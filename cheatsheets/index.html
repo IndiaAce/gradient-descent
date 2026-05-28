@@ -91,6 +91,20 @@
     }
     .cs-card.featured .row { opacity: 1; }
     .cs-card .row .go { color: var(--hot); }
+  
+    @media (max-width: 720px) {
+      .ix-hero { padding: 36px 0 40px; }
+      .ix-hero h1 { font-size: clamp(56px, 17vw, 88px); margin-bottom: 22px; line-height: 0.88; }
+      .ix-hero .deck { font-size: 14px; margin-bottom: 26px; }
+
+      .cs-card-grid { grid-template-columns: 1fr; }
+      .cs-card { border-right: 0; border-bottom: 1.5px solid var(--ink); padding: 22px 20px; }
+      .cs-card:last-child { border-bottom: 0; }
+      .cs-card.featured { grid-column: auto; }
+      .cs-card h3 { font-size: 28px; }
+      .cs-card.featured h3 { font-size: 40px; }
+      .cs-card .blurb { font-size: 12.5px; margin-bottom: 14px; }
+    }
   </style>
 </head>
 <body>

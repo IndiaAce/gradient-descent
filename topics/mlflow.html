@@ -192,6 +192,43 @@
     .roadmap-row.current { background: rgba(255,77,46,0.04); }
     .roadmap-row.future { opacity: 0.7; }
     .roadmap-row.future .step { color: var(--dim); }
+  
+    @media (max-width: 720px) {
+      .topic-hero { padding: 36px 0 40px; }
+      .topic-hero h1 { font-size: clamp(56px, 17vw, 92px); margin-bottom: 22px; line-height: 0.88; }
+      .topic-hero .id { font-size: 10px; padding: 3px 8px; margin-bottom: 18px; }
+      .topic-hero .deck { font-size: 14px; line-height: 1.55; margin-bottom: 26px; }
+      .related-row { gap: 6px; margin-top: 12px; }
+
+      .ed-timeline { grid-template-columns: 1fr; }
+      .ed-timeline-row.h { display: none; }
+      .ed-timeline-row > * { padding: 16px 18px; border-top: 1px solid var(--line); }
+      .ed-timeline-row > div:first-child {
+        border-top: 1.5px solid var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+      }
+      .ed-timeline-row > div:first-child .ed-num { font-size: 24px; }
+      .ed-where { font-size: 12.5px; line-height: 1.6; }
+      .ed-where .ttl { font-size: 16px; margin-bottom: 6px; }
+      .ed-meta { text-align: left; font-size: 9px; }
+
+      .roadmap-row {
+        grid-template-columns: 50px 1fr;
+        grid-template-areas: "step desc" ".    meta";
+        gap: 4px 14px;
+        padding: 16px 18px;
+      }
+      .roadmap-row .step { grid-area: step; font-size: 24px; align-self: start; }
+      .roadmap-row .desc { grid-area: desc; font-size: 12.5px; }
+      .roadmap-row .desc strong { font-size: 15px; }
+      .roadmap-row .dur, .roadmap-row .when { grid-area: meta; display: inline; text-align: left; font-size: 9px; }
+      .roadmap-row .when::before { content: " · "; }
+    }
   </style>
 </head>
 <body>

@@ -138,6 +138,27 @@
     .recipe .snippet .n { color: #f2c462; }
     .recipe .snippet .f { color: #ffd699; }
     .recipe .snippet .pr { color: #ff4d2e; }
+  
+    @media (max-width: 720px) {
+      .cs-hero { padding: 36px 0 40px; }
+      .cs-hero h1 { font-size: clamp(56px, 17vw, 96px); margin-bottom: 22px; line-height: 0.88; }
+      .cs-hero .id-row { flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+      .cs-hero .deck { font-size: 14px; line-height: 1.55; margin-bottom: 26px; }
+
+      .cs-layout { grid-template-columns: 1fr; gap: 28px; padding-top: 40px; }
+      .cs-toc { position: static; order: -1; padding: 0; margin-bottom: 8px; }
+      .cs-toc h4 { font-size: 9.5px; padding-bottom: 8px; }
+      .cs-toc ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+      .cs-toc li { padding: 6px 0; font-size: 11.5px; }
+      .cs-toc li .num { font-size: 9px; }
+
+      .recipe { grid-template-columns: 44px 1fr; gap: 14px; padding: 18px 0; }
+      .recipe-num { font-size: 22px; }
+      .recipe-num small { font-size: 8.5px; margin-top: 2px; }
+      .recipe h3 { font-size: 18px; line-height: 1.2; margin-bottom: 8px; }
+      .recipe p { font-size: 12.5px; line-height: 1.6; }
+      .recipe .snippet { font-size: 11px; line-height: 1.6; padding: 10px 12px; }
+    }
   </style>
 </head>
 <body>

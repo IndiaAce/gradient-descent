@@ -32,6 +32,13 @@
     .topic-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
     .related-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
     .related-row .label { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; margin-right: 6px; }
+  
+    @media (max-width: 720px) {
+      .topic-hero { padding: 36px 0 40px; }
+      .topic-hero h1 { font-size: clamp(56px, 17vw, 88px); margin-bottom: 22px; line-height: 0.88; }
+      .topic-hero .id { font-size: 10px; padding: 3px 8px; margin-bottom: 18px; }
+      .topic-hero .deck { font-size: 14px; line-height: 1.55; margin-bottom: 26px; }
+    }
   </style>
 </head>
 <body>

@@ -121,6 +121,32 @@
       text-align: right;
       text-transform: uppercase;
     }
+  
+    @media (max-width: 720px) {
+      .ix-hero { padding: 36px 0 40px; }
+      .ix-hero h1 { font-size: clamp(56px, 17vw, 88px); margin-bottom: 22px; line-height: 0.88; }
+      .ix-hero .deck { font-size: 14px; margin-bottom: 26px; }
+
+      .tt-head { display: none; }
+      .tt-row {
+        grid-template-columns: 56px 1fr auto;
+        grid-template-areas:
+          "ix nm    go"
+          "ix eds   eds"
+          "ix stat  stat"
+          "ix rel   rel"
+          "ix last  last";
+        gap: 4px 12px;
+        padding: 16px 18px;
+      }
+      .tt-row .ix { grid-area: ix; align-self: start; }
+      .tt-row .nm { grid-area: nm; font-size: 22px; }
+      .tt-row .eds { grid-area: eds; }
+      .tt-row .stat { grid-area: stat; justify-self: start; }
+      .tt-row .rel { grid-area: rel; font-size: 11px; }
+      .tt-row .last { grid-area: last; }
+      .tt-row .go { grid-area: go; }
+    }
   </style>
 </head>
 <body>
