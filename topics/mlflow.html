@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MLflow — Topic // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    /* topic page header */
+    .topic-hero {
+      padding: 70px 0 60px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .topic-hero .crumbs { margin-bottom: 32px; }
+    .topic-hero .id {
+      display: inline-block;
+      font-family: var(--depmono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      background: var(--hot);
+      color: var(--paper);
+      margin-bottom: 24px;
+    }
+    .topic-hero h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(100px, 14vw, 240px);
+      line-height: 0.85;
+      letter-spacing: -0.05em;
+      margin-bottom: 32px;
+    }
+    .topic-hero h1 em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--hot);
+    }
+    .topic-hero .deck {
+      font-family: var(--mono);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-2);
+      max-width: 70ch;
+      margin-bottom: 36px;
+    }
+    .topic-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .topic-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    /* timeline of appearances across editions */
+    .ed-timeline {
+      display: grid;
+      grid-template-columns: 100px 1fr 200px;
+      gap: 0;
+      border: 2px solid var(--ink);
+      background: var(--paper-3);
+    }
+    .ed-timeline-row {
+      display: contents;
+    }
+    .ed-timeline-row > * {
+      padding: 20px 22px;
+      border-top: 1px solid var(--line);
+    }
+    .ed-timeline-row.h > * {
+      background: var(--ink);
+      color: var(--paper);
+      border-top: 0;
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 10px 22px;
+    }
+    .ed-num {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 38px;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .ed-num.current { color: var(--hot); }
+    .ed-where {
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--ink-2);
+    }
+    .ed-where .ttl {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .ed-where .ttl em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+    .ed-meta {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: right;
+    }
+    .ed-meta .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .ed-meta .pill.hot { background: var(--hot); color: var(--paper); border-color: var(--hot); }
+
+    /* related topics — small chip row */
+    .related-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .related-row .label {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-right: 6px;
+    }
+
+    /* roadmap list */
+    .roadmap {
+      border: 2px solid var(--ink);
+      background: var(--paper-3);
+    }
+    .roadmap-row {
+      display: grid;
+      grid-template-columns: 80px 60px 1fr 160px;
+      gap: 20px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+    }
+    .roadmap-row:last-child { border-bottom: 0; }
+    .roadmap-row .step {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      color: var(--hot);
+    }
+    .roadmap-row .dur {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+    .roadmap-row .desc {
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--ink-2);
+    }
+    .roadmap-row .desc strong {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .roadmap-row .when {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-align: right;
+    }
+    .roadmap-row.done .step { color: var(--green); }
+    .roadmap-row.done .desc strong { text-decoration: line-through; opacity: 0.6; }
+    .roadmap-row.current { background: rgba(255,77,46,0.04); }
+    .roadmap-row.future { opacity: 0.7; }
+    .roadmap-row.future .step { color: var(--dim); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-T01</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="index.html" class="active">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// TOPIC</span>
+        <span style="color: var(--ink);">MLflow</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <!-- HERO -->
+    <section class="topic-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">topics</a>
+        <span class="sep">/</span>
+        <span>mlflow</span>
+      </div>
+
+      <span class="id">§ TOPIC · NEW THIS WEEK</span>
+
+      <h1>MLflow<em>.</em></h1>
+
+      <p class="deck">The experiment tracker that turns notebook archaeology into a sortable table. Every run becomes a named, permanent record with its exact parameters, evaluation metrics, and saved model artifact. Introduced this edition as the <em>spine</em> of every Calendra experiment going forward.</p>
+
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="lbl">// EDITIONS TOUCHED</div>
+          <div class="v">1<em>/5</em></div>
+          <div class="delta">NEW · ED #005</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// CODE SAMPLES</div>
+          <div class="v">3</div>
+          <div class="delta">baseline · sweep · embed-aug</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// RELATED TOPICS</div>
+          <div class="v">5</div>
+          <div class="delta">GBM · Tracking · Optuna · Drift · Embed</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// PROJECTS USING</div>
+          <div class="v">1</div>
+          <div class="delta">Calendra · GBM</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// CHEAT SHEETS</div>
+          <div class="v">1</div>
+          <div class="delta">jupyter-for-ml · § 5</div>
+        </div>
+      </div>
+
+      <div class="related-row">
+        <span class="label">// RELATED:</span>
+        <a class="topic-chip" href="index.html">GBM</a>
+        <a class="topic-chip" href="index.html">Optuna</a>
+        <a class="topic-chip" href="index.html">Tracking</a>
+        <a class="topic-chip" href="index.html">Registry</a>
+        <a class="topic-chip" href="index.html">Drift</a>
+        <a class="topic-chip" href="embeddings.html">Embeddings</a>
+      </div>
+    </section>
+
+    <!-- ============== WHY IT MATTERS ============== -->
+    <section class="secblock body">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">01</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id ink">§ T-01 · WHY IT MATTERS</span>
+          <div class="ref">CORE THESIS · CALENDRA CONTEXT</div>
+        </div>
+        <h2>The loop that turns runs into <em>diffs.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p>You have a working GBM hitting 98% accuracy. But which <code class="inline">n_estimators</code> got you there? What <code class="inline">max_depth</code> did you finally settle on? When you retrain on fresh labeled data next month, how will you know the new run is actually better — or just differently broken?</p>
+          <p>Without experiment tracking, model development is <em>archaeology</em>. Every Saturday begins with reconstructing what past-you did from notebook cells and vague memory. The number you remember was the best of one path through the search space — and you have no record of the paths you didn't take.</p>
+          <p><strong>MLflow fixes this.</strong> Every training run becomes a named, permanent record: parameters, evaluation metrics, saved model artifact, source git commit, environment. The UI lets you sort, filter, and visually diff any two runs side by side.</p>
+        </div>
+
+        <div>
+          <p>The API surface you actually need is tiny:</p>
+          <ul style="list-style:none; padding:0; font-family:var(--mono); font-size:13.5px; line-height:1.85; color:var(--ink-2); margin-bottom:20px;">
+            <li><code class="inline">set_experiment(name)</code> — bucket runs under a project</li>
+            <li><code class="inline">start_run(run_name=...)</code> — open one record</li>
+            <li><code class="inline">log_param / log_metric</code> — fill it in</li>
+            <li><code class="inline">log_model</code> — pickle the artifact</li>
+            <li><code class="inline">mlflow ui</code> — sort, diff, deploy</li>
+          </ul>
+
+          <div class="callout">
+            <span class="lbl">// THE BEHAVIORAL UNLOCK</span>
+            Once tracking is free, you start running <strong>five short experiments per session</strong> instead of one long manually-tweaked one. That's when you actually learn what moves the needle.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== APPEARANCES ACROSS EDITIONS ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">02</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-02 · APPEARANCES</span>
+          <div class="ref">ACROSS 5 EDITIONS</div>
+        </div>
+        <h2>Where this topic <em>has lived.</em></h2>
+      </div>
+
+      <div class="ed-timeline">
+        <div class="ed-timeline-row h">
+          <span>edition</span><span>section · why it appeared</span><span>tag</span>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num current">005</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--hot); margin-top:6px; text-transform:uppercase;">2026·05·27</div></div>
+          <div class="ed-where">
+            <span class="ttl">§C-02 · Concept → Code <em>— stop guessing, start comparing</em></span>
+            Introduced as the new spine of every Calendra experiment. Tiny API surface: <code class="inline">set_experiment</code> + <code class="inline">start_run</code> + three logging calls. Read in &lt;7 min, drop in this weekend.
+            <div class="related-row">
+              <span class="label">also in:</span>
+              <span class="dm-tag">§C-03 BUILD</span>
+              <span class="dm-tag">§C-06 ONE READ</span>
+            </div>
+          </div>
+          <div class="ed-meta"><span class="pill hot">CURRENT</span><div>// ANCHOR</div></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">004</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·04·22</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · not covered</span>
+            Feature Forensics edition stayed on SHAP. MLflow was on the radar list for next-up but didn't make the cut.
+          </div>
+          <div class="ed-meta"><span class="pill">RADAR</span></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">003</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·04·04</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · not covered</span>
+            Trace Layer edition. Adjacent territory (observability for agents, not for training runs) but no MLflow specifically.
+          </div>
+          <div class="ed-meta"><span class="pill">ADJACENT</span></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">002</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·03·27</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · not covered</span>
+            Drift &amp; Drag focused on data-side concerns. MLflow surfaced as "next up" in the Concept→Code closing.
+          </div>
+          <div class="ed-meta"><span class="pill">NEXT-UP</span></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">001</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·03·21</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · not covered</span>
+            Cold Start. Establishing the GBM baseline; tracking was deferred.
+          </div>
+          <div class="ed-meta"><span class="pill">PRE</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CODE ARCHIVE ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">03</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id blue">§ T-03 · CODE ARCHIVE</span>
+          <div class="ref">3 PATTERNS · GROWS WITH EDITIONS</div>
+        </div>
+        <h2>Reach-for-it <em>patterns.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--hot); margin-bottom:14px; text-transform:uppercase;">// PATTERN 01 · BASELINE LOG</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">The minimum viable wrap. Take your existing training cell and add five lines. Source: <a href="../index.html#concept">§C-02 ED #005</a>.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 01 · baseline</span>
+            <span class="id">// 5 LINES</span>
+          </div>
+<pre>mlflow.set_experiment(<span class="s">"calendra-gbm"</span>)
+
+<span class="k">with</span> mlflow.start_run(run_name=<span class="s">"baseline"</span>):
+    model.fit(X_train, y_train)
+    mlflow.log_params(params)
+    mlflow.log_metric(<span class="s">"auc_roc"</span>, auc)
+    mlflow.log_metric(<span class="s">"f1"</span>, f1)
+    mlflow.sklearn.log_model(model, <span class="s">"model"</span>)</pre>
+        </div>
+      </div>
+
+      <div class="twocol" style="margin-top:48px;">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--hot); margin-bottom:14px; text-transform:uppercase;">// PATTERN 02 · CONFIG SWEEP</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">A list of configs, each becomes a named run. Diff them in the UI by sorting on metric columns. Source: <a href="../index.html#build">§C-03 ED #005</a>.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 02 · sweep</span>
+            <span class="id">// N RUNS, ONE SCRIPT</span>
+          </div>
+<pre>experiments = [
+    {<span class="s">"run_name"</span>: <span class="s">"shallow-fast"</span>,  <span class="s">"max_depth"</span>: <span class="n">3</span>, <span class="s">"learning_rate"</span>: <span class="n">0.10</span>},
+    {<span class="s">"run_name"</span>: <span class="s">"deeper-slower"</span>, <span class="s">"max_depth"</span>: <span class="n">5</span>, <span class="s">"learning_rate"</span>: <span class="n">0.05</span>},
+]
+
+<span class="k">for</span> cfg <span class="k">in</span> experiments:
+    run_name = cfg.pop(<span class="s">"run_name"</span>)
+    <span class="k">with</span> mlflow.start_run(run_name=run_name):
+        model = <span class="f">GradientBoostingClassifier</span>(**cfg, random_state=<span class="n">42</span>)
+        model.fit(X_train, y_train)
+        mlflow.log_params(cfg)
+        mlflow.log_metric(<span class="s">"f1"</span>, f1_score(y_test, model.predict(X_test)))
+        mlflow.sklearn.log_model(model, <span class="s">"model"</span>)</pre>
+        </div>
+      </div>
+
+      <div class="twocol" style="margin-top:48px;">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--hot); margin-bottom:14px; text-transform:uppercase;">// PATTERN 03 · FEATURE AB TEST</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">Log two runs with different feature sets — bare baseline and embedding-augmented. Then sort the comparison view by AUC and accept reality.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 03 · feature A/B</span>
+            <span class="id">// FOR ED #005 ICEBREAKER</span>
+          </div>
+<pre><span class="k">for</span> name, feats <span class="k">in</span> [(<span class="s">"baseline"</span>, X_base), (<span class="s">"with-embed"</span>, X_with_embed)]:
+    <span class="k">with</span> mlflow.start_run(run_name=name):
+        model = <span class="f">GradientBoostingClassifier</span>(**best_params, random_state=<span class="n">42</span>)
+        model.fit(feats, y_train)
+        mlflow.log_metric(<span class="s">"auc_roc"</span>, roc_auc_score(y_test, model.predict_proba(feats_test)[:, <span class="n">1</span>]))
+        mlflow.log_param(<span class="s">"n_features"</span>, feats.shape[<span class="n">1</span>])
+        mlflow.sklearn.log_model(model, <span class="s">"model"</span>)</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== ROADMAP ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">04</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-04 · ROADMAP</span>
+          <div class="ref">FROM BASELINE TO REGISTRY</div>
+        </div>
+        <h2>Where this <em>goes next.</em></h2>
+      </div>
+
+      <div class="roadmap">
+        <div class="roadmap-row current">
+          <div class="step">01</div>
+          <div class="dur">~ 90 MIN</div>
+          <div class="desc">
+            <strong>Baseline tracking on Calendra GBM</strong>
+            Drop <code class="inline">mlflow.start_run</code> around the existing training cell in <code class="inline">model_training.ipynb</code>. Log 3 params + 2 metrics. Open the UI, confirm runs persist.
+          </div>
+          <div class="when">THIS WEEKEND</div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="step">02</div>
+          <div class="dur">~ 60 MIN</div>
+          <div class="desc">
+            <strong>Sweep: 5 hyperparameter configs</strong>
+            Wrap the training loop in a config list, name each run, sort the comparison view by AUC. First moment you stop guessing.
+          </div>
+          <div class="when">ED #006 · BUILD</div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="step">03</div>
+          <div class="dur">~ 2 HRS</div>
+          <div class="desc">
+            <strong>Optuna-driven hyperparameter search</strong>
+            Each Optuna trial becomes an MLflow run. Lock the best config as a registered model version. Bridges from tracking into the Model Registry.
+          </div>
+          <div class="when">ED #006 · ICEBREAKER</div>
+        </div>
+
+        <div class="roadmap-row future">
+          <div class="step">04</div>
+          <div class="dur">~ 90 MIN</div>
+          <div class="desc">
+            <strong>Promote winner to staging</strong>
+            Use the Model Registry to stage / production the best run. Loading by alias (<code class="inline">models:/calendra-gbm@production</code>) decouples your inference code from any one run.
+          </div>
+          <div class="when">ED #007</div>
+        </div>
+
+        <div class="roadmap-row future">
+          <div class="step">05</div>
+          <div class="dur">~ 2 HRS</div>
+          <div class="desc">
+            <strong>REST serving via <code class="inline">mlflow models serve</code></strong>
+            Spin up a local endpoint backed by the registered model. Wire Calendra's inference path to it. First time the GBM has a stable URL.
+          </div>
+          <div class="when">ED #008</div>
+        </div>
+
+        <div class="roadmap-row future">
+          <div class="step">06</div>
+          <div class="dur">ONGOING</div>
+          <div class="desc">
+            <strong>Drift dashboards from MLflow metrics</strong>
+            Cron-tagged inference runs that log live AUC against held-out batches. The graph compounds; alerts when distributions move.
+          </div>
+          <div class="when">ED #009+</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== USING IT ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">05</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id blue">§ T-05 · USED IN</span>
+          <div class="ref">PROJECTS · CHEAT SHEETS</div>
+        </div>
+        <h2>Where it shows <em>up.</em></h2>
+      </div>
+
+      <div class="topic-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <a class="topic-cell current" href="../projects/calendra-gbm.html">
+          <div class="num">// PROJECT</div>
+          <h3>Calendra · GBM</h3>
+          <div class="meta"><span>72% · TRAINING</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="../cheatsheets/jupyter-ml.html">
+          <div class="num">// CHEAT SHEET · § 5</div>
+          <h3>Jupyter for ML</h3>
+          <div class="meta"><span>RECIPE 5.1 → 5.4</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="../index.html#oneread">
+          <div class="num">// EXTERNAL READ</div>
+          <h3>MarkTechPost end-to-end guide</h3>
+          <div class="meta"><span>PINNED · ED #005</span><span>OPEN →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="foot">
+      <div class="foot-marquee">topic/<em>mlflow.</em></div>
+
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <p>Topic pages compound. Every week this page gains another entry — a new code pattern, a roadmap step crossed off, another project that started using it.</p>
+        </div>
+        <div class="foot-col">
+          <h4>// Related topics</h4>
+          <ul>
+            <li><a href="index.html">GBM</a></li>
+            <li><a href="index.html">Optuna</a></li>
+            <li><a href="index.html">Registry</a></li>
+            <li><a href="index.html">Tracking</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// Library</h4>
+          <ul>
+            <li><a href="index.html">All topics</a></li>
+            <li><a href="../projects/index.html">Build log</a></li>
+            <li><a href="../cheatsheets/index.html">Cheat sheets</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// First seen</h4>
+          <ul>
+            <li>ED #005 · 2026·05·27</li>
+            <li>Anchor candidate</li>
+            <li>Next: ED #006</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <span>TOPIC PAGE · GROWS WITH EDITIONS</span>
+        <span>GD/T01 · MLFLOW</span>
+        <a href="../index.html">↳ BACK TO LATEST</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    const obs = new IntersectionObserver(es => {
+      es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

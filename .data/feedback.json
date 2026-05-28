@@ -1,0 +1,46 @@
+{
+  "entries": [
+    {
+      "date": "2026-03-21",
+      "newsletter": "email-digest",
+      "edition": "#001",
+      "section": "Hunt of the Week",
+      "topic": "MQL detection sketches and actionable threat hunting logic",
+      "rating": "positive",
+      "note": "OAuth redirect abuse hunt was particularly interesting and super relevant to work — this style of content (concrete detection logic, MQL sketches, customer-vertical callouts) is exactly what lands"
+    },
+    {
+      "date": "2026-03-21",
+      "newsletter": "email-digest",
+      "edition": "#001",
+      "section": "Threat Landscape",
+      "topic": "Novel email evasion techniques targeting detection infrastructure (NLP, ML-based filters)",
+      "rating": "positive",
+      "note": "NLP padding evasion was super relevant — techniques that specifically target detection systems (NLP classifiers, AI-based filters) are high-signal for a detection engineer"
+    },
+    {
+      "date": "2026-03-21",
+      "newsletter": "email-digest",
+      "edition": "#001",
+      "section": "Threat Landscape",
+      "topic": "State-sponsored APT activity targeting high-value individuals (HVTs)",
+      "rating": "negative",
+      "note": "Customer base is commercial (retail, education, law, real estate, AI companies, SaaS/consumer products) — not impacted by nation-state HVT targeting. Include APT/state-sponsored content ONLY if TTPs or infrastructure have demonstrably trickled down to commercial-sector targets, e.g. Kimsuky QR code techniques being adopted by commodity actors, or RIS infrastructure overlapping with BEC campaigns"
+    }
+  ],
+  "summary": {
+    "preferred_topics": [
+      "MQL detection sketches and concrete detection logic",
+      "actionable threat hunting with customer-vertical callouts",
+      "novel evasion techniques targeting NLP or ML-based email filters",
+      "email threats relevant to commercial-sector customers (retail, education, law, real estate, AI companies, SaaS)"
+    ],
+    "avoid_topics": [
+      "state-sponsored APT activity targeting high-value individuals (government, military, journalists) — skip unless TTPs have clearly proliferated to commercial-sector campaigns"
+    ],
+    "preferred_sections": [
+      "Hunt of the Week"
+    ],
+    "avoid_sections": []
+  }
+}

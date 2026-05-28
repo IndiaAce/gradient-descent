@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topics — Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .ix-hero {
+      padding: 70px 0 60px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .ix-hero .crumbs { margin-bottom: 32px; }
+    .ix-hero h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(96px, 13vw, 200px);
+      line-height: 0.86;
+      letter-spacing: -0.05em;
+      margin-bottom: 32px;
+    }
+    .ix-hero h1 em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--hot);
+    }
+    .ix-hero .deck {
+      font-family: var(--mono);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-2);
+      max-width: 70ch;
+      margin-bottom: 36px;
+    }
+    .ix-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    /* topic table */
+    .topic-table {
+      border: 2px solid var(--ink);
+      background: var(--paper-3);
+    }
+    .tt-head {
+      display: grid;
+      grid-template-columns: 60px 1.4fr 0.7fr 1fr 0.9fr 1fr 100px;
+      padding: 12px 22px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .tt-row {
+      display: grid;
+      grid-template-columns: 60px 1.4fr 0.7fr 1fr 0.9fr 1fr 100px;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+      transition: background 0.2s;
+      color: inherit;
+    }
+    .tt-row:last-child { border-bottom: 0; }
+    .tt-row:hover { background: var(--paper-2); }
+    .tt-row.current { background: rgba(255,77,46,0.05); }
+    .tt-row .ix {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--dim);
+    }
+    .tt-row .nm {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .tt-row .nm em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+    .tt-row .eds {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--ink-2);
+      text-transform: uppercase;
+    }
+    .tt-row .stat {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      padding: 3px 8px;
+      border: 1px solid currentColor;
+      justify-self: start;
+      text-transform: uppercase;
+    }
+    .tt-row .stat.anchor    { color: var(--blue); }
+    .tt-row .stat.active    { color: var(--hot); background: rgba(255,77,46,0.06); }
+    .tt-row .stat.recurring { color: var(--ink); }
+    .tt-row .stat.dormant   { color: var(--dim); }
+    .tt-row .stat.new       { color: var(--paper); background: var(--hot); border-color: var(--hot); }
+    .tt-row .last {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+    .tt-row .rel {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--ink-2);
+    }
+    .tt-row .go {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--hot);
+      text-align: right;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-T</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="index.html" class="active">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// TOPICS</span>
+        <span style="color: var(--ink);">8 NODES</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <section class="ix-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <span>topics</span>
+      </div>
+
+      <h1>Topic <em>graph.</em></h1>
+
+      <p class="deck">Every concept this newsletter has touched. Topics gain edges with each edition that touches them — anchors are the dense nodes the rest of the graph hangs off, dormant topics are radar items waiting to come back. <em>Click any row to open its page.</em></p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">// TOTAL NODES</div><div class="v">8</div><div class="delta">+ 1 this week</div></div>
+        <div class="kpi"><div class="lbl">// EDGES</div><div class="v">14</div><div class="delta">+ 3 this week</div></div>
+        <div class="kpi"><div class="lbl">// ANCHORS</div><div class="v">1</div><div class="delta">SHAP · 3 ED</div></div>
+        <div class="kpi"><div class="lbl">// DORMANT</div><div class="v">1</div><div class="delta flat">Drift · 30d</div></div>
+        <div class="kpi"><div class="lbl">// NEW · ED #005</div><div class="v">1<em>.</em></div><div class="delta">MLflow</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id">§ T · ALL TOPICS</span>
+        <h2>Every node, sorted by <em>density.</em></h2>
+        <span class="ts">5 EDITIONS · 8 NODES</span>
+        <span class="ref">SORT: EDITIONS · DESC</span>
+      </div>
+
+      <div class="topic-table">
+        <div class="tt-head">
+          <span>#</span><span>topic</span><span>editions</span><span>status</span><span>last seen</span><span>related</span><span></span>
+        </div>
+
+        <a class="tt-row" href="index.html">
+          <span class="ix">T-01</span>
+          <div class="nm">SHAP</div>
+          <div class="eds">3 · #001 #004 #005</div>
+          <span class="stat anchor">ANCHOR</span>
+          <span class="last">ED #005 · 2D AGO</span>
+          <div class="rel">GBM, Drift, Features, Interactions</div>
+          <span class="go">OPEN →</span>
+        </a>
+
+        <a class="tt-row current" href="mlflow.html">
+          <span class="ix">T-02</span>
+          <div class="nm">MLflow<em>.</em></div>
+          <div class="eds">1 · #005</div>
+          <span class="stat new">NEW</span>
+          <span class="last">ED #005 · NOW</span>
+          <div class="rel">GBM, Optuna, Registry, Drift</div>
+          <span class="go">OPEN →</span>
+        </a>
+
+        <a class="tt-row" href="tool-use.html">
+          <span class="ix">T-03</span>
+          <div class="nm">Tool Use</div>
+          <div class="eds">2 · #003 #005</div>
+          <span class="stat active">ACTIVE</span>
+          <span class="last">ED #005 · NOW</span>
+          <div class="rel">Anthropic SDK, Agents, Workshop</div>
+          <span class="go">OPEN →</span>
+        </a>
+
+        <a class="tt-row" href="embeddings.html">
+          <span class="ix">T-04</span>
+          <div class="nm">Embeddings</div>
+          <div class="eds">2 · #002 #005</div>
+          <span class="stat active">ACTIVE</span>
+          <span class="last">ED #005 · NOW</span>
+          <div class="rel">Sentence transformers, Features, CVE</div>
+          <span class="go">OPEN →</span>
+        </a>
+
+        <a class="tt-row" href="index.html">
+          <span class="ix">T-05</span>
+          <div class="nm">GBM</div>
+          <div class="eds">2 · #001 #005</div>
+          <span class="stat recurring">RECURRING</span>
+          <span class="last">ED #005 · NOW</span>
+          <div class="rel">MLflow, SHAP, Features</div>
+          <span class="go">→</span>
+        </a>
+
+        <a class="tt-row" href="index.html">
+          <span class="ix">T-06</span>
+          <div class="nm">Observability</div>
+          <div class="eds">2 · #003 #005</div>
+          <span class="stat recurring">RECURRING</span>
+          <span class="last">ED #005 · 2D AGO</span>
+          <div class="rel">Workshop, Trace, Tool Use</div>
+          <span class="go">→</span>
+        </a>
+
+        <a class="tt-row" href="index.html">
+          <span class="ix">T-07</span>
+          <div class="nm">Features</div>
+          <div class="eds">2 · #004 #005</div>
+          <span class="stat recurring">RECURRING</span>
+          <span class="last">ED #005 · NOW</span>
+          <div class="rel">Embeddings, SHAP, Engineering</div>
+          <span class="go">→</span>
+        </a>
+
+        <a class="tt-row" href="index.html">
+          <span class="ix">T-08</span>
+          <div class="nm">Drift</div>
+          <div class="eds">2 · #002 #004</div>
+          <span class="stat dormant">DORMANT 30d</span>
+          <span class="last">ED #004 · 5W AGO</span>
+          <div class="rel">SHAP, Embeddings, Calibration</div>
+          <span class="go">→</span>
+        </a>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-marquee">topic/<em>graph.</em></div>
+      <div class="foot-grid">
+        <div class="foot-brand"><p>The graph grows weekly. Click any topic to see every edition that touched it, plus the code patterns, related projects, and roadmap forward.</p></div>
+        <div class="foot-col">
+          <h4>// Featured</h4>
+          <ul><li><a href="mlflow.html">MLflow</a></li><li><a href="tool-use.html">Tool Use</a></li><li><a href="embeddings.html">Embeddings</a></li></ul>
+        </div>
+        <div class="foot-col">
+          <h4>// Library</h4>
+          <ul><li><a href="../index.html">Latest edition</a></li><li><a href="../projects/index.html">Build log</a></li><li><a href="../cheatsheets/index.html">Cheat sheets</a></li></ul>
+        </div>
+        <div class="foot-col">
+          <h4>// Counts</h4>
+          <ul><li>8 nodes</li><li>14 edges</li><li>1 anchor · 3 active</li><li>1 dormant</li></ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>KNOWLEDGE BASE</span>
+        <span>GD/T · TOPIC GRAPH</span>
+        <a href="../index.html">↳ BACK TO LATEST</a>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

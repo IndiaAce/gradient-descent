@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Use — Topic // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .topic-hero {
+      padding: 70px 0 60px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .topic-hero .crumbs { margin-bottom: 32px; }
+    .topic-hero .id {
+      display: inline-block;
+      font-family: var(--depmono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      background: var(--hot);
+      color: var(--paper);
+      margin-bottom: 24px;
+    }
+    .topic-hero h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(80px, 12vw, 200px);
+      line-height: 0.85;
+      letter-spacing: -0.05em;
+      margin-bottom: 32px;
+    }
+    .topic-hero h1 em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--hot);
+    }
+    .topic-hero .deck {
+      font-family: var(--mono);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-2);
+      max-width: 70ch;
+      margin-bottom: 36px;
+    }
+    .topic-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .topic-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+    .related-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+    .related-row .label { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; margin-right: 6px; }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-T03</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="index.html" class="active">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// TOPIC</span>
+        <span style="color: var(--ink);">Tool Use</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <section class="topic-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">topics</a>
+        <span class="sep">/</span>
+        <span>tool-use</span>
+      </div>
+
+      <span class="id">§ TOPIC · ACTIVE</span>
+
+      <h1>Tool Use<em>.</em></h1>
+
+      <p class="deck">The pattern where you give Claude a set of functions it can call mid-response. Claude pauses generation, invokes the tool, gets a result, and continues. <strong>This isn't prompt engineering</strong> — it's a function-dispatch loop where Claude is the dispatcher and your code is the executor. Active since edition #003.</p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">// EDITIONS TOUCHED</div><div class="v">2<em>/5</em></div><div class="delta">#003 · #005</div></div>
+        <div class="kpi"><div class="lbl">// CODE SAMPLES</div><div class="v">2</div><div class="delta">basic loop · streaming</div></div>
+        <div class="kpi"><div class="lbl">// RELATED TOPICS</div><div class="v">4</div><div class="delta">Anthropic SDK · Agents · Workshop · Obs</div></div>
+        <div class="kpi"><div class="lbl">// PROJECTS USING</div><div class="v">1</div><div class="delta">Workshop trace layer</div></div>
+      </div>
+
+      <div class="related-row">
+        <span class="label">// RELATED:</span>
+        <a class="topic-chip" href="index.html">Anthropic SDK</a>
+        <a class="topic-chip" href="index.html">Agents</a>
+        <a class="topic-chip" href="index.html">Workshop</a>
+        <a class="topic-chip" href="index.html">Observability</a>
+      </div>
+    </section>
+
+    <section class="secblock body">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">01</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id ink">§ T-01 · CORE THESIS</span>
+          <div class="ref">FUNCTION-DISPATCH LOOP</div>
+        </div>
+        <h2>Claude as the <em>dispatcher.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p>Tool use is misleadingly named. It sounds like an SDK feature, but mechanically it's a runtime protocol: you describe each tool with a name, description, and JSON schema for inputs. Claude decides when to call it. You implement the logic. The loop runs until <code class="inline">stop_reason == "end_turn"</code>.</p>
+          <p>The most immediate use case for Calendra: a Claude agent that reads a verdict JSON and writes a human-readable threat report, optionally calling lookup tools — <em>domain age, URL category</em> — for context the verdict alone can't carry.</p>
+          <p>The reason this pattern matters more than chat: it's the cleanest way to give a model access to fresh state without retraining or stuffing the context window. Tools are also the API the model uses to do anything in the real world.</p>
+        </div>
+
+        <div>
+          <div class="callout ink">
+            <span class="lbl">// MENTAL MODEL</span>
+            Tool use turns Claude's generation into a <strong>state machine</strong>. Each state is either "generating text" or "waiting for a tool result." Your code drives the transitions.
+          </div>
+
+          <div class="callout">
+            <span class="lbl">// PAIR WITH</span>
+            <a href="../index.html#agent">Workshop</a> for observability — every <code class="inline">tool_use</code> block shows up as a fully-typed event in the trace tree. You see exactly which tool fired, with what arguments, returning what.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">02</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-02 · APPEARANCES</span>
+          <div class="ref">2 EDITIONS · CYCLE 0/7</div>
+        </div>
+        <h2>Where this topic <em>has lived.</em></h2>
+      </div>
+
+      <div class="buildlog">
+        <div class="buildlog-head" style="grid-template-columns: 80px 1.4fr 2fr 1fr;">
+          <span>edition</span><span>section</span><span>angle</span><span>cycle</span>
+        </div>
+
+        <a class="buildlog-row" href="../index.html#agent" style="grid-template-columns: 80px 1.4fr 2fr 1fr;">
+          <span class="idx" style="color: var(--hot);">#005</span>
+          <div class="name">§C-04 · <em>Agent Brief</em></div>
+          <div class="next-line">Tool use as a function-dispatch loop. Threat-report agent reading Calendra verdict JSON, optional domain-age lookup.</div>
+          <span class="dm-tag hot">CYCLE 0/7</span>
+        </a>
+
+        <a class="buildlog-row" href="../index.html#archive" style="grid-template-columns: 80px 1.4fr 2fr 1fr;">
+          <span class="idx">#003</span>
+          <div class="name">§C · <em>Trace Layer</em></div>
+          <div class="next-line">First mention. Trace observability for agents in production — Workshop debug daemon, SQLite log.</div>
+          <span class="dm-tag">INTRO</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">03</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id blue">§ T-03 · CODE ARCHIVE</span>
+          <div class="ref">REACH-FOR-IT</div>
+        </div>
+        <h2>The <em>loop.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">The canonical pattern. Define tools as JSON-schema declarations. Loop until Claude stops. Feed every tool's return value back into the next message turn. <a href="../index.html#agent">Full context from §C-04 ED #005 →</a></p>
+        </div>
+
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · the loop</span>
+            <span class="id">// CYCLE 0</span>
+          </div>
+<pre><span class="k">while</span> <span class="n">True</span>:
+    resp = client.messages.create(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=<span class="n">512</span>,
+        tools=tools,
+        messages=messages,
+    )
+    <span class="k">if</span> resp.stop_reason == <span class="s">"end_turn"</span>:
+        <span class="k">return</span> next(b.text <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> hasattr(b, <span class="s">"text"</span>))
+
+    <span class="c"># Claude called a tool — execute and feed back</span>
+    results = [<span class="f">execute_tool</span>(b.name, b.input)
+               <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
+    messages += [
+        {<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content},
+        {<span class="s">"role"</span>: <span class="s">"user"</span>,      <span class="s">"content"</span>: results},
+    ]</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">04</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-04 · ROADMAP</span>
+          <div class="ref">CYCLE 0 → 7</div>
+        </div>
+        <h2>Where this <em>goes next.</em></h2>
+      </div>
+
+      <div class="buildlog">
+        <div class="buildlog-head" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span>cycle</span><span>concept</span><span>angle</span><span>ed</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx" style="color: var(--hot);">0 / 7</span>
+          <div class="name" style="font-size: 18px;">Tool Use</div>
+          <div class="next-line">Basic dispatch loop. <b>Threat-report agent</b> calling domain-age lookup.</div>
+          <span class="dm-tag hot">ED #005</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">1 / 7</span>
+          <div class="name" style="font-size: 18px;">Prompt Chaining</div>
+          <div class="next-line">When one call isn't enough. Claude's output becomes the input for the next step.</div>
+          <span class="dm-tag">ED #006</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">2 / 7</span>
+          <div class="name" style="font-size: 18px;">Routing</div>
+          <div class="next-line">First step classifies the request, sends it to a specialized downstream agent.</div>
+          <span class="dm-tag">ED #007</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">3 / 7</span>
+          <div class="name" style="font-size: 18px;">Parallelization</div>
+          <div class="next-line">Fan out N independent tool calls, gather, reduce.</div>
+          <span class="dm-tag">ED #008</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">4 / 7</span>
+          <div class="name" style="font-size: 18px;">Orchestrator–Worker</div>
+          <div class="next-line">A planner agent decomposing tasks, dispatching to worker agents, integrating results.</div>
+          <span class="dm-tag">ED #009</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">5–7</span>
+          <div class="name" style="font-size: 18px;">Evaluator · Loop · Production</div>
+          <div class="next-line">Eval harness · agentic loop with memory · deployment patterns.</div>
+          <span class="dm-tag">ED #010+</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-marquee">topic/<em>tool-use.</em></div>
+      <div class="foot-grid">
+        <div class="foot-brand"><p>Cycle 0 of 7 — the basic dispatch loop. Each future edition advances one cycle, building toward production-grade agentic systems wired to Calendra.</p></div>
+        <div class="foot-col"><h4>// Related</h4><ul><li><a href="index.html">Anthropic SDK</a></li><li><a href="index.html">Agents</a></li><li><a href="index.html">Workshop</a></li></ul></div>
+        <div class="foot-col"><h4>// Library</h4><ul><li><a href="index.html">All topics</a></li><li><a href="../projects/index.html">Build log</a></li><li><a href="../cheatsheets/index.html">Cheat sheets</a></li></ul></div>
+        <div class="foot-col"><h4>// First seen</h4><ul><li>ED #003 · 2026·04·04</li><li>2 editions · 1 active</li><li>Next: ED #006</li></ul></div>
+      </div>
+      <div class="foot-bottom"><span>TOPIC PAGE · CYCLES 0–7</span><span>GD/T03 · TOOL USE</span><a href="../index.html">↳ BACK TO LATEST</a></div>
+    </footer>
+
+  </main>
+</body>
+</html>

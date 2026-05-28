@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendra · GBM — Project // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .proj-hero {
+      padding: 70px 0 60px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .proj-hero .crumbs { margin-bottom: 28px; }
+    .proj-hero .id-row {
+      display: flex; gap: 8px; align-items: center; margin-bottom: 24px;
+    }
+    .proj-hero h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(80px, 11vw, 180px);
+      line-height: 0.86;
+      letter-spacing: -0.045em;
+      margin-bottom: 32px;
+      text-wrap: balance;
+    }
+    .proj-hero h1 em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--hot);
+    }
+    .proj-hero .deck {
+      font-family: var(--mono);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-2);
+      max-width: 70ch;
+      margin-bottom: 36px;
+    }
+    .proj-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .proj-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    /* metric over time — sparkline blocks */
+    .metric-chart {
+      border: 2px solid var(--ink);
+      background: var(--paper-3);
+    }
+    .metric-chart-head {
+      padding: 14px 20px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--depmono);
+      font-size: 10.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .metric-chart-body {
+      padding: 32px 20px 20px;
+      position: relative;
+    }
+    .mc-axis {
+      position: relative;
+      height: 220px;
+      border-bottom: 1.5px solid var(--ink);
+      border-left: 1.5px solid var(--ink);
+      margin-bottom: 12px;
+    }
+    .mc-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(14,12,8,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14,12,8,0.08) 1px, transparent 1px);
+      background-size: 25% 25%;
+    }
+    .mc-y {
+      position: absolute;
+      left: -32px;
+      font-family: var(--depmono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: var(--dim);
+      transform: translateY(50%);
+    }
+    .mc-x {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      font-family: var(--depmono);
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
+      color: var(--dim);
+      text-transform: uppercase;
+      padding: 0 4px;
+    }
+    .mc-x span { text-align: center; }
+    .mc-line {
+      position: absolute;
+      inset: 0;
+    }
+    .mc-point {
+      position: absolute;
+      width: 10px; height: 10px;
+      background: var(--hot);
+      border: 2px solid var(--ink);
+      transform: translate(-50%, 50%);
+    }
+    .mc-point.blue { background: var(--blue); }
+    .mc-point .lbl {
+      position: absolute;
+      top: -22px; left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--depmono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+      color: var(--ink);
+      background: var(--paper-3);
+      padding: 2px 6px;
+      border: 1px solid var(--ink);
+    }
+    .mc-legend {
+      display: flex; gap: 24px;
+      padding-top: 12px;
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+    .mc-legend .item { display: inline-flex; align-items: center; gap: 8px; }
+    .mc-legend .swatch { width: 14px; height: 8px; background: var(--hot); }
+    .mc-legend .swatch.blue { background: var(--blue); }
+
+    /* file references */
+    .files {
+      border: 2px solid var(--ink);
+      background: var(--paper-3);
+    }
+    .files-row {
+      display: grid;
+      grid-template-columns: 40px 1fr auto auto;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+      gap: 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+    .files-row:last-child { border-bottom: 0; }
+    .files-row .icon {
+      font-family: var(--depmono);
+      font-size: 11px;
+      color: var(--hot);
+      letter-spacing: 0.18em;
+    }
+    .files-row .path {
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .files-row .path em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--dim); }
+    .files-row .size {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--dim);
+    }
+    .files-row .touched {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-B01</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="index.html" class="active">build-log</a>
+        <a href="../topics/index.html">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// PROJECT</span>
+        <span style="color: var(--ink);">Calendra · GBM</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <!-- HERO -->
+    <section class="proj-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">projects</a>
+        <span class="sep">/</span>
+        <span>calendra-gbm</span>
+      </div>
+
+      <div class="id-row">
+        <span class="dm-tag solid-hot">B-01</span>
+        <span class="dm-tag blue">TRAINING</span>
+        <span class="dm-tag">REV 005-A</span>
+        <span class="dm-tag">CALENDRA / main</span>
+      </div>
+
+      <h1>Calendra · <em>GBM.</em></h1>
+
+      <p class="deck">A gradient-boosting classifier that scores incoming meeting invitations as benign or malicious. Currently <strong>v4.1</strong>, <strong>AUC 0.978</strong>, <strong>F1 0.954</strong>, training set 5,142 labeled events. About to grow up: MLflow goes in this weekend, then a description-embedding feature on the L2 backlog.</p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">// AUC ROC</div><div class="v">0.978</div><div class="delta">▲ +0.012 vs v4.0</div></div>
+        <div class="kpi"><div class="lbl">// F1</div><div class="v">0.954</div><div class="delta">▲ +0.018 vs v4.0</div></div>
+        <div class="kpi"><div class="lbl">// PRECISION</div><div class="v">0.961</div><div class="delta">▲ +0.009</div></div>
+        <div class="kpi"><div class="lbl">// RECALL</div><div class="v">0.947</div><div class="delta">▲ +0.026</div></div>
+        <div class="kpi"><div class="lbl">// SET SIZE</div><div class="v">5142</div><div class="delta">+ 318 this month</div></div>
+        <div class="kpi"><div class="lbl">// LATENCY (P95)</div><div class="v">8ms</div><div class="delta flat">flat vs v4.0</div></div>
+      </div>
+    </section>
+
+    <!-- METRICS OVER TIME -->
+    <section class="panel">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id">§ M · METRICS OVER TIME</span>
+        <h2>The <em>training</em> trajectory.</h2>
+        <span class="ts">5 VERSIONS · SINCE V1.0</span>
+        <span class="ref">REF: model_training.ipynb</span>
+      </div>
+
+      <div class="metric-chart">
+        <div class="metric-chart-head">
+          <span>// AUC + F1 BY MODEL VERSION</span>
+          <span>↗ MOVING IN THE RIGHT DIRECTION</span>
+        </div>
+        <div class="metric-chart-body">
+          <div class="mc-axis">
+            <span class="mc-y" style="bottom: 0;">0.85</span>
+            <span class="mc-y" style="bottom: 25%;">0.89</span>
+            <span class="mc-y" style="bottom: 50%;">0.93</span>
+            <span class="mc-y" style="bottom: 75%;">0.96</span>
+            <span class="mc-y" style="bottom: 100%;">0.99</span>
+
+            <div class="mc-grid"></div>
+
+            <!-- SVG line for AUC -->
+            <svg class="mc-line" viewBox="0 0 100 100" preserveAspectRatio="none" style="overflow: visible;">
+              <polyline points="6,68 27,55 50,38 73,22 94,9" stroke="#ff4d2e" stroke-width="0.6" fill="none" />
+              <polyline points="6,80 27,68 50,48 73,30 94,16" stroke="#0050ff" stroke-width="0.6" fill="none" stroke-dasharray="2,1.5" />
+            </svg>
+
+            <!-- AUC points -->
+            <div class="mc-point" style="left: 6%; bottom: 32%;"><span class="lbl">0.910</span></div>
+            <div class="mc-point" style="left: 27%; bottom: 45%;"><span class="lbl">0.938</span></div>
+            <div class="mc-point" style="left: 50%; bottom: 62%;"><span class="lbl">0.957</span></div>
+            <div class="mc-point" style="left: 73%; bottom: 78%;"><span class="lbl">0.966</span></div>
+            <div class="mc-point" style="left: 94%; bottom: 91%;"><span class="lbl">0.978</span></div>
+
+            <!-- F1 points -->
+            <div class="mc-point blue" style="left: 6%; bottom: 20%;"></div>
+            <div class="mc-point blue" style="left: 27%; bottom: 32%;"></div>
+            <div class="mc-point blue" style="left: 50%; bottom: 52%;"></div>
+            <div class="mc-point blue" style="left: 73%; bottom: 70%;"></div>
+            <div class="mc-point blue" style="left: 94%; bottom: 84%;"></div>
+          </div>
+
+          <div class="mc-x">
+            <span>v1.0 · 03·14</span>
+            <span>v2.0 · 03·28</span>
+            <span>v3.0 · 04·10</span>
+            <span>v4.0 · 04·22</span>
+            <span>v4.1 · 05·25</span>
+          </div>
+
+          <div class="mc-legend">
+            <span class="item"><span class="swatch"></span> AUC ROC · 0.978</span>
+            <span class="item"><span class="swatch blue"></span> F1 · 0.954</span>
+            <span class="item" style="margin-left:auto; color: var(--hot);">▴ next: MLflow this weekend</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIMENT LOG -->
+    <section class="panel">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id">§ E · EXPERIMENTS</span>
+        <h2>Every run, <em>logged.</em></h2>
+        <span class="ts">5 RUNS · TO BE MIGRATED TO MLFLOW</span>
+        <span class="ref">SORT: AUC DESC</span>
+      </div>
+
+      <div class="buildlog">
+        <div class="buildlog-head" style="grid-template-columns: 80px 1.4fr 1fr 90px 1.2fr 0.9fr 1fr;">
+          <span>run</span><span>name</span><span>n_est · depth · lr</span><span>auc</span><span>f1</span><span>note</span><span>when</span>
+        </div>
+
+        <a class="buildlog-row" style="grid-template-columns: 80px 1.4fr 1fr 90px 1.2fr 0.9fr 1fr;">
+          <span class="idx" style="color: var(--green);">R-005</span>
+          <div class="name">v4.1 <em>· current</em></div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-2);">100 · 3 · 0.10</div>
+          <div class="metrics"><b style="color: var(--green); font-weight: 600;">0.978</b></div>
+          <div class="metrics">0.954</div>
+          <div class="next-line">+ time-of-day; class_weight balanced</div>
+          <div class="touch">2 days ago</div>
+        </a>
+
+        <a class="buildlog-row" style="grid-template-columns: 80px 1.4fr 1fr 90px 1.2fr 0.9fr 1fr;">
+          <span class="idx">R-004</span>
+          <div class="name">v4.0</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-2);">100 · 3 · 0.10</div>
+          <div class="metrics">0.966</div>
+          <div class="metrics">0.936</div>
+          <div class="next-line">Baseline GBM, 12 features</div>
+          <div class="touch">5 weeks ago</div>
+        </a>
+
+        <a class="buildlog-row" style="grid-template-columns: 80px 1.4fr 1fr 90px 1.2fr 0.9fr 1fr;">
+          <span class="idx">R-003</span>
+          <div class="name">v3.0</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-2);">150 · 5 · 0.05</div>
+          <div class="metrics">0.957</div>
+          <div class="metrics">0.918</div>
+          <div class="next-line">Deeper, overfits validation</div>
+          <div class="touch">7 weeks ago</div>
+        </a>
+
+        <a class="buildlog-row" style="grid-template-columns: 80px 1.4fr 1fr 90px 1.2fr 0.9fr 1fr;">
+          <span class="idx">R-002</span>
+          <div class="name">v2.0</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-2);">100 · 3 · 0.10</div>
+          <div class="metrics">0.938</div>
+          <div class="metrics">0.882</div>
+          <div class="next-line">+ url_count; sender_domain_age</div>
+          <div class="touch">9 weeks ago</div>
+        </a>
+
+        <a class="buildlog-row" style="grid-template-columns: 80px 1.4fr 1fr 90px 1.2fr 0.9fr 1fr;">
+          <span class="idx">R-001</span>
+          <div class="name">v1.0</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-2);">50 · 3 · 0.10</div>
+          <div class="metrics">0.910</div>
+          <div class="metrics">0.842</div>
+          <div class="next-line">Cold start. 7 features, hand-picked.</div>
+          <div class="touch">10 weeks ago</div>
+        </a>
+      </div>
+
+      <div class="callout" style="margin-top: 24px;">
+        <span class="lbl">// MLFLOW MIGRATION — THIS WEEKEND</span>
+        These five rows live in <code class="inline">model_training.ipynb</code> cell outputs. After this weekend they live in MLflow's tracking server as named runs, sortable, diffable, with the actual model artifacts attached. See <a href="../topics/mlflow.html">topics/mlflow</a>.
+      </div>
+    </section>
+
+    <!-- FEATURES IN PLAY -->
+    <section class="panel">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id blue">§ F · FEATURES</span>
+        <h2>The 12 currently <em>in play.</em></h2>
+        <span class="ts">12 ACTIVE · 3 ON DECK</span>
+        <span class="ref">REF: features.py</span>
+      </div>
+
+      <div class="topic-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="topic-cell">
+          <div class="num">// L1 · NUMERIC</div>
+          <h3 style="font-size: 22px;">url_count</h3>
+          <div class="meta"><span>raw integer</span><span>0.18 GAIN</span></div>
+        </div>
+        <div class="topic-cell">
+          <div class="num">// L1 · NUMERIC</div>
+          <h3 style="font-size: 22px;">sender_domain_age</h3>
+          <div class="meta"><span>days</span><span>0.21 GAIN</span></div>
+        </div>
+        <div class="topic-cell">
+          <div class="num">// L1 · NUMERIC</div>
+          <h3 style="font-size: 22px;">attendee_count</h3>
+          <div class="meta"><span>integer</span><span>0.09 GAIN</span></div>
+        </div>
+        <div class="topic-cell">
+          <div class="num">// L1 · TEMPORAL</div>
+          <h3 style="font-size: 22px;">time_of_day</h3>
+          <div class="meta"><span>0–23 ord.</span><span>NEW · v4.1</span></div>
+        </div>
+        <div class="topic-cell">
+          <div class="num">// L1 · BOOLEAN</div>
+          <h3 style="font-size: 22px;">has_attachment</h3>
+          <div class="meta"><span>0/1</span><span>0.07 GAIN</span></div>
+        </div>
+        <div class="topic-cell">
+          <div class="num">// L1 · CATEGORICAL</div>
+          <h3 style="font-size: 22px;">sender_org_tier</h3>
+          <div class="meta"><span>0–4</span><span>0.11 GAIN</span></div>
+        </div>
+        <div class="topic-cell">
+          <div class="num">// L1 · STRING-DERIVED</div>
+          <h3 style="font-size: 22px;">subject_len</h3>
+          <div class="meta"><span>char count</span><span>0.04 GAIN</span></div>
+        </div>
+        <div class="topic-cell">
+          <div class="num">// L1 · NUMERIC</div>
+          <h3 style="font-size: 22px;">+5 more</h3>
+          <div class="meta"><span>see features.py</span><span>OPEN →</span></div>
+        </div>
+        <a class="topic-cell current" href="../topics/embeddings.html">
+          <div class="num">// L2 · ON DECK · ED #005</div>
+          <h3 style="font-size: 22px;">desc_embed_sim</h3>
+          <div class="meta"><span>cosine to mal centroid</span><span>ICEBREAKER #1 →</span></div>
+        </a>
+        <div class="topic-cell coming" style="opacity: 0.45;">
+          <div class="num">// L3 · BACKLOG</div>
+          <h3 style="font-size: 22px;">desc_embed_pca16</h3>
+          <div class="meta"><span>PCA on embedding</span><span>ED #006</span></div>
+        </div>
+        <div class="topic-cell coming" style="opacity: 0.45;">
+          <div class="num">// L3 · BACKLOG</div>
+          <h3 style="font-size: 22px;">link_obfuscation</h3>
+          <div class="meta"><span>regex-detected</span><span>ED #007</span></div>
+        </div>
+        <div class="topic-cell coming" style="opacity: 0.45;">
+          <div class="num">// L3 · BACKLOG</div>
+          <h3 style="font-size: 22px;">recipient_clustering</h3>
+          <div class="meta"><span>community detection</span><span>ED #008</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="panel">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id">§ R · ROADMAP</span>
+        <h2>What's <em>next.</em></h2>
+        <span class="ts">5 STEPS · ED #005 → #008</span>
+        <span class="ref">PRIORITIZED BY EXPECTED LIFT</span>
+      </div>
+
+      <div class="buildlog">
+        <div class="buildlog-head" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
+          <span>#</span><span>step</span><span>angle</span><span>est. lift</span><span>when</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr; background: rgba(255,77,46,0.04);">
+          <span class="idx" style="color: var(--hot);">01</span>
+          <div class="name" style="font-size: 18px;">MLflow tracking on existing pipeline</div>
+          <div class="next-line">Wrap training in <code class="inline">with start_run():</code>. Log params + metrics + model artifact. 5 lines of diff.</div>
+          <div class="metrics" style="color: var(--dim);">PROCESS</div>
+          <span class="dm-tag hot">THIS WEEKEND</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
+          <span class="idx">02</span>
+          <div class="name" style="font-size: 18px;">Description embedding feature (cosine)</div>
+          <div class="next-line">One new feature: <code class="inline">desc_embed_sim</code>. A/B against v4.1 baseline in MLflow.</div>
+          <div class="metrics"><b>+0.008 AUC</b><br><span style="font-family: var(--depmono); font-size: 9px; color: var(--dim);">est. · per L2</span></div>
+          <span class="dm-tag">ED #006</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
+          <span class="idx">03</span>
+          <div class="name" style="font-size: 18px;">Optuna hyperparameter search</div>
+          <div class="next-line">50 trials, each an MLflow run. Pick best. Register as <code class="inline">v5.0</code>.</div>
+          <div class="metrics"><b>+0.004 AUC</b><br><span style="font-family: var(--depmono); font-size: 9px; color: var(--dim);">est.</span></div>
+          <span class="dm-tag">ED #006</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
+          <span class="idx">04</span>
+          <div class="name" style="font-size: 18px;">SHAP interaction maskers (post-hoc)</div>
+          <div class="next-line">After model is locked, find feature pairs that interact. Inform future feature engineering.</div>
+          <div class="metrics" style="color: var(--dim);">INSIGHT</div>
+          <span class="dm-tag">ED #007</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
+          <span class="idx">05</span>
+          <div class="name" style="font-size: 18px;">Model Registry → REST serving</div>
+          <div class="next-line">Promote winner to <code class="inline">@production</code>. Spin up <code class="inline">mlflow models serve</code>. Calendra inference path hits a URL.</div>
+          <div class="metrics" style="color: var(--dim);">DEPLOYMENT</div>
+          <span class="dm-tag">ED #008</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILES -->
+    <section class="panel">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id blue">§ FS · FILES</span>
+        <h2>The <em>artifacts.</em></h2>
+        <span class="ts">8 ENTRIES · CALENDRA / main</span>
+        <span class="ref">GIT REF: a3f1c2</span>
+      </div>
+
+      <div class="files">
+        <div class="files-row">
+          <span class="icon">.ipynb</span>
+          <span class="path">model_training.ipynb <em>· primary notebook · this is where MLflow drops in</em></span>
+          <span class="size">348 KB</span>
+          <span class="touched">2 days ago</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.py</span>
+          <span class="path">features.py <em>· feature engineering pipeline · 12 active</em></span>
+          <span class="size">14 KB</span>
+          <span class="touched">2 days ago</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.py</span>
+          <span class="path">data_loader.py <em>· ICS parser + label join</em></span>
+          <span class="size">8 KB</span>
+          <span class="touched">1 week ago</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.joblib</span>
+          <span class="path">models/v4.1.joblib <em>· current production blob — to be replaced by MLflow registry</em></span>
+          <span class="size">2.4 MB</span>
+          <span class="touched">2 days ago</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.parquet</span>
+          <span class="path">data/train.parquet <em>· 5142 labeled events</em></span>
+          <span class="size">18 MB</span>
+          <span class="touched">3 days ago</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.ipynb</span>
+          <span class="path">notebooks/shap_explore.ipynb <em>· SHAP analysis · from ED #004</em></span>
+          <span class="size">220 KB</span>
+          <span class="touched">5 weeks ago</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.md</span>
+          <span class="path">README.md</span>
+          <span class="size">6 KB</span>
+          <span class="touched">3 weeks ago</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.toml</span>
+          <span class="path">pyproject.toml <em>· uv-locked · sklearn 1.5.2</em></span>
+          <span class="size">2 KB</span>
+          <span class="touched">3 weeks ago</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATED -->
+    <section class="panel">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id">§ X · RELATED</span>
+        <h2>What this <em>connects to.</em></h2>
+        <span class="ts">3 TOPICS · 1 CHEAT SHEET</span>
+        <span class="ref">EDGES IN GRAPH</span>
+      </div>
+
+      <div class="topic-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <a class="topic-cell current" href="../topics/mlflow.html">
+          <div class="num">// TOPIC · NEXT STEP</div>
+          <h3>MLflow</h3>
+          <div class="meta"><span>NEW · ED #005</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="../topics/embeddings.html">
+          <div class="num">// TOPIC · ICEBREAKER #1</div>
+          <h3>Embeddings</h3>
+          <div class="meta"><span>ACTIVE · 2 ED</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="../topics/index.html">
+          <div class="num">// TOPIC · ANCHOR</div>
+          <h3>SHAP</h3>
+          <div class="meta"><span>3 ED</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="../cheatsheets/jupyter-ml.html">
+          <div class="num">// CHEAT SHEET · § 5–7</div>
+          <h3>Jupyter for ML</h3>
+          <div class="meta"><span>NEW · ED #005</span><span>OPEN →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-marquee">project/<em>calendra-gbm.</em></div>
+      <div class="foot-grid">
+        <div class="foot-brand"><p>The flagship classifier this newsletter exists to advance. Every edition feeds something into this project; every project advance feeds back into the editorial roadmap.</p></div>
+        <div class="foot-col"><h4>// Related topics</h4><ul><li><a href="../topics/mlflow.html">MLflow</a></li><li><a href="../topics/embeddings.html">Embeddings</a></li><li><a href="../topics/index.html">SHAP</a></li></ul></div>
+        <div class="foot-col"><h4>// Library</h4><ul><li><a href="index.html">All projects</a></li><li><a href="../topics/index.html">Topic graph</a></li><li><a href="../cheatsheets/index.html">Cheat sheets</a></li></ul></div>
+        <div class="foot-col"><h4>// Status</h4><ul><li>v4.1 · TRAINING</li><li>AUC 0.978 · F1 0.954</li><li>5142 labeled events</li><li>Next: MLflow this weekend</li></ul></div>
+      </div>
+      <div class="foot-bottom"><span>PROJECT PAGE · LIVING DOC</span><span>GD/B01 · CALENDRA-GBM</span><a href="../index.html">↳ BACK TO LATEST</a></div>
+    </footer>
+
+  </main>
+</body>
+</html>

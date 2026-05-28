@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embeddings — Topic // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .topic-hero { padding: 70px 0 60px; border-bottom: 2px solid var(--ink); }
+    .topic-hero .crumbs { margin-bottom: 32px; }
+    .topic-hero .id {
+      display: inline-block; font-family: var(--depmono); font-size: 11px;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 4px 10px; background: var(--hot); color: var(--paper);
+      margin-bottom: 24px;
+    }
+    .topic-hero h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(80px, 11vw, 180px);
+      line-height: 0.85; letter-spacing: -0.05em;
+      margin-bottom: 32px;
+    }
+    .topic-hero h1 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .topic-hero .deck {
+      font-family: var(--mono); font-size: 17px; line-height: 1.55;
+      color: var(--ink-2); max-width: 70ch; margin-bottom: 36px;
+    }
+    .topic-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .topic-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+    .related-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+    .related-row .label { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; margin-right: 6px; }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-T04</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="index.html" class="active">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// TOPIC</span>
+        <span style="color: var(--ink);">Embeddings</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <section class="topic-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">topics</a>
+        <span class="sep">/</span>
+        <span>embeddings</span>
+      </div>
+
+      <span class="id">§ TOPIC · ACTIVE</span>
+
+      <h1>Embeddings<em>.</em></h1>
+
+      <p class="deck">Dense vectors that encode semantic meaning of text. <strong>Sentence transformers</strong> map a sentence to a 384-dim point; cosine similarity becomes a usable feature in any classical model. For Calendra: catches what <code class="inline">url_count</code> misses — the suspicious <em>language</em> around a malicious link.</p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">// EDITIONS TOUCHED</div><div class="v">2<em>/5</em></div><div class="delta">#002 · #005</div></div>
+        <div class="kpi"><div class="lbl">// CODE SAMPLES</div><div class="v">1</div><div class="delta">centroid suspicion</div></div>
+        <div class="kpi"><div class="lbl">// MODEL OF CHOICE</div><div class="v">MiniLM</div><div class="delta">all-MiniLM-L6-v2 · 384d</div></div>
+        <div class="kpi"><div class="lbl">// L2 EVIDENCE</div><div class="v">F1 89.0</div><div class="delta">arxiv 2602.22433</div></div>
+      </div>
+
+      <div class="related-row">
+        <span class="label">// RELATED:</span>
+        <a class="topic-chip" href="index.html">Sentence Transformers</a>
+        <a class="topic-chip" href="index.html">Features</a>
+        <a class="topic-chip" href="mlflow.html">MLflow</a>
+        <a class="topic-chip" href="index.html">PCA</a>
+      </div>
+    </section>
+
+    <section class="secblock body">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">01</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id ink">§ T-01 · CORE THESIS</span>
+          <div class="ref">SEMANTIC FEATURE AXIS</div>
+        </div>
+        <h2>The language <em>around</em> a URL is the signal.</h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p>Your Calendra feature pipeline uses <code class="inline">url_count</code> as a raw integer. Useful, but brittle: a single obfuscated link scores the same as a zero-URL benign invite, and a verbose phishing description with no URLs at all gets ignored entirely.</p>
+          <p>The description field itself contains far richer signal. Attackers write things like <em>"Click here to confirm your attendance: http://malcal-invite.xyz/rsvp?t=abc123"</em> — the surrounding language is semantically suspicious before you ever parse the URL.</p>
+          <p>Sentence transformers map raw text into a 384-dim vector encoding semantic meaning. The cosine similarity to a centroid of known-malicious description embeddings becomes a single new feature — or use the raw embedding dims via PCA.</p>
+        </div>
+
+        <div>
+          <div class="callout">
+            <span class="lbl">// L2 EVIDENCE</span>
+            arxiv 2602.22433: 14 sentence-transformer models tested on attack-to-CVE mapping. <strong>multi-qa-mpnet-base-dot-v1 hit F1 = 89.0</strong>, precision 84.0, recall 94.7 on MITRE ATT&amp;CK. The finding: description text outperforms TTP summary labels — surrounding language carries more weight than structured tags.
+          </div>
+
+          <div class="callout blue">
+            <span class="lbl">// MODEL CHOICE</span>
+            For Calendra's ~5k sample corpus, <strong>all-MiniLM-L6-v2</strong> is the sweet spot — 384 dims, fast on CPU. Bigger encoders overfit cosine-similarity centroids in &lt; 1k examples.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">02</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-02 · APPEARANCES</span>
+          <div class="ref">2 EDITIONS</div>
+        </div>
+        <h2>Where this topic <em>has lived.</em></h2>
+      </div>
+
+      <div class="buildlog">
+        <div class="buildlog-head" style="grid-template-columns: 80px 1.4fr 2fr 1fr;">
+          <span>edition</span><span>section</span><span>angle</span><span>tag</span>
+        </div>
+
+        <a class="buildlog-row" href="../index.html#icebreaker" style="grid-template-columns: 80px 1.4fr 2fr 1fr;">
+          <span class="idx" style="color: var(--hot);">#005</span>
+          <div class="name">§C-05 · <em>Icebreaker</em></div>
+          <div class="next-line">Trade <code class="inline">url_count</code> for a description-embedding cosine-similarity feature. Pair with MLflow to A/B against baseline.</div>
+          <span class="dm-tag hot">IDEA #1</span>
+        </a>
+
+        <a class="buildlog-row" href="../index.html#signal" style="grid-template-columns: 80px 1.4fr 2fr 1fr;">
+          <span class="idx" style="color: var(--hot);">#005</span>
+          <div class="name">§C-01 · <em>Signal (item iii)</em></div>
+          <div class="next-line">L2 pull · arxiv 2602.22433 benchmark of 14 sentence transformers on attack-to-CVE.</div>
+          <span class="dm-tag blue">L2 PULL</span>
+        </a>
+
+        <a class="buildlog-row" href="../index.html#archive" style="grid-template-columns: 80px 1.4fr 2fr 1fr;">
+          <span class="idx">#002</span>
+          <div class="name">§C · <em>Drift &amp; Drag</em></div>
+          <div class="next-line">First mention. Embedding drift detection alongside data drift — was a teaser pointer for later.</div>
+          <span class="dm-tag">INTRO</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">03</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id blue">§ T-03 · CODE ARCHIVE</span>
+          <div class="ref">CENTROID SUSPICION FEATURE</div>
+        </div>
+        <h2>The <em>recipe.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">Encode every description. Average the known-malicious vectors to get a centroid. Each description's cosine similarity to that centroid is a single new feature — works as a drop-in alongside <code class="inline">url_count</code>.</p>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">Source: <a href="../index.html#icebreaker">§C-05 ED #005</a>. See the <a href="../projects/calendra-gbm.html">Calendra GBM project page</a> for how this slots into the feature matrix.</p>
+        </div>
+
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · description_embed.py</span>
+            <span class="id">// CENTROID</span>
+          </div>
+<pre><span class="k">from</span> sentence_transformers <span class="k">import</span> SentenceTransformer
+<span class="k">from</span> sklearn.metrics.pairwise <span class="k">import</span> cosine_similarity
+
+model = <span class="f">SentenceTransformer</span>(<span class="s">"all-MiniLM-L6-v2"</span>)  <span class="c"># 384d, fast</span>
+
+embeddings = model.encode(descriptions)   <span class="c"># (n, 384)</span>
+
+<span class="c"># cosine similarity to centroid of known-malicious embeddings</span>
+mal_centroid   = embeddings[labels == <span class="n">1</span>].mean(axis=<span class="n">0</span>, keepdims=<span class="n">True</span>)
+suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()
+
+<span class="c"># drop straight into your feature matrix alongside url_count, etc.</span>
+X_aug = np.hstack([X_base, suspicion_feat.reshape(-<span class="n">1</span>, <span class="n">1</span>)])</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">04</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-04 · ROADMAP</span>
+          <div class="ref">DROP-IN → PCA → FINE-TUNE</div>
+        </div>
+        <h2>Where this <em>goes next.</em></h2>
+      </div>
+
+      <div class="buildlog">
+        <div class="buildlog-head" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span>step</span><span>concept</span><span>angle</span><span>when</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx" style="color: var(--hot);">01</span>
+          <div class="name" style="font-size: 18px;">Centroid suspicion</div>
+          <div class="next-line">One new feature. Log A/B in MLflow alongside baseline. Accept the AUC reality.</div>
+          <span class="dm-tag hot">THIS WEEKEND</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">02</span>
+          <div class="name" style="font-size: 18px;">Raw dims via PCA</div>
+          <div class="next-line">Reduce 384 → 16 with PCA, concatenate. Compare AUC to centroid-only and to baseline.</div>
+          <span class="dm-tag">ED #006</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">03</span>
+          <div class="name" style="font-size: 18px;">Fine-tune on Calendra labels</div>
+          <div class="next-line">Triplet-loss fine-tune on (malicious, benign) pairs. Should beat zero-shot centroid.</div>
+          <span class="dm-tag">ED #008</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 80px 1fr 2fr 120px;">
+          <span class="idx">04</span>
+          <div class="name" style="font-size: 18px;">Drift detection on embeddings</div>
+          <div class="next-line">KS-test on embedding-distribution distance over time. Alert when the meeting language shifts.</div>
+          <span class="dm-tag">ED #009</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-marquee">topic/<em>embeddings.</em></div>
+      <div class="foot-grid">
+        <div class="foot-brand"><p>The semantic feature axis. Active this edition with a one-feature drop-in; the topic page grows as the experiment compounds across editions.</p></div>
+        <div class="foot-col"><h4>// Related</h4><ul><li><a href="index.html">Sentence Transformers</a></li><li><a href="mlflow.html">MLflow</a></li><li><a href="index.html">Features</a></li></ul></div>
+        <div class="foot-col"><h4>// Library</h4><ul><li><a href="index.html">All topics</a></li><li><a href="../projects/index.html">Build log</a></li><li><a href="../cheatsheets/index.html">Cheat sheets</a></li></ul></div>
+        <div class="foot-col"><h4>// First seen</h4><ul><li>ED #002 · 2026·03·27</li><li>2 editions · active</li><li>Next: ED #006</li></ul></div>
+      </div>
+      <div class="foot-bottom"><span>TOPIC PAGE · ACTIVE</span><span>GD/T04 · EMBEDDINGS</span><a href="../index.html">↳ BACK TO LATEST</a></div>
+    </footer>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "tracked": [
+    {
+      "id": "nlp-padding-evasion",
+      "name": "NLP Padding: Body Flooding to Outweigh Malicious Signals",
+      "description": "Attackers append large volumes of benign, unrelated text after several line breaks at the end of phishing emails to dilute the malicious signal in NLP-based content classifiers. Watch for: wider adoption of this technique across campaigns, variations (HTML comment stuffing, zero-font text, invisible Unicode), vendor research on detection countermeasures, and any PhaaS kits incorporating it as a standard evasion feature.",
+      "search_queries": [
+        "NLP phishing evasion body padding benign text 2026",
+        "phishing email obfuscation natural language processing bypass technique 2026",
+        "email content classifier evasion appended text phishing 2026"
+      ],
+      "newsletter": "email-digest",
+      "source_edition": "#001",
+      "source_edition_file": "email/2026-03/email-digest-2026-03-21.html",
+      "source_date": "2026-03-21",
+      "source_url": "https://www.scworld.com/news/phishing-emails-target-ai-defenses-with-unique-obfuscation",
+      "source_section": "Threat Landscape",
+      "first_tracked": "2026-03-21",
+      "last_updated": "2026-03-21",
+      "status": "active",
+      "updates": []
+    }
+  ]
+}

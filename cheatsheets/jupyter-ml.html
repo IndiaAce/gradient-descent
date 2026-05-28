@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jupyter for ML — Cheat Sheet // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .cs-hero { padding: 70px 0 60px; border-bottom: 2px solid var(--ink); }
+    .cs-hero .crumbs { margin-bottom: 28px; }
+    .cs-hero .id-row { display: flex; gap: 8px; align-items: center; margin-bottom: 24px; }
+    .cs-hero h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(96px, 13vw, 220px);
+      line-height: 0.86; letter-spacing: -0.05em;
+      margin-bottom: 32px;
+    }
+    .cs-hero h1 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .cs-hero .deck {
+      font-family: var(--mono); font-size: 17px; line-height: 1.55;
+      color: var(--ink-2); max-width: 72ch; margin-bottom: 36px;
+    }
+    .cs-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .cs-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    /* sticky TOC on the right */
+    .cs-layout {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 56px;
+      align-items: start;
+      padding-top: 60px;
+    }
+    .cs-toc {
+      position: sticky;
+      top: 80px;
+      padding-bottom: 40px;
+    }
+    .cs-toc h4 {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--hot);
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--ink);
+      margin-bottom: 6px;
+    }
+    .cs-toc ul { list-style: none; }
+    .cs-toc li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dotted var(--line);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .cs-toc li:hover, .cs-toc li.on { color: var(--hot); }
+    .cs-toc li .num {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--dim);
+    }
+    .cs-toc li.on .num { color: var(--hot); }
+
+    /* recipe item — building block of every section */
+    .recipe-list { display: grid; gap: 0; }
+    .recipe {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 24px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+    .recipe:first-child { border-top: 1.5px solid var(--ink); }
+    .recipe:last-child { border-bottom: 1.5px solid var(--ink); }
+    .recipe-num {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      color: var(--hot);
+    }
+    .recipe-num small {
+      display: block;
+      font-family: var(--depmono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--dim);
+      font-weight: 400;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+    .recipe h3 {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .recipe h3 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .recipe p {
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--ink-2);
+      max-width: 76ch;
+      margin-bottom: 10px;
+    }
+    .recipe p strong { color: var(--ink); }
+    .recipe p em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    .recipe .snippet {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.65;
+      padding: 12px 16px;
+      margin-top: 10px;
+      overflow-x: auto;
+    }
+    .recipe .snippet .k { color: #ffb88f; }
+    .recipe .snippet .s { color: #b8e0ff; }
+    .recipe .snippet .c { color: rgba(232,230,212,0.45); font-style: italic; }
+    .recipe .snippet .n { color: #f2c462; }
+    .recipe .snippet .f { color: #ffd699; }
+    .recipe .snippet .pr { color: #ff4d2e; }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-CS01</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="../topics/index.html">topic-graph</a>
+        <a href="index.html" class="active">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// CHEAT SHEET</span>
+        <span style="color: var(--ink);">Jupyter for ML</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <section class="cs-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">cheatsheets</a>
+        <span class="sep">/</span>
+        <span>jupyter-for-ml</span>
+      </div>
+
+      <div class="id-row">
+        <span class="dm-tag solid-hot">CHEAT SHEET · 01</span>
+        <span class="dm-tag">LIVING DOC · GROWS WEEKLY</span>
+        <span class="dm-tag blue">~ 14 MIN READ</span>
+        <span class="dm-tag">FIRST: ED #005</span>
+      </div>
+
+      <h1>Jupyter <em>for ML.</em></h1>
+
+      <p class="deck">Forty-two opinions, sharply held. The things that separate a notebook you'd actually share from one you'd quietly close before anyone sees it. Setup, cell discipline, autoreload, reproducibility, MLflow integration, plotting, ML-specific tooling, and the <em>anti-patterns</em> that quietly destroy your experiments. Every section has runnable code; copy what you need.</p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">// SECTIONS</div><div class="v">8</div><div class="delta">setup → anti-patterns</div></div>
+        <div class="kpi"><div class="lbl">// RECIPES</div><div class="v">42</div><div class="delta">+ growing</div></div>
+        <div class="kpi"><div class="lbl">// RUNNABLE SNIPPETS</div><div class="v">28</div><div class="delta">copy + paste</div></div>
+        <div class="kpi"><div class="lbl">// RELATED TOPICS</div><div class="v">3</div><div class="delta">MLflow · Embed · GBM</div></div>
+      </div>
+    </section>
+
+    <div class="cs-layout">
+
+      <div>
+
+        <!-- ═══════════ §1 · SETUP ═══════════ -->
+        <section class="secblock" id="setup" style="padding-top: 0; border-bottom-style: none;">
+          <div class="secblock-num-display">1</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 1 · SETUP</span>
+              <div class="ref">5 RECIPES · ENV, KERNELS, INSTALL</div>
+            </div>
+            <h2>Get the <em>foundations</em> right.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">1.1<small>core</small></div>
+              <div>
+                <h3>One <em>venv</em> per project. Install Jupyter <em>inside</em> it.</h3>
+                <p>Global Jupyter installs leak dependencies between projects. Every project gets its own virtual environment and installs Jupyter as a project dependency, never globally. Use <code class="inline">uv</code> if you're starting fresh — it's an order of magnitude faster than pip and handles locking cleanly.</p>
+                <div class="snippet"><span class="c"># inside the project root</span>
+uv venv
+source .venv/bin/activate
+uv pip install jupyter ipykernel</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">1.2<small>core</small></div>
+              <div>
+                <h3>Register the kernel so it shows up by <em>project name</em>.</h3>
+                <p>Without this, the kernel dropdown shows generic <code class="inline">Python 3</code> entries and you'll launch the wrong env. Register every project's kernel under its own name; the UI list becomes self-describing.</p>
+                <div class="snippet">python -m ipykernel install --user --name calendra --display-name <span class="s">"Python (calendra)"</span></div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">1.3<small>lock</small></div>
+              <div>
+                <h3>Lock with <em>pyproject.toml</em>, never <code class="inline">pip freeze</code>.</h3>
+                <p><code class="inline">pip freeze</code> dumps the full transitive tree and rots fast. A <code class="inline">pyproject.toml</code> + lockfile (<code class="inline">uv.lock</code> or <code class="inline">poetry.lock</code>) keeps direct deps human-readable and resolves the rest deterministically. Future-you will thank present-you.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">1.4<small>kit</small></div>
+              <div>
+                <h3>The <em>baseline stack</em> for any ML notebook.</h3>
+                <p>This is the floor — install these eagerly and you won't break flow halfway through a session looking for a missing import.</p>
+                <div class="snippet">uv pip install jupyter ipykernel \
+  numpy pandas scikit-learn matplotlib seaborn \
+  mlflow joblib tqdm rich \
+  ipywidgets jupyterlab-widgets</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">1.5<small>config</small></div>
+              <div>
+                <h3>JupyterLab over classic Notebook. <em>Always.</em></h3>
+                <p>JupyterLab gives you a real file tree, split views, drag-and-drop cell reordering, and proper markdown rendering. The classic interface is a dead end. <code class="inline">jupyter lab</code>, not <code class="inline">jupyter notebook</code>.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════ §2 · CELL DISCIPLINE ═══════════ -->
+        <section class="secblock" id="cells" style="border-bottom-style: none;">
+          <div class="secblock-num-display">2</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 2 · CELL DISCIPLINE</span>
+              <div class="ref">7 RECIPES · ORDER, SCOPE, STATE</div>
+            </div>
+            <h2>How to keep notebooks <em>honest.</em></h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">2.1<small>law</small></div>
+              <div>
+                <h3>Restart-and-run-all <em>before</em> you commit.</h3>
+                <p>The single most important habit. If your notebook depends on a cell you ran 30 minutes ago and have since edited, your "results" are fiction. Restart kernel → Run All → confirm everything still works. Only then commit or share.</p>
+                <p>Keyboard shortcut: <code class="inline">Esc</code> then <code class="inline">0 0</code> (zero twice) to restart. <code class="inline">Esc</code> then <code class="inline">Shift+L</code> to enable line numbers.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">2.2<small>structure</small></div>
+              <div>
+                <h3>The <em>top cell</em> is always: imports + config + seeds.</h3>
+                <p>One cell that sets up the world. Imports, plotting config, random seeds, environment variables. Nothing else lives there. When you reopen the notebook tomorrow, Run All starts from a known state.</p>
+                <div class="snippet"><span class="c"># cell 1 — setup. always.</span>
+<span class="k">import</span> os, numpy <span class="k">as</span> np, pandas <span class="k">as</span> pd
+<span class="k">import</span> matplotlib.pyplot <span class="k">as</span> plt
+<span class="k">from</span> pathlib <span class="k">import</span> Path
+
+np.random.seed(<span class="n">42</span>)
+plt.rcParams[<span class="s">"figure.figsize"</span>] = (<span class="n">10</span>, <span class="n">6</span>)
+plt.rcParams[<span class="s">"figure.dpi"</span>] = <span class="n">100</span>
+pd.options.display.max_columns = <span class="n">100</span>
+
+DATA = Path(<span class="s">"./data"</span>)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">2.3<small>scope</small></div>
+              <div>
+                <h3>One <em>idea</em> per cell. Don't golf.</h3>
+                <p>Cells are paragraphs, not essays. If a cell exceeds ~25 lines, you've probably mixed concepts. Split it; you'll thank yourself when re-running a single step.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">2.4<small>hygiene</small></div>
+              <div>
+                <h3>Use markdown headers <em>liberally</em> as section anchors.</h3>
+                <p>JupyterLab renders <code class="inline"># H1</code> through <code class="inline">### H3</code> as a navigable table of contents (left rail). Treat headers like section dividers in a paper — your future self scrolls less.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">2.5<small>state</small></div>
+              <div>
+                <h3>Never use <code class="inline">del</code> to fix hidden state. <em>Restart instead.</em></h3>
+                <p>If your notebook is misbehaving because some variable lingers from an earlier run, <code class="inline">del var_name</code> is a band-aid that hides the real problem. Restart the kernel. If that breaks the notebook, the notebook is broken — better to find out now.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">2.6<small>flow</small></div>
+              <div>
+                <h3>Don't <code class="inline">print(df)</code> on a 10k-row DataFrame. <em>Sample.</em></h3>
+                <p>Rendering 10,000 rows blocks the kernel and clutters the output. Use <code class="inline">df.head()</code>, <code class="inline">df.sample(20)</code>, or <code class="inline">df.tail()</code>. For inspecting columns, <code class="inline">df.info()</code> and <code class="inline">df.describe(include="all")</code> beat raw prints.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">2.7<small>order</small></div>
+              <div>
+                <h3>Trust the <em>execution counter</em>, not the cell order.</h3>
+                <p>The little <code class="inline">[7]:</code> in the gutter is the truth. If you see <code class="inline">[3]</code> below <code class="inline">[12]</code>, cells were run out of order. Either restart-and-run-all or accept that your notebook is now a creative non-fiction piece.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════ §3 · AUTORELOAD ═══════════ -->
+        <section class="secblock" id="autoreload" style="border-bottom-style: none;">
+          <div class="secblock-num-display">3</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 3 · AUTORELOAD</span>
+              <div class="ref">3 RECIPES · LOCAL MODULES</div>
+            </div>
+            <h2>Notebooks are scratch. <em>Modules</em> are the artifact.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">3.1<small>magic</small></div>
+              <div>
+                <h3>Enable <em>autoreload</em> in cell 2.</h3>
+                <p>The moment you import a local Python module, you'll want autoreload. Edit the <code class="inline">.py</code> file, the notebook picks up the changes on next execution. No more kernel restarts every time you tweak a helper.</p>
+                <div class="snippet"><span class="pr">%load_ext autoreload</span>
+<span class="pr">%autoreload</span> <span class="n">2</span></div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">3.2<small>arch</small></div>
+              <div>
+                <h3>Keep helper code in <em>.py files</em>, not in cells.</h3>
+                <p>Cells are for exploration and presentation. Functions, classes, and pipelines belong in importable Python modules. Your notebook becomes a thin orchestration layer — far easier to review, version, and reuse.</p>
+                <div class="snippet"><span class="c"># notebook</span>
+<span class="k">from</span> calendra.features <span class="k">import</span> build_feature_matrix
+<span class="k">from</span> calendra.metrics  <span class="k">import</span> evaluate
+
+X, y = build_feature_matrix(events)
+metrics = evaluate(model, X, y)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">3.3<small>caveat</small></div>
+              <div>
+                <h3>Autoreload won't reload <em>class state</em>. Restart when changing dataclasses.</h3>
+                <p>If you redefine a dataclass field or change a class hierarchy, existing instances keep their old type. Either restart the kernel or re-instantiate. Knowing the limitation up-front saves an hour of debugging.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════ §4 · REPRODUCIBILITY ═══════════ -->
+        <section class="secblock" id="repro" style="border-bottom-style: none;">
+          <div class="secblock-num-display">4</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 4 · REPRODUCIBILITY</span>
+              <div class="ref">5 RECIPES · SEEDS, PATHS, OUTPUTS</div>
+            </div>
+            <h2>The notebook should produce the <em>same numbers</em> next month.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">4.1<small>seed</small></div>
+              <div>
+                <h3>Seed <em>everything</em>. Once. At the top.</h3>
+                <p>Every library that touches randomness has its own seed source. Set them all in the setup cell. Pass <code class="inline">random_state=42</code> to every sklearn function that takes it.</p>
+                <div class="snippet"><span class="k">import</span> random, numpy <span class="k">as</span> np
+random.seed(<span class="n">42</span>)
+np.random.seed(<span class="n">42</span>)
+
+<span class="c"># if you use torch:</span>
+<span class="c"># import torch; torch.manual_seed(42)</span>
+
+<span class="c"># sklearn: always pass random_state=42</span></div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">4.2<small>paths</small></div>
+              <div>
+                <h3>Use <em>pathlib</em>. Never hardcode strings.</h3>
+                <p>Hardcoded <code class="inline">"/Users/you/projects/calendra/data/..."</code> breaks the moment anyone else opens the notebook. Anchor paths to a <code class="inline">Path</code> rooted at the project, and treat the rest as joins.</p>
+                <div class="snippet"><span class="k">from</span> pathlib <span class="k">import</span> Path
+
+ROOT  = Path(__file__).resolve().parent <span class="k">if</span> <span class="s">"__file__"</span> <span class="k">in</span> dir() <span class="k">else</span> Path.cwd()
+DATA  = ROOT / <span class="s">"data"</span>
+MODEL = ROOT / <span class="s">"models"</span>
+
+df = pd.read_parquet(DATA / <span class="s">"train.parquet"</span>)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">4.3<small>outputs</small></div>
+              <div>
+                <h3><em>Save</em> training-notebook outputs. <em>Strip</em> exploration-notebook outputs.</h3>
+                <p>Two different rules. The training notebook is a record — its outputs (metrics, plots, run IDs) <em>are</em> the deliverable. Commit it with outputs intact. Exploration notebooks are scratch — strip outputs before committing with <code class="inline">nbstripout</code>, so the diff is just code.</p>
+                <div class="snippet">uv pip install nbstripout
+nbstripout --install
+<span class="c"># now outputs are auto-stripped on git add for excluded patterns</span></div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">4.4<small>data</small></div>
+              <div>
+                <h3>Split <em>before</em> you do any feature engineering.</h3>
+                <p>The most common source of silent leakage. If you fit an <code class="inline">OneHotEncoder</code> or compute a mean for imputation on the full dataset before splitting, your test set has leaked. Always: load → split → engineer on train → transform on test.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">4.5<small>env</small></div>
+              <div>
+                <h3>Record the <em>actual</em> library versions at the top.</h3>
+                <p>Six months from now, "it worked on my machine" is not a debugging tool. Print versions into the first output cell.</p>
+                <div class="snippet"><span class="k">import</span> sklearn, numpy <span class="k">as</span> np, pandas <span class="k">as</span> pd
+<span class="k">import</span> mlflow
+
+print(<span class="s">f"sklearn={sklearn.__version__}, np={np.__version__}, "</span>
+      <span class="s">f"pd={pd.__version__}, mlflow={mlflow.__version__}"</span>)</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════ §5 · MLFLOW IN NOTEBOOKS ═══════════ -->
+        <section class="secblock" id="mlflow" style="border-bottom-style: none;">
+          <div class="secblock-num-display">5</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id blue">§ 5 · MLFLOW IN NOTEBOOKS</span>
+              <div class="ref">4 RECIPES · TRACKING + ARTIFACTS</div>
+            </div>
+            <h2>Wrap <em>every</em> training cell.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">5.1<small>start</small></div>
+              <div>
+                <h3>Three lines turn an ad-hoc training cell into a tracked run.</h3>
+                <p>The minimum viable wrap. Drop into your existing training cell — no other changes required.</p>
+                <div class="snippet"><span class="k">import</span> mlflow
+mlflow.set_experiment(<span class="s">"calendra-gbm"</span>)
+
+<span class="k">with</span> mlflow.start_run(run_name=<span class="s">"baseline"</span>):
+    model.fit(X_train, y_train)
+    mlflow.log_params(params)
+    mlflow.log_metric(<span class="s">"auc"</span>, auc_score)
+    mlflow.sklearn.log_model(model, <span class="s">"model"</span>)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">5.2<small>auto</small></div>
+              <div>
+                <h3>Use <em>autolog</em> for one-line tracking on common frameworks.</h3>
+                <p>If you're using sklearn / xgboost / lightgbm / pytorch, MLflow can log params and metrics automatically. Useful when you want tracking but don't want to write logging code yet.</p>
+                <div class="snippet">mlflow.sklearn.autolog()  <span class="c"># enables auto-logging for all subsequent runs</span>
+
+<span class="c"># now any model.fit(...) call inside a run is logged automatically</span></div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">5.3<small>compare</small></div>
+              <div>
+                <h3>Name your runs so the UI is <em>actually</em> useful.</h3>
+                <p><code class="inline">run_name="run_42_4a8b"</code> gives you a sortable table of meaningless strings. <code class="inline">run_name="shallow-fast-no-embed"</code> gives you a sortable table you can actually read.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">5.4<small>ui</small></div>
+              <div>
+                <h3>Open the UI from the notebook with a magic.</h3>
+                <p>Save yourself the terminal trip. The MLflow UI runs in a backgrounded process and renders in an iframe right inside Jupyter.</p>
+                <div class="snippet"><span class="pr">%load_ext</span> mlflow_extras  <span class="c"># pip install mlflow-extras</span>
+<span class="pr">%mlflow</span> ui
+
+<span class="c"># or just shell-out from the notebook</span>
+<span class="pr">!</span>mlflow ui --port <span class="n">5000</span> &</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════ §6 · PERFORMANCE ═══════════ -->
+        <section class="secblock" id="perf" style="border-bottom-style: none;">
+          <div class="secblock-num-display">6</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 6 · PERFORMANCE</span>
+              <div class="ref">6 RECIPES · TIME + MEMORY + DTYPES</div>
+            </div>
+            <h2>When the notebook gets <em>slow.</em></h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">6.1<small>time</small></div>
+              <div>
+                <h3><code class="inline">%time</code> for one-shot. <code class="inline">%timeit</code> for repeated.</h3>
+                <p>Two magics. <code class="inline">%time</code> on a single cell or line; <code class="inline">%timeit</code> runs it many times and reports mean / stdev. Use <code class="inline">%%time</code> / <code class="inline">%%timeit</code> for whole cells.</p>
+                <div class="snippet"><span class="pr">%timeit</span> df.groupby(<span class="s">"sender"</span>).agg({<span class="s">"url_count"</span>: <span class="s">"sum"</span>})
+<span class="c"># 12.3 ms ± 0.4 ms per loop (mean ± std. dev. of 7 runs, 100 loops each)</span></div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">6.2<small>profile</small></div>
+              <div>
+                <h3><code class="inline">%prun</code> when <code class="inline">%timeit</code> says <em>"too slow"</em> and you need to know why.</h3>
+                <p>Function-level profiler. Sort by cumulative time, look at the top 5 — that's where the wall-clock lives.</p>
+                <div class="snippet"><span class="pr">%prun</span> <span class="f">build_feature_matrix</span>(events)
+<span class="c"># shows which functions burned the time</span></div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">6.3<small>mem</small></div>
+              <div>
+                <h3>Check memory <em>before</em> you OOM.</h3>
+                <p><code class="inline">df.memory_usage(deep=True).sum() / 1e9</code> gives you GB. If you're loading a 4GB table on a 16GB laptop, you have 25% of RAM in one variable. Cast dtypes before going further.</p>
+                <div class="snippet">df.memory_usage(deep=<span class="n">True</span>).sum() / <span class="n">1e9</span>  <span class="c"># GB</span>
+df.info(memory_usage=<span class="s">"deep"</span>)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">6.4<small>dtypes</small></div>
+              <div>
+                <h3>Specify <code class="inline">dtype=</code> on read. Don't load as <code class="inline">object</code>.</h3>
+                <p>By default pandas reads strings as <code class="inline">object</code> dtype — slow, memory-hungry. Specify <code class="inline">dtype</code> or use <code class="inline">"category"</code> for low-cardinality columns. Same data, often 5–10× less memory.</p>
+                <div class="snippet">df = pd.read_csv(<span class="s">"events.csv"</span>, dtype={
+    <span class="s">"sender_domain"</span>: <span class="s">"category"</span>,
+    <span class="s">"org_tier"</span>:       <span class="s">"int8"</span>,
+    <span class="s">"is_malicious"</span>:   <span class="s">"bool"</span>,
+})</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">6.5<small>big</small></div>
+              <div>
+                <h3>For <em>&gt; 1 GB</em> tables: reach for <code class="inline">polars</code> or <code class="inline">pyarrow</code>.</h3>
+                <p>Pandas is great for the gigabyte you're holding in your head. Beyond that, Polars (zero-copy, lazy, multithreaded) or PyArrow streaming kills the bottleneck. The API gap closes faster every release.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">6.6<small>cache</small></div>
+              <div>
+                <h3>Cache <em>expensive</em> intermediate computations to disk.</h3>
+                <p>Joblib's memoize keeps deterministic, expensive function results between sessions. Saves 5 minutes of re-running every time you reopen the notebook.</p>
+                <div class="snippet"><span class="k">from</span> joblib <span class="k">import</span> Memory
+mem = <span class="f">Memory</span>(location=<span class="s">".cache"</span>, verbose=<span class="n">0</span>)
+
+<span class="pr">@</span>mem.cache
+<span class="k">def</span> <span class="f">expensive_embed</span>(texts):
+    <span class="k">return</span> model.encode(texts)</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════ §7 · ML-SPECIFIC ═══════════ -->
+        <section class="secblock" id="ml" style="border-bottom-style: none;">
+          <div class="secblock-num-display">7</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 7 · ML-SPECIFIC</span>
+              <div class="ref">7 RECIPES · PIPELINES, SPLITS, SERIALIZATION</div>
+            </div>
+            <h2>The <em>practitioner</em> recipes.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">7.1<small>law</small></div>
+              <div>
+                <h3>Split <em>before</em> any preprocessing. Always.</h3>
+                <p>The cardinal sin. If you fit a scaler or impute a mean on the full dataset before splitting, the test set has leaked into the model. The training–test split is the first thing you do, not the last.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">7.2<small>pipeline</small></div>
+              <div>
+                <h3>Every project ships as a <code class="inline">Pipeline</code>.</h3>
+                <p>Even for a single model. Pipelines wrap preprocessing + model into one object that can <code class="inline">.fit</code>, <code class="inline">.predict</code>, and <code class="inline">.save</code> together. No more "what scaler did I use in training?" mysteries.</p>
+                <div class="snippet"><span class="k">from</span> sklearn.pipeline <span class="k">import</span> Pipeline
+<span class="k">from</span> sklearn.preprocessing <span class="k">import</span> StandardScaler
+
+pipe = <span class="f">Pipeline</span>([
+    (<span class="s">"scale"</span>, <span class="f">StandardScaler</span>()),
+    (<span class="s">"model"</span>, <span class="f">GradientBoostingClassifier</span>(random_state=<span class="n">42</span>)),
+])
+pipe.fit(X_train, y_train)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">7.3<small>columns</small></div>
+              <div>
+                <h3>For mixed column types: <code class="inline">ColumnTransformer</code>.</h3>
+                <p>Numeric columns need scaling. Categorical columns need encoding. ColumnTransformer applies different transforms to different column subsets and stitches them back together.</p>
+                <div class="snippet"><span class="k">from</span> sklearn.compose <span class="k">import</span> ColumnTransformer
+<span class="k">from</span> sklearn.preprocessing <span class="k">import</span> StandardScaler, OneHotEncoder
+
+prep = <span class="f">ColumnTransformer</span>([
+    (<span class="s">"num"</span>, <span class="f">StandardScaler</span>(),       [<span class="s">"url_count"</span>, <span class="s">"attendees"</span>]),
+    (<span class="s">"cat"</span>, <span class="f">OneHotEncoder</span>(sparse_output=<span class="n">False</span>), [<span class="s">"org_tier"</span>]),
+])
+pipe = <span class="f">Pipeline</span>([(<span class="s">"prep"</span>, prep), (<span class="s">"clf"</span>, model)])</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">7.4<small>save</small></div>
+              <div>
+                <h3>Use <code class="inline">joblib</code> for sklearn artifacts, never raw <code class="inline">pickle</code>.</h3>
+                <p>Joblib is faster, handles numpy arrays better, and is the sklearn-recommended path. For sharing or production, use MLflow's <code class="inline">log_model</code> which wraps joblib with metadata and a clean reload path.</p>
+                <div class="snippet"><span class="k">import</span> joblib
+joblib.dump(pipe, <span class="s">"models/v4.1.joblib"</span>)
+loaded = joblib.load(<span class="s">"models/v4.1.joblib"</span>)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">7.5<small>imbalance</small></div>
+              <div>
+                <h3><em>Always</em> check class balance before training.</h3>
+                <p>A 99% accurate "model" that predicts the majority class is a one-liner. Check <code class="inline">y_train.value_counts(normalize=True)</code> first. If imbalanced, use <code class="inline">class_weight="balanced"</code> or stratified sampling, and report F1 or PR-AUC instead of accuracy.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">7.6<small>cv</small></div>
+              <div>
+                <h3>Cross-validate <em>through</em> the pipeline.</h3>
+                <p>If you cross-validate only the model, preprocessing leaks across folds. Use <code class="inline">cross_val_score</code> on the full pipeline so each fold re-fits the preprocessor on its own training data.</p>
+                <div class="snippet"><span class="k">from</span> sklearn.model_selection <span class="k">import</span> cross_val_score
+scores = <span class="f">cross_val_score</span>(pipe, X, y, cv=<span class="n">5</span>, scoring=<span class="s">"f1"</span>)
+print(<span class="s">f"f1: {scores.mean():.3f} ± {scores.std():.3f}"</span>)</div>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num">7.7<small>display</small></div>
+              <div>
+                <h3>For DataFrames you want to <em>read</em>, style them.</h3>
+                <p>Heatmap-colored numerical DataFrames are dramatically easier to scan than raw tables. Especially for confusion matrices and feature importance tables.</p>
+                <div class="snippet">df.style.background_gradient(cmap=<span class="s">"YlOrRd"</span>, axis=<span class="n">0</span>) \
+        .format(<span class="s">"{:.3f}"</span>)</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════ §8 · ANTI-PATTERNS ═══════════ -->
+        <section class="secblock" id="bad" style="border-bottom-style: none;">
+          <div class="secblock-num-display">8</div>
+
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id ink">§ 8 · ANTI-PATTERNS</span>
+              <div class="ref">5 RECIPES · WHAT TO NEVER DO</div>
+            </div>
+            <h2>The <em>quiet</em> destroyers.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num" style="color: var(--ink);">8.1<small>danger</small></div>
+              <div>
+                <h3>Don't store <em>API keys</em> in cells. Use <code class="inline">os.environ</code>.</h3>
+                <p>If you commit the notebook, the key is in your git history forever. <code class="inline">os.environ["ANTHROPIC_API_KEY"]</code> + a <code class="inline">.env</code> in <code class="inline">.gitignore</code>. Or use a secrets manager. <em>Anything but</em> a string literal in a cell.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num" style="color: var(--ink);">8.2<small>danger</small></div>
+              <div>
+                <h3>Don't run cells out of order then commit the notebook.</h3>
+                <p>The execution counter tells the truth. If <code class="inline">[3]</code> is below <code class="inline">[12]</code>, restart-and-run-all before commit. Otherwise the file you commit doesn't actually produce its own outputs.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num" style="color: var(--ink);">8.3<small>danger</small></div>
+              <div>
+                <h3>Don't mix <em>training</em> and <em>evaluation</em> in the same cell.</h3>
+                <p>The second the cell is too big to reason about in one screen, you'll start re-running training accidentally when you only wanted to re-evaluate. Always: one cell trains and saves; the next loads and evaluates.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num" style="color: var(--ink);">8.4<small>danger</small></div>
+              <div>
+                <h3>Don't trust <code class="inline">.head()</code> as your only sanity check.</h3>
+                <p>The first 5 rows can hide all kinds of nightmares — sorted data, NaN clusters, leakage. Use <code class="inline">.sample(20)</code>, <code class="inline">.describe()</code>, and quick histograms on every column before training.</p>
+              </div>
+            </div>
+
+            <div class="recipe">
+              <div class="recipe-num" style="color: var(--ink);">8.5<small>danger</small></div>
+              <div>
+                <h3>Don't load the <em>full</em> dataset for EDA. <em>Sample first.</em></h3>
+                <p>For initial exploration, <code class="inline">df = pd.read_parquet(p).sample(n=10_000)</code>. You'll iterate ten times faster, then run the final pipeline on the full set. The exception: when answering questions about distributional tails, where you need everything.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- TOC -->
+      <aside class="cs-toc" id="csToc">
+        <h4>// CONTENTS</h4>
+        <ul>
+          <li data-tgt="#setup" class="on"><span class="num">1</span> Setup</li>
+          <li data-tgt="#cells"><span class="num">2</span> Cell discipline</li>
+          <li data-tgt="#autoreload"><span class="num">3</span> Autoreload</li>
+          <li data-tgt="#repro"><span class="num">4</span> Reproducibility</li>
+          <li data-tgt="#mlflow"><span class="num">5</span> MLflow</li>
+          <li data-tgt="#perf"><span class="num">6</span> Performance</li>
+          <li data-tgt="#ml"><span class="num">7</span> ML-specific</li>
+          <li data-tgt="#bad"><span class="num">8</span> Anti-patterns</li>
+        </ul>
+
+        <h4 style="margin-top: 36px;">// META</h4>
+        <ul>
+          <li><span class="num">📌</span> 42 recipes</li>
+          <li><span class="num">⏱</span> ~14 min</li>
+          <li><span class="num">🔁</span> living doc</li>
+        </ul>
+
+        <h4 style="margin-top: 36px;">// RELATED</h4>
+        <ul>
+          <li><span class="num">→</span> <a href="../topics/mlflow.html" style="color: inherit;">MLflow</a></li>
+          <li><span class="num">→</span> <a href="../projects/calendra-gbm.html" style="color: inherit;">Calendra · GBM</a></li>
+          <li><span class="num">→</span> <a href="index.html" style="color: inherit;">All sheets</a></li>
+        </ul>
+      </aside>
+
+    </div>
+
+    <!-- DOWNLOAD CTA -->
+    <section class="panel" style="margin-top: 60px;">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head">
+        <span class="id">§ X · NEXT</span>
+        <h2>Where this <em>compounds.</em></h2>
+        <span class="ts">3 LINKS</span>
+        <span class="ref">RELATED RESOURCES</span>
+      </div>
+
+      <div class="topic-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <a class="topic-cell current" href="../topics/mlflow.html">
+          <div class="num">// TOPIC</div>
+          <h3>MLflow</h3>
+          <div class="meta"><span>USES §5 · 4 RECIPES</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="../projects/calendra-gbm.html">
+          <div class="num">// PROJECT</div>
+          <h3>Calendra · GBM</h3>
+          <div class="meta"><span>WHERE §5–7 LAND</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="index.html">
+          <div class="num">// LIBRARY</div>
+          <h3>All cheat sheets</h3>
+          <div class="meta"><span>3 ON DECK</span><span>OPEN →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-marquee">cheatsheet/<em>jupyter.</em></div>
+      <div class="foot-grid">
+        <div class="foot-brand"><p>Living doc. Each edition that touches Jupyter habits adds a recipe here. Open suggestions / corrections / additions for next week — that's what this skill is built for.</p></div>
+        <div class="foot-col"><h4>// Sections</h4><ul><li><a href="#setup">Setup</a></li><li><a href="#cells">Cell discipline</a></li><li><a href="#mlflow">MLflow</a></li><li><a href="#ml">ML-specific</a></li><li><a href="#bad">Anti-patterns</a></li></ul></div>
+        <div class="foot-col"><h4>// Related</h4><ul><li><a href="../topics/mlflow.html">MLflow</a></li><li><a href="../projects/calendra-gbm.html">Calendra GBM</a></li><li><a href="index.html">All cheat sheets</a></li></ul></div>
+        <div class="foot-col"><h4>// Status</h4><ul><li>First: ED #005</li><li>42 recipes · 8 sections</li><li>Living doc · grows weekly</li></ul></div>
+      </div>
+      <div class="foot-bottom"><span>CHEAT SHEET · 01 · LIVING DOC</span><span>GD/CS01 · JUPYTER FOR ML</span><a href="../index.html">↳ BACK TO LATEST</a></div>
+    </footer>
+
+  </main>
+
+  <script>
+    // TOC active-section highlight
+    const tocLis = document.querySelectorAll('#csToc li[data-tgt]');
+    tocLis.forEach(li => li.addEventListener('click', () => {
+      const tgt = li.dataset.tgt;
+      document.querySelector(tgt)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }));
+
+    const sections = [...document.querySelectorAll('section[id]')];
+    const obs = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (e.isIntersecting) {
+          const id = '#' + e.target.id;
+          tocLis.forEach(li => li.classList.toggle('on', li.dataset.tgt === id));
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    sections.forEach(s => obs.observe(s));
+  </script>
+</body>
+</html>

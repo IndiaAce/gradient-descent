@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRADIENT-DESCENT // 005 — Ultraviolet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    /* ── page-specific: hero + a few unique components */
+    .hero {
+      position: relative;
+      padding: 80px 0 60px;
+      border-bottom: 2px solid var(--ink);
+      overflow: visible;
+    }
+    .hero-meta-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+      padding: 14px 56px;
+      font-family: var(--depmono);
+      font-size: 10.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dim);
+      border-bottom: 1px solid var(--line);
+      margin: 0 -56px 50px;
+    }
+    .hero-meta-row .cell strong {
+      display: block;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+      text-transform: none;
+    }
+    .hero-meta-row .cell.hot strong { color: var(--hot); }
+
+    .hero-display {
+      position: relative;
+      margin: 0 -120px 40px 0;
+      overflow: visible;
+    }
+    .hero-display .line {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(120px, 16vw, 280px);
+      line-height: 0.82;
+      letter-spacing: -0.05em;
+      color: var(--ink);
+      white-space: nowrap;
+      will-change: transform;
+    }
+    .hero-display .l2 {
+      color: var(--hot);
+      margin-left: -20px;
+    }
+    .hero-display .l2 em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .hero-deck {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 56px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+    }
+    .hero-deck .col {
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink-2);
+    }
+    .hero-deck .col h4 {
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--hot);
+      margin-bottom: 12px;
+    }
+    .hero-deck .col strong { color: var(--ink); font-weight: 500; }
+    .hero-deck .col em { color: var(--blue); font-style: italic; }
+
+    /* Signal sheet — 3 articles split */
+    .signal-sheet {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1.5px solid var(--ink);
+      background: var(--paper-3);
+    }
+    .signal-cell {
+      padding: 28px 30px 30px;
+      border-right: 1.5px solid var(--ink);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .signal-cell:last-child { border-right: 0; }
+    .signal-cell .ix {
+      font-family: var(--depmono);
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      color: var(--hot);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .signal-cell h3 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+      text-wrap: balance;
+    }
+    .signal-cell h3 em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+    .signal-cell .meta-line {
+      font-family: var(--depmono);
+      font-size: 9.5px;
+      letter-spacing: 0.18em;
+      color: var(--dim);
+      text-transform: uppercase;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .signal-cell p {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--ink-2);
+      margin-bottom: 12px;
+      flex: 1;
+    }
+    .signal-cell .ftr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-family: var(--depmono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .signal-cell .ftr .read { color: var(--hot); }
+    .signal-cell .ftr .tags { display: flex; gap: 6px; }
+    .signal-cell .ftr .tag { padding: 2px 7px; border: 1px solid var(--line-strong); color: var(--dim); }
+    .signal-cell .ftr .tag.l2 { color: var(--blue); border-color: var(--blue); }
+
+    /* Build card */
+    .build {
+      border: 2px solid var(--ink);
+      background: var(--paper-3);
+      position: relative;
+    }
+    .build-band {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      padding: 14px 24px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--depmono);
+      font-size: 10.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      align-items: center;
+      gap: 24px;
+    }
+    .build-band .diff {
+      color: var(--paper);
+      background: var(--hot);
+      padding: 3px 8px;
+    }
+    .build-body { padding: 40px 48px 48px; }
+
+    /* Icebreaker dark card */
+    .ice {
+      background: var(--ink);
+      color: var(--paper);
+      border: 2px solid var(--ink);
+      position: relative;
+    }
+    .ice-band {
+      padding: 14px 24px;
+      background: var(--hot);
+      color: var(--paper);
+      font-family: var(--depmono);
+      font-size: 10.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+    }
+    .ice-body { padding: 40px 48px 48px; }
+    .ice-body p {
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.75;
+      color: rgba(232,230,212,0.88);
+      max-width: 60ch;
+      margin-bottom: 18px;
+    }
+    .ice-body p strong { color: var(--paper); }
+    .ice-body p em { font-family: var(--serif); font-style: italic; color: var(--hot); }
+    .ice-body code.inline { background: var(--paper); color: var(--ink); }
+    .ice-body .connect {
+      margin-top: 28px;
+      padding: 14px 18px;
+      border: 1.5px dashed var(--hot);
+      font-family: var(--depmono);
+      font-size: 10.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--hot);
+    }
+    .ice-body .connect a { color: var(--paper); text-decoration: underline; }
+
+    /* One read */
+    .oneread {
+      border: 2px solid var(--ink);
+      background: var(--paper-3);
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 0;
+    }
+    .oneread .number {
+      background: var(--hot);
+      color: var(--paper);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 2px solid var(--ink);
+    }
+    .oneread .number .big {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 140px;
+      line-height: 0.85;
+      letter-spacing: -0.05em;
+    }
+    .oneread .number .lbl {
+      font-family: var(--depmono);
+      font-size: 10.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .oneread .content { padding: 40px 48px; }
+    .oneread h3 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+    .oneread h3 em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+
+    /* Cheatsheet panel — grid of cards */
+    .cs-grid {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr 1fr 1fr;
+      gap: 0;
+      border: 2px solid var(--ink);
+    }
+    .cs-card {
+      padding: 28px 24px 24px;
+      border-right: 1.5px solid var(--ink);
+      background: var(--paper-3);
+      display: flex;
+      flex-direction: column;
+      transition: background 0.2s;
+      color: inherit;
+      position: relative;
+    }
+    .cs-card:last-child { border-right: 0; }
+    .cs-card:hover { background: var(--paper); }
+    .cs-card.featured {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .cs-card.featured:hover { background: #1a1610; }
+    .cs-card .ix {
+      font-family: var(--depmono);
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      color: var(--hot);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .cs-card h3 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: -0.02em;
+      line-height: 1.0;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .cs-card.featured h3 { font-size: 44px; }
+    .cs-card h3 em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+    .cs-card.featured h3 em { color: var(--hot); }
+    .cs-card .blurb {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: inherit;
+      opacity: 0.78;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+    .cs-card .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--depmono);
+      font-size: 9.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding-top: 12px;
+      border-top: 1px solid currentColor;
+      opacity: 0.7;
+    }
+    .cs-card.featured .row { opacity: 1; }
+    .cs-card .row .go { color: var(--hot); }
+    .cs-card.coming h3 { opacity: 0.4; }
+    .cs-card.coming .blurb { opacity: 0.4; }
+    .cs-card.coming .row .go { color: var(--dim); }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-005</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="../topics/index.html">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span style="font-family:var(--depmono);font-size:10px;letter-spacing:0.15em;color:var(--dim);">ARCHIVED</span>
+        <span>2026·05·27</span>
+        <span style="color: var(--ink);">REV 005-A</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas" id="latest">
+
+    <!-- HERO -->
+    <section class="hero">
+      <span class="cmark" style="top:8px; left:-20px;"></span>
+      <span class="cmark tr" style="top:8px; right:-20px;"></span>
+
+      <div class="hero-meta-row">
+        <div class="cell hot"><strong>№005</strong>edition</div>
+        <div class="cell"><strong>2026·05·27</strong>publish date</div>
+        <div class="cell"><strong>ULTRAVIOLET</strong>codename</div>
+        <div class="cell"><strong>~7 min</strong>read time</div>
+        <div class="cell"><strong>6 / 1 / 3</strong>secs / topics-new / in-flight</div>
+      </div>
+
+      <div class="hero-display" id="kinetic">
+        <div class="line l1">GRADIENT/</div>
+        <div class="line l2">DESCEN<em>t.</em></div>
+      </div>
+
+      <div class="hero-deck">
+        <div class="col">
+          <h4>// THE LEAD</h4>
+          <p><a href="topics/mlflow.html"><strong>MLflow</strong></a> becomes the spine of every Calendra experiment this week — the loop that finally turns ad-hoc notebook runs into something you can <em>diff</em>.</p>
+        </div>
+        <div class="col">
+          <h4>// ONE LEVEL UP</h4>
+          <p><a href="topics/embeddings.html"><strong>Sentence transformers</strong></a> open a new feature axis on the ICS description field. A 384-dim vector that catches what <code class="inline">url_count</code> misses.</p>
+        </div>
+        <div class="col">
+          <h4>// AGENT LOOP</h4>
+          <p>Anthropic's <a href="topics/tool-use.html"><strong>tool-use</strong></a> loop, drawn out so the GBM can <em>explain itself</em> — verdict JSON in, three-sentence threat report out.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUILD LOG -->
+    <section class="panel" id="projects">
+      <span class="cmark" style="top:20px; left:-20px;"></span>
+      <span class="cmark tr" style="top:20px; right:-20px;"></span>
+
+      <div class="panel-head">
+        <span class="id">§ B · BUILD LOG</span>
+        <h2>What's <em>actually</em> on the bench.</h2>
+        <span class="ts">SYNCED 14:32 UTC</span>
+        <span class="ref"><a href="projects/index.html">ALL PROJECTS →</a></span>
+      </div>
+
+      <div class="buildlog">
+        <div class="buildlog-head">
+          <span>#</span><span>name</span><span>next step</span><span>status</span><span>progress</span><span>metrics</span><span>touched</span>
+        </div>
+
+        <a class="buildlog-row" href="projects/calendra-gbm.html">
+          <span class="idx">B-01</span>
+          <div class="name">Calendra · <em>GBM</em></div>
+          <div class="next-line">Add <b>MLflow tracking</b> · §C-02 this weekend</div>
+          <span class="status training">TRAINING</span>
+          <div class="barwrap"><span>72%</span><div class="bar"><i style="width:72%"></i></div></div>
+          <div class="metrics"><span>AUC</span> 0.978 · <span>F1</span> 0.954</div>
+          <div class="touch">2 days ago</div>
+        </a>
+
+        <a class="buildlog-row" href="projects/index.html">
+          <span class="idx">B-02</span>
+          <div class="name">Description <em>embeddings</em></div>
+          <div class="next-line">Test <b>all-MiniLM-L6-v2</b> · §C-05 icebreaker</div>
+          <span class="status experiment">EXPERIMENT</span>
+          <div class="barwrap"><span>18%</span><div class="bar"><i style="width:18%"></i></div></div>
+          <div class="metrics"><span>DIMS</span> 384 · <span>L2</span> queued</div>
+          <div class="touch">spec draft</div>
+        </a>
+
+        <a class="buildlog-row" href="projects/index.html">
+          <span class="idx">B-03</span>
+          <div class="name">Workshop <em>trace</em> layer</div>
+          <div class="next-line">Wire into <b>tool-use agent</b> · §C-04</div>
+          <span class="status evaluating">EVALUATING</span>
+          <div class="barwrap"><span>35%</span><div class="bar"><i style="width:35%"></i></div></div>
+          <div class="metrics"><span>PORT</span> :5899 · <span>STORE</span> SQLite</div>
+          <div class="touch">5 days ago</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- TOPIC GRAPH -->
+    <section class="panel" id="knowledge">
+      <span class="cmark" style="top:20px; left:-20px;"></span>
+      <span class="cmark tr" style="top:20px; right:-20px;"></span>
+
+      <div class="panel-head">
+        <span class="id">§ K · TOPIC GRAPH</span>
+        <h2>Compounding <em>knowledge.</em></h2>
+        <span class="ts">8 NODES · 14 EDGES</span>
+        <span class="ref"><a href="topics/index.html">ALL TOPICS →</a></span>
+      </div>
+
+      <div class="topic-grid">
+        <a class="topic-cell current" href="topics/mlflow.html">
+          <div class="num">// NEW · ED #005</div>
+          <h3>MLflow</h3>
+          <div class="meta"><span>1 ED</span><span>ANCHOR-CANDIDATE</span></div>
+        </a>
+        <a class="topic-cell" href="topics/index.html">
+          <div class="num">// ANCHOR</div>
+          <h3>SHAP</h3>
+          <div class="meta"><span>3 ED</span><span>2 NEW EDGES</span></div>
+        </a>
+        <a class="topic-cell current" href="topics/tool-use.html">
+          <div class="num">// ACTIVE · ED #005</div>
+          <h3>Tool Use</h3>
+          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
+        </a>
+        <a class="topic-cell current" href="topics/embeddings.html">
+          <div class="num">// ACTIVE · ED #005</div>
+          <h3>Embeddings</h3>
+          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
+        </a>
+        <a class="topic-cell" href="topics/index.html">
+          <div class="num">// RECURRING</div>
+          <h3>Observability</h3>
+          <div class="meta"><span>2 ED</span><span>—</span></div>
+        </a>
+        <a class="topic-cell" href="topics/index.html">
+          <div class="num">// RECURRING</div>
+          <h3>GBM</h3>
+          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
+        </a>
+        <a class="topic-cell" href="topics/index.html">
+          <div class="num">// DORMANT 30d</div>
+          <h3>Drift</h3>
+          <div class="meta"><span>2 ED</span><span>radar</span></div>
+        </a>
+        <a class="topic-cell" href="topics/index.html">
+          <div class="num">// RECURRING</div>
+          <h3>Features</h3>
+          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============== ARTICLE SECTIONS ============== -->
+
+    <!-- 01 · SIGNAL -->
+    <section class="secblock reveal" id="signal">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <span class="cmark bl"></span><span class="cmark br"></span>
+      <div class="secblock-num-display">01</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ C-01 · THE SIGNAL</span>
+          <div class="ref">3 ITEMS · WEEK 21 · REF: VB / MTP / ARXIV</div>
+          <div class="secblock-topics">
+            <a class="topic-chip" href="topics/index.html">Observability</a>
+            <a class="topic-chip" href="topics/index.html">SHAP</a>
+            <a class="topic-chip" href="topics/embeddings.html">Embeddings</a>
+          </div>
+        </div>
+        <h2>Three things <em>worth</em> stopping for.</h2>
+      </div>
+
+      <div class="signal-sheet">
+        <article class="signal-cell">
+          <div class="ix">// item i · S-01-A</div>
+          <h3>Raindrop <em>Workshop:</em> local debugger for AI agents.</h3>
+          <div class="meta-line">VENTUREBEAT · MAY 14 · MIT · OPEN SOURCE</div>
+          <p>Raindrop AI dropped <strong>Workshop</strong> — a local daemon that streams every token, tool call, and decision from your AI agent into a single SQLite file and serves a dashboard at <code class="inline">localhost:5899</code>. Zero code changes — an env var hooks Anthropic, OpenAI, LangChain, LlamaIndex, CrewAI automatically.</p>
+          <div class="ftr">
+            <a href="https://venturebeat.com/technology/developers-can-now-debug-and-evaluate-ai-agents-locally-with-raindrops-open-source-tool-workshop" class="read">VENTUREBEAT →</a>
+            <div class="tags"><span class="tag">MIT</span><span class="tag">TRACE</span></div>
+          </div>
+        </article>
+
+        <article class="signal-cell">
+          <div class="ix">// item ii · S-01-B</div>
+          <h3>Advanced <em>SHAP:</em> drift, interactions, maskers.</h3>
+          <div class="meta-line">MARKTECHPOST · MAY 17 · CODING GUIDE</div>
+          <p>A code-first guide past force plots: <strong>SHAP-IQ</strong> for feature <em>interaction</em> effects, KS-tests on SHAP distributions to detect attribution drift, side-by-side TreeExplainer vs. KernelExplainer vs. PermutationExplainer. Tells you not just "inputs changed" but "the model's <em>reasoning</em> changed."</p>
+          <div class="ftr">
+            <a href="https://www.marktechpost.com/2026/05/17/a-coding-guide-implementing-shap-explainability-workflows-with-explainer-comparisons-maskers-interactions-drift-and-black-box-models/" class="read">MARKTECHPOST →</a>
+            <div class="tags"><span class="tag">DRIFT</span><span class="tag">PYTHON</span></div>
+          </div>
+        </article>
+
+        <article class="signal-cell">
+          <div class="ix">// item iii · S-01-C</div>
+          <h3>Sentence transformers <em>benchmarked</em> for attack-to-CVE.</h3>
+          <div class="meta-line">ARXIV 2602.22433 · L2 · ONE LEVEL AHEAD</div>
+          <p>14 models tested on mapping cyberattack descriptions to known CVEs. <em>multi-qa-mpnet-base-dot-v1</em> hit <strong>F1 = 89.0</strong>, precision 84.0, recall 94.7 on MITRE ATT&amp;CK. The finding: description text outperforms TTP summary labels — surrounding language carries more weight than structured tags.</p>
+          <div class="ftr">
+            <a href="https://arxiv.org/abs/2602.22433" class="read">ARXIV →</a>
+            <div class="tags"><span class="tag l2">L2 PULL</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 02 · CONCEPT → CODE -->
+    <section class="secblock reveal body" id="concept">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <span class="cmark bl"></span><span class="cmark br"></span>
+      <div class="secblock-num-display">02</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ C-02 · CONCEPT → CODE</span>
+          <div class="ref">~ 7 MIN · L1 PYTHON · REF: MLflow 2.x</div>
+          <div class="secblock-topics">
+            <a class="topic-chip" href="topics/mlflow.html">MLflow</a>
+            <a class="topic-chip" href="topics/mlflow.html">Tracking</a>
+            <a class="topic-chip" href="topics/index.html">GBM</a>
+          </div>
+        </div>
+        <h2>MLflow: <em>stop guessing,</em> start comparing.</h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p>You have a working GBM hitting 98% accuracy. But which <code class="inline">n_estimators</code> got you there? What <code class="inline">max_depth</code> did you finally settle on? When you retrain on fresh labeled data next month, how will you know the new run is actually better — or just differently broken?</p>
+          <p>Without experiment tracking, model development is <em>archaeology</em> — reconstructing what past-you did from notebook cells and vague memory. <strong>MLflow fixes this.</strong> Every training run becomes a named, permanent record with its exact parameters, evaluation metrics, and saved model artifact.</p>
+          <p>The API surface you need is tiny: <code class="inline">set_experiment()</code> names the project, <code class="inline">start_run()</code> opens a record, three logging calls fill it in. Comparison views, registry, artifact browser — free.</p>
+          <p>Change one param, re-run with a different <code class="inline">run_name</code>, and the UI lets you diff them. That's the entire loop.</p>
+
+          <div class="callout">
+            <span class="lbl">// see also</span>
+            Full topic page on MLflow with every appearance across editions, the full code archive, and the roadmap of where it goes next — <a href="topics/mlflow.html">topics/mlflow →</a>
+          </div>
+        </div>
+
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · baseline_gbm.py</span>
+            <span class="id">// FIG C-02-α</span>
+          </div>
+<pre><span class="k">import</span> mlflow
+<span class="k">import</span> mlflow.sklearn
+<span class="k">from</span> sklearn.ensemble <span class="k">import</span> GradientBoostingClassifier
+<span class="k">from</span> sklearn.model_selection <span class="k">import</span> train_test_split
+<span class="k">from</span> sklearn.metrics <span class="k">import</span> roc_auc_score, f1_score
+
+params = {<span class="s">"n_estimators"</span>: <span class="n">100</span>, <span class="s">"max_depth"</span>: <span class="n">3</span>, <span class="s">"learning_rate"</span>: <span class="n">0.1</span>}
+
+mlflow.set_experiment(<span class="s">"calendra-gbm"</span>)
+
+<span class="k">with</span> mlflow.start_run(run_name=<span class="s">"baseline"</span>):
+    model = <span class="f">GradientBoostingClassifier</span>(**params, random_state=<span class="n">42</span>)
+    model.fit(X_train, y_train)
+
+    mlflow.log_params(params)
+    mlflow.log_metric(<span class="s">"auc_roc"</span>, roc_auc_score(y_test, model.predict_proba(X_test)[:, <span class="n">1</span>]))
+    mlflow.log_metric(<span class="s">"f1"</span>,      f1_score(y_test, model.predict(X_test)))
+    mlflow.sklearn.log_model(model, <span class="s">"model"</span>)
+
+<span class="c"># Now run:  mlflow ui  →  open localhost:5000</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 · BUILD -->
+    <section class="secblock reveal body" id="build">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <span class="cmark bl"></span><span class="cmark br"></span>
+      <div class="secblock-num-display">03</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ C-03 · THIS WEEK'S BUILD</span>
+          <div class="ref">SAT · ~ 90 MIN · DELIVERABLE: NOTEBOOK</div>
+          <div class="secblock-topics">
+            <a class="topic-chip" href="topics/mlflow.html">MLflow</a>
+            <a class="topic-chip" href="topics/index.html">GBM</a>
+          </div>
+        </div>
+        <h2>GBM <em>experiment tracker.</em></h2>
+      </div>
+
+      <div class="build">
+        <div class="build-band">
+          <span class="diff">INTERMEDIATE</span>
+          <span>// DELIVERABLE: SWEEP_GBM.PY + MLFLOW UI · 3 TRACKED RUNS · LIVE DIFF</span>
+          <span>REV 005-A</span>
+        </div>
+
+        <div class="build-body">
+          <div class="twocol">
+            <div class="prose">
+              <h4>// WHAT YOU'LL BUILD</h4>
+              <p style="font-family:var(--mono); font-size:14px; line-height:1.7; color:var(--ink-2); max-width:60ch;">A repeatable GBM training pipeline that logs every run — parameters, AUC, F1, and the model artifact — to MLflow, so you can compare iterations visually and never lose a result.</p>
+
+              <h4>// WHAT YOU'LL LEARN</h4>
+              <ul>
+                <li>How MLflow organizes experiments, runs, parameters, metrics, artifacts</li>
+                <li>Sweep multiple hyperparameter configs in one script and diff them in the UI</li>
+                <li>Register a production-ready model version from the winning run</li>
+              </ul>
+
+              <h4>// CALENDRA ANGLE</h4>
+              <p style="font-family:var(--mono); font-size:14px; line-height:1.7; color:var(--ink-2); max-width:60ch;">Open <code class="inline">model_training.ipynb</code> this weekend. Migration is three steps: <code class="inline">import mlflow</code>, wrap the training block in <code class="inline">with start_run():</code>, drop in four <code class="inline">log_*</code> calls around your existing metrics prints. See the full <a href="projects/calendra-gbm.html">Calendra GBM project page</a> for the migration plan.</p>
+            </div>
+
+            <div class="code">
+              <div class="code-head">
+                <span class="lang">python · sweep_gbm.py</span>
+                <span class="id">// FIG C-03-α</span>
+              </div>
+<pre>experiments = [
+    {<span class="s">"run_name"</span>: <span class="s">"shallow-fast"</span>,  <span class="s">"n_estimators"</span>:  <span class="n">50</span>, <span class="s">"max_depth"</span>: <span class="n">3</span>, <span class="s">"learning_rate"</span>: <span class="n">0.10</span>},
+    {<span class="s">"run_name"</span>: <span class="s">"deeper-slower"</span>, <span class="s">"n_estimators"</span>: <span class="n">100</span>, <span class="s">"max_depth"</span>: <span class="n">5</span>, <span class="s">"learning_rate"</span>: <span class="n">0.05</span>},
+    {<span class="s">"run_name"</span>: <span class="s">"more-trees"</span>,    <span class="s">"n_estimators"</span>: <span class="n">200</span>, <span class="s">"max_depth"</span>: <span class="n">3</span>, <span class="s">"learning_rate"</span>: <span class="n">0.05</span>},
+]
+
+mlflow.set_experiment(<span class="s">"calendra-gbm-comparison"</span>)
+
+<span class="k">for</span> cfg <span class="k">in</span> experiments:
+    run_name = cfg.pop(<span class="s">"run_name"</span>)
+    <span class="k">with</span> mlflow.start_run(run_name=run_name):
+        model = <span class="f">GradientBoostingClassifier</span>(**cfg, random_state=<span class="n">42</span>)
+        model.fit(X_train, y_train)
+
+        auc   = roc_auc_score(y_test, model.predict_proba(X_test)[:, <span class="n">1</span>])
+        f1    = f1_score(y_test, model.predict(X_test))
+        cv_f1 = cross_val_score(model, X_train, y_train, cv=<span class="n">5</span>, scoring=<span class="s">"f1"</span>).mean()
+
+        mlflow.log_params(cfg)
+        mlflow.log_metric(<span class="s">"auc_roc"</span>, auc)
+        mlflow.log_metric(<span class="s">"f1"</span>,      f1)
+        mlflow.log_metric(<span class="s">"cv_f1"</span>,   cv_f1)
+        mlflow.sklearn.log_model(model, <span class="s">"model"</span>)</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 · AGENT BRIEF -->
+    <section class="secblock reveal body" id="agent">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <span class="cmark bl"></span><span class="cmark br"></span>
+      <div class="secblock-num-display">04</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ C-04 · AGENT BRIEF</span>
+          <div class="ref">L3 · LLM ENG · CYCLE 0/7</div>
+          <div class="secblock-topics">
+            <a class="topic-chip" href="topics/tool-use.html">Tool Use</a>
+            <a class="topic-chip" href="topics/tool-use.html">Anthropic SDK</a>
+          </div>
+        </div>
+        <h2>Tool use, the <em>function-dispatch</em> loop.</h2>
+      </div>
+
+      <div class="agent-meta-strip">
+        <span class="hot">CYCLE 0 / 7</span>
+        <span class="ink">L3 · LLM ENG</span>
+        <span>EDITION #005</span>
+        <span>SDK: anthropic-py 0.42+</span>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p>Tool use is the pattern where you give Claude a set of functions it can call during a response — pausing generation to invoke them and incorporating their return values before continuing.</p>
+          <p>You describe each tool with a name, description, and JSON schema for its inputs. Claude decides when to call it. You implement the logic. The loop runs until Claude reaches a natural stopping point. This isn't prompt engineering — it's a proper function-dispatch loop with Claude as the decision-maker about when to invoke external systems.</p>
+          <p>The most immediate use case for you: a Claude agent that reads a Calendra verdict JSON and writes a human-readable threat report, optionally calling lookup tools — domain age, URL category — for context the verdict alone can't carry.</p>
+
+          <div class="next-up">
+            <span class="lbl">NEXT UP · CYCLE 1 / 7</span>
+            Prompt chaining — when a single call isn't enough and Claude's output needs to become the input for the next step.
+          </div>
+        </div>
+
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · threat_report_agent.py</span>
+            <span class="id">// FIG C-04-α</span>
+          </div>
+<pre><span class="k">import</span> anthropic, json, os
+
+client = anthropic.Anthropic(api_key=os.environ[<span class="s">"ANTHROPIC_API_KEY"</span>])
+
+tools = [{
+    <span class="s">"name"</span>: <span class="s">"lookup_domain_age"</span>,
+    <span class="s">"description"</span>: <span class="s">"Returns approximate age of a domain in years"</span>,
+    <span class="s">"input_schema"</span>: {
+        <span class="s">"type"</span>: <span class="s">"object"</span>,
+        <span class="s">"properties"</span>: {<span class="s">"domain"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>}},
+        <span class="s">"required"</span>: [<span class="s">"domain"</span>],
+    },
+}]
+
+<span class="k">def</span> <span class="f">write_threat_report</span>(verdict: dict) -> str:
+    messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>:
+        <span class="s">f"Write a 3-sentence threat report. Verdict: {json.dumps(verdict)}"</span>}]
+
+    <span class="k">while</span> <span class="n">True</span>:
+        resp = client.messages.create(
+            model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=<span class="n">512</span>,
+            tools=tools, messages=messages,
+        )
+        <span class="k">if</span> resp.stop_reason == <span class="s">"end_turn"</span>:
+            <span class="k">return</span> next(b.text <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> hasattr(b, <span class="s">"text"</span>))
+        results = [<span class="f">execute_tool</span>(b.name, b.input)
+                   <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
+        messages += [{<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content},
+                     {<span class="s">"role"</span>: <span class="s">"user"</span>,      <span class="s">"content"</span>: results}]</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · ICEBREAKER -->
+    <section class="secblock reveal" id="icebreaker">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <span class="cmark bl"></span><span class="cmark br"></span>
+      <div class="secblock-num-display">05</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ C-05 · ICEBREAKER</span>
+          <div class="ref">IDEA #1 · L2 · ~2 HRS · CALENDRA</div>
+          <div class="secblock-topics">
+            <a class="topic-chip" href="topics/embeddings.html">Embeddings</a>
+            <a class="topic-chip" href="topics/index.html">Features</a>
+          </div>
+        </div>
+        <h2>Trade <code class="inline" style="font-size:0.7em; background: var(--hot); color: var(--paper);">url_count</code> for a <em>description embedding.</em></h2>
+      </div>
+
+      <div class="ice">
+        <div class="ice-band">
+          <span>// IDEA #1 OF 2 THIS EDITION</span>
+          <span>HYPOTHESIS: description embeddings &gt; raw URL count on AUC</span>
+          <span>REV 005-A</span>
+        </div>
+
+        <div class="ice-body">
+          <div class="twocol">
+            <div>
+              <p>Your Calendra feature pipeline uses <code class="inline">url_count</code> as a raw integer. Useful, but brittle: a single obfuscated link scores the same as a zero-URL benign invite, and a verbose phishing description with no URLs at all gets ignored entirely.</p>
+              <p>The description field itself contains far richer signal. Attackers write things like <em>"Click here to confirm your attendance: http://malcal-invite.xyz/rsvp?t=abc123"</em> — the surrounding language is semantically suspicious before you ever parse the URL.</p>
+              <p><strong>Sentence transformers</strong> map raw text into a 384-dim vector encoding semantic meaning. Add cosine similarity to a centroid of known-malicious description embeddings as a single new feature — or use the raw embedding dims via PCA, or test both alongside your existing features with MLflow.</p>
+
+              <div class="connect">
+                ↳ CONNECTS TO §C-03 BUILD — log the embedding-augmented run alongside your baseline in MLflow and compare AUC + F1 directly in the UI. <a href="topics/embeddings.html">topics/embeddings →</a>
+              </div>
+            </div>
+
+            <div class="code">
+              <div class="code-head">
+                <span class="lang">python · description_embed.py</span>
+                <span class="id">// FIG C-05-α</span>
+              </div>
+<pre><span class="k">from</span> sentence_transformers <span class="k">import</span> SentenceTransformer
+<span class="k">from</span> sklearn.metrics.pairwise <span class="k">import</span> cosine_similarity
+
+model = <span class="f">SentenceTransformer</span>(<span class="s">"all-MiniLM-L6-v2"</span>)  <span class="c"># 384-dim, fast</span>
+
+descriptions = [
+    <span class="s">"Join the team for our Q2 planning session — Google Meet link inside"</span>,
+    <span class="s">"Confirm your attendance: http://quarterly-sync.xyz/rsvp?token=abc"</span>,
+]
+embeddings = model.encode(descriptions)   <span class="c"># shape: (n, 384)</span>
+
+<span class="c"># Cosine similarity to a centroid of known-malicious embeddings</span>
+mal_centroid   = embeddings[labels == <span class="n">1</span>].mean(axis=<span class="n">0</span>, keepdims=<span class="n">True</span>)
+suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 · ONE READ -->
+    <section class="secblock reveal" id="oneread">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <span class="cmark bl"></span><span class="cmark br"></span>
+      <div class="secblock-num-display">06</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ C-06 · ONE READ</span>
+          <div class="ref">PINNED · LONG FORM · MARKTECHPOST</div>
+          <div class="secblock-topics">
+            <a class="topic-chip" href="topics/mlflow.html">MLflow</a>
+            <a class="topic-chip" href="topics/index.html">Deployment</a>
+          </div>
+        </div>
+        <h2>The one <em>worth opening.</em></h2>
+      </div>
+
+      <div class="oneread">
+        <div class="number">
+          <div class="big">01</div>
+          <div class="lbl">PINNED // ED #005</div>
+        </div>
+        <div class="content">
+          <h3><a href="https://www.marktechpost.com/2026/03/01/a-complete-end-to-end-coding-guide-to-mlflow-experiment-tracking-hyperparameter-optimization-model-evaluation-and-live-model-deployment/">End-to-End MLflow: <em>tracking → tuning → live deployment.</em></a></h3>
+          <p style="font-family: var(--mono); font-size: 14px; line-height: 1.75; color: var(--ink-2); max-width: 70ch;">
+            A complete, production-grade ML experimentation and deployment walkthrough in a single notebook: structured MLflow tracking server, Optuna hyperparameter search as tracked runs, evaluating the winner, Model Registry, REST endpoint. The exact progression you'll work through with Calendra over the next month — baseline (this weekend) → Optuna (next edition's icebreaker) → registry → API.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CHEAT SHEETS ============== -->
+    <section class="panel" id="cheatsheets">
+      <span class="cmark" style="top:20px; left:-20px;"></span>
+      <span class="cmark tr" style="top:20px; right:-20px;"></span>
+
+      <div class="panel-head">
+        <span class="id">§ X · CHEAT SHEETS</span>
+        <h2>Always-on <em>references.</em></h2>
+        <span class="ts">1 LIVE · 3 ON DECK</span>
+        <span class="ref"><a href="cheatsheets/index.html">ALL CHEAT SHEETS →</a></span>
+      </div>
+
+      <div class="cs-grid">
+        <a class="cs-card featured" href="cheatsheets/jupyter-ml.html">
+          <div class="ix">// NEW · ED #005</div>
+          <h3>Jupyter <em>for ML.</em></h3>
+          <p class="blurb">42 opinions, sharply held — kernels, cell discipline, autoreload, MLflow integration, reproducibility, plotting, and the anti-patterns that quietly destroy your experiments.</p>
+          <div class="row">
+            <span>~ 14 MIN · LIVING DOC</span>
+            <span class="go">OPEN →</span>
+          </div>
+        </a>
+
+        <a class="cs-card coming" href="cheatsheets/index.html">
+          <div class="ix">// ON DECK · ED #006</div>
+          <h3>Scikit-learn <em>pipelines.</em></h3>
+          <p class="blurb">Why every project should ship as a Pipeline — preprocessing, ColumnTransformer, custom transformers, and the joblib gotchas.</p>
+          <div class="row"><span>QUEUED</span><span class="go">SOON →</span></div>
+        </a>
+
+        <a class="cs-card coming" href="cheatsheets/index.html">
+          <div class="ix">// ON DECK</div>
+          <h3>Pandas <em>for &gt;1GB.</em></h3>
+          <p class="blurb">When pandas slows down: dtypes, chunking, Polars, PyArrow — the cheat codes for tables that no longer fit in RAM.</p>
+          <div class="row"><span>QUEUED</span><span class="go">SOON →</span></div>
+        </a>
+
+        <a class="cs-card coming" href="cheatsheets/index.html">
+          <div class="ix">// ON DECK</div>
+          <h3>SHAP <em>recipes.</em></h3>
+          <p class="blurb">Explainer choice, force / waterfall / summary, interaction effects, drift detection — the practitioner's reach-for-it card.</p>
+          <div class="row"><span>QUEUED</span><span class="go">SOON →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ARCHIVE -->
+    <section class="panel" id="archive">
+      <span class="cmark" style="top:20px; left:-20px;"></span>
+      <span class="cmark tr" style="top:20px; right:-20px;"></span>
+
+      <div class="panel-head">
+        <span class="id">§ A · ARCHIVE</span>
+        <h2>Every edition <em>compounds.</em></h2>
+        <span class="ts">5 ISSUES · SINCE 03/2026</span>
+        <span class="ref">FULL TIMELINE →</span>
+      </div>
+
+      <div class="arch-strip">
+        <a class="arch">
+          <div class="num">001</div>
+          <div class="date">2026·03·21</div>
+          <div class="title">Cold Start</div>
+          <div class="topics"><span>SHAP</span><span>GBM</span></div>
+        </a>
+        <a class="arch">
+          <div class="num">002</div>
+          <div class="date">2026·03·27</div>
+          <div class="title">Drift &amp; Drag</div>
+          <div class="topics"><span>Drift</span><span>Embed</span></div>
+        </a>
+        <a class="arch">
+          <div class="num">003</div>
+          <div class="date">2026·04·04</div>
+          <div class="title">The Trace Layer</div>
+          <div class="topics"><span>Obs</span><span>Tools</span></div>
+        </a>
+        <a class="arch">
+          <div class="num">004</div>
+          <div class="date">2026·04·22</div>
+          <div class="title">Feature Forensics</div>
+          <div class="topics"><span>SHAP</span><span>Feat</span></div>
+        </a>
+        <a class="arch current">
+          <div class="num">005</div>
+          <div class="date">2026·05·27</div>
+          <div class="title"><em>Ultraviolet</em></div>
+          <div class="topics"><span>MLflow</span><span>Tools</span><span>Embed</span></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="foot">
+      <div class="foot-marquee" id="footMarquee">GRADIENT/<em>descent.</em></div>
+
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <p>A weekly ML reading-room for people who actually ship. Built in tandem with Calendra; the graph compounds with every edition.</p>
+        </div>
+        <div class="foot-col">
+          <h4>// Sections</h4>
+          <ul>
+            <li><a href="#signal">The Signal</a></li>
+            <li><a href="#concept">Concept → Code</a></li>
+            <li><a href="#build">This Week's Build</a></li>
+            <li><a href="#agent">Agent Brief</a></li>
+            <li><a href="#icebreaker">Icebreaker</a></li>
+            <li><a href="#oneread">One Read</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// Library</h4>
+          <ul>
+            <li><a href="topics/index.html">Topic graph</a></li>
+            <li><a href="projects/index.html">Build log</a></li>
+            <li><a href="cheatsheets/index.html">Cheat sheets</a></li>
+            <li><a href="directions.html">Design study</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// Editions</h4>
+          <ul>
+            <li>005 — Ultraviolet</li>
+            <li>004 — Feature Forensics</li>
+            <li>003 — Trace Layer</li>
+            <li>002 — Drift &amp; Drag</li>
+            <li>001 — Cold Start</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <span>BUILT FOR BUILDERS · NOT THEORISTS</span>
+        <span>GRADIENT-DESCENT · 005 · ULTRAVIOLET · REV 005-A</span>
+        <a href="directions.html">↳ DESIGN STUDY</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    // Kinetic hero — anchored left at rest, separates lines as cursor moves right,
+    // sweeps left together on scroll.
+    const kinetic = document.getElementById('kinetic');
+    const l1 = kinetic.querySelector('.l1');
+    const l2 = kinetic.querySelector('.l2');
+    const footMarquee = document.getElementById('footMarquee');
+    let scrollY = 0, mouseX = 0, tMouseX = 0;
+
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+    window.addEventListener('mousemove', e => {
+      // 0 at left edge → 1 at right edge. Clamped, positive-only.
+      tMouseX = Math.max(0, Math.min(1, e.clientX / innerWidth));
+    });
+    window.addEventListener('mouseleave', () => { tMouseX = 0; });
+
+    function tick() {
+      // Ease mouse position so the stagger feels analog, not snappy
+      mouseX += (tMouseX - mouseX) * 0.12;
+
+      // Scroll always pushes left (never right). Both lines move together with scroll.
+      const scrollPush = scrollY * -0.18;
+
+      // Mouse-driven separation. L2 (DESCENt.) pulls right faster than L1 — they stagger.
+      const l1Push = mouseX * 22;
+      const l2Push = mouseX * 88;
+
+      l1.style.transform = `translateX(${scrollPush + l1Push}px)`;
+      l2.style.transform = `translateX(${scrollPush + l2Push}px)`;
+
+      if (footMarquee) footMarquee.style.transform = `translateX(${scrollY * 0.06 - 100}px)`;
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    // Reveal on scroll
+    const obs = new IntersectionObserver(es => {
+      es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // Active nav highlighting
+    const links = document.querySelectorAll('.nav-links a[href^="#"]');
+    const sections = [...document.querySelectorAll('section[id], main[id]')];
+    const navObs = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (e.isIntersecting) {
+          const id = e.target.id;
+          links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    sections.forEach(s => navObs.observe(s));
+  </script>
+</body>
+</html>
