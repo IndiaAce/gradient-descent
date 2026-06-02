@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What's New — Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="system.css">
+  <style>
+    .ix-hero { padding: 70px 0 60px; border-bottom: 2px solid var(--ink); }
+    .ix-hero .crumbs { margin-bottom: 32px; }
+    .ix-hero h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(80px, 13vw, 220px);
+      line-height: 0.84; letter-spacing: -0.05em;
+      margin-bottom: 32px;
+    }
+    .ix-hero h1 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .ix-hero .deck {
+      font-family: var(--mono); font-size: 17px; line-height: 1.55;
+      color: var(--ink-2); max-width: 70ch; margin-bottom: 36px;
+    }
+    .ix-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    /* edition group */
+    .ed-group { border-top: 2px solid var(--ink); }
+    .ed-group:last-child { border-bottom: 2px solid var(--ink); }
+    .ed-group-head {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      align-items: baseline;
+      gap: 24px;
+      padding: 26px 4px 22px;
+    }
+    .ed-group-head .num {
+      font-family: var(--display); font-weight: 800;
+      font-size: 56px; letter-spacing: -0.04em; line-height: 0.8;
+      color: var(--ink);
+    }
+    .ed-group-head .num em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .ed-group.latest .num { color: var(--hot); }
+    .ed-group-head .meta { font-family: var(--mono); font-size: 14px; color: var(--ink-2); }
+    .ed-group-head .meta .cn { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -0.01em; color: var(--ink); display: block; margin-bottom: 4px; }
+    .ed-group-head .meta .cn em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+    .ed-group-head .date {
+      font-family: var(--depmono); font-size: 11px; letter-spacing: 0.18em;
+      color: var(--dim); text-transform: uppercase; text-align: right; white-space: nowrap;
+    }
+    .ed-group-head .date a { color: var(--hot); }
+    .ed-group-head .date .live {
+      display: inline-block; margin-top: 6px; padding: 2px 8px;
+      background: var(--hot); color: var(--paper);
+      font-size: 9.5px; letter-spacing: 0.2em;
+    }
+
+    /* entry rows */
+    .entry {
+      display: grid;
+      grid-template-columns: 40px 130px 1fr auto;
+      gap: 20px;
+      align-items: center;
+      padding: 16px 4px;
+      border-top: 1px solid var(--line);
+      color: inherit;
+      transition: background 0.15s;
+    }
+    a.entry:hover { background: var(--paper-2); }
+    .entry .glyph {
+      font-family: var(--display); font-weight: 800; font-size: 24px;
+      line-height: 1; text-align: center;
+    }
+    .entry .glyph.add { color: var(--hot); }
+    .entry .glyph.blue { color: var(--blue); }
+    .entry .glyph.upd { color: var(--dim); }
+    .entry .glyph.ship { color: var(--green); }
+    .entry .glyph.star { color: var(--ink); }
+    .entry .pill {
+      font-family: var(--depmono); font-size: 9px; letter-spacing: 0.16em;
+      text-transform: uppercase; padding: 4px 8px;
+      border: 1px solid var(--line-strong); color: var(--dim);
+      justify-self: start; white-space: nowrap;
+    }
+    .entry .pill.add  { color: var(--hot);  border-color: var(--hot); }
+    .entry .pill.blue { color: var(--blue); border-color: var(--blue); }
+    .entry .pill.ship { color: var(--green); border-color: var(--green); }
+    .entry .pill.star { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+    .entry .body { font-family: var(--mono); font-size: 14px; line-height: 1.4; color: var(--ink); }
+    .entry .body .lbl { font-weight: 500; }
+    .entry .body .det { color: var(--ink-2); font-size: 12.5px; display: block; margin-top: 3px; }
+    .entry .go {
+      font-family: var(--depmono); font-size: 10px; letter-spacing: 0.18em;
+      color: var(--hot); text-transform: uppercase; text-align: right; white-space: nowrap;
+    }
+    .entry.nolink .go { color: var(--dim); }
+
+    @media (max-width: 720px) {
+      .ix-hero { padding: 36px 0 40px; }
+      .ix-hero h1 { font-size: clamp(52px, 17vw, 92px); margin-bottom: 22px; line-height: 0.88; }
+      .ix-hero .deck { font-size: 14px; margin-bottom: 26px; }
+
+      .ed-group-head { grid-template-columns: 64px 1fr; grid-template-areas: "num meta" "num date"; gap: 6px 16px; padding: 20px 2px 16px; }
+      .ed-group-head .num { grid-area: num; font-size: 34px; }
+      .ed-group-head .meta { grid-area: meta; font-size: 12.5px; }
+      .ed-group-head .meta .cn { font-size: 18px; }
+      .ed-group-head .date { grid-area: date; text-align: left; font-size: 9.5px; }
+
+      .entry { grid-template-columns: 28px 1fr; grid-template-areas: "glyph pill" "glyph body" "glyph go"; gap: 4px 12px; padding: 14px 2px; }
+      .entry .glyph { grid-area: glyph; font-size: 18px; align-self: start; margin-top: 2px; }
+      .entry .pill { grid-area: pill; }
+      .entry .body { grid-area: body; font-size: 13px; }
+      .entry .body .det { font-size: 11.5px; }
+      .entry .go { grid-area: go; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-NEW</span>
+        <a href="index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="index.html#latest">latest</a>
+        <a href="projects/index.html">build-log</a>
+        <a href="topics/index.html">topic-graph</a>
+        <a href="cheatsheets/index.html">cheatsheets</a>
+        <a href="whats-new.html" class="active">what's new</a>
+        <a href="index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// CHANGELOG</span>
+        <span style="color: var(--ink);" id="navCount">—</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <section class="ix-hero">
+      <div class="crumbs">
+        <a href="index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <span>what's new</span>
+      </div>
+
+      <h1>What's <em>new.</em></h1>
+
+      <p class="deck">Everything added since the last time you looked — new topics, cheat sheets, code patterns, features, roadmap moves, shipped work — newest first, grouped by edition. The site compounds; this is the <em>diff.</em></p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">// LATEST</div><div class="v" id="kpiLatest">—</div><div class="delta" id="kpiLatestName">—</div></div>
+        <div class="kpi"><div class="lbl">// EDITIONS</div><div class="v" id="kpiEditions">—</div><div class="delta">tracked</div></div>
+        <div class="kpi"><div class="lbl">// ADDITIONS</div><div class="v" id="kpiTotal">—</div><div class="delta">all-time</div></div>
+        <div class="kpi"><div class="lbl">// THIS EDITION</div><div class="v" id="kpiThis">—</div><div class="delta">changes</div></div>
+      </div>
+    </section>
+
+    <section class="panel" style="border:0; padding-top:8px;">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="panel-head" style="margin-bottom:8px;">
+        <span class="id">§ Δ · CHANGELOG</span>
+        <h2>The running <em>diff.</em></h2>
+        <span class="ts">NEWEST FIRST</span>
+        <span class="ref"><a href="index.html#latest">CURRENT EDITION →</a></span>
+      </div>
+
+      <div id="feed"><!-- rendered from #changelog below --></div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-marquee">what's/<em>new.</em></div>
+      <div class="foot-grid">
+        <div class="foot-brand"><p>A compounding site needs a changelog. Every edition prepends its additions here — so you never have to hunt for what moved.</p></div>
+        <div class="foot-col"><h4>// Library</h4><ul><li><a href="index.html">Latest edition</a></li><li><a href="topics/index.html">Topic graph</a></li><li><a href="projects/index.html">Build log</a></li><li><a href="cheatsheets/index.html">Cheat sheets</a></li></ul></div>
+        <div class="foot-col"><h4>// Legend</h4><ul><li>+ new topic / sheet</li><li>+ code pattern / feature</li><li>~ updated · ✓ shipped</li></ul></div>
+        <div class="foot-col"><h4>// Source</h4><ul><li>.data/changelog.json</li><li>auto-updated per edition</li><li>rendered client-side</li></ul></div>
+      </div>
+      <div class="foot-bottom"><span>CHANGELOG · GROWS WITH EDITIONS</span><span>GD/NEW · WHAT'S NEW</span><a href="index.html">↳ BACK TO LATEST</a></div>
+    </footer>
+
+  </main>
+
+  <!-- ════ SOURCE OF TRUTH (mirror of .data/changelog.json — kept in sync by the ml-digest skill) ════ -->
+  <script id="changelog" type="application/json">
+{
+  "editions": [
+    {
+      "edition": "006", "codename": "Composite", "date": "2026-06-02", "url": "index.html",
+      "entries": [
+        { "type": "new-topic", "label": "Pipelines", "detail": "Leak-free ColumnTransformer + Pipeline — one deployable object", "url": "topics/pipelines.html" },
+        { "type": "new-topic", "label": "Prompt Chaining", "detail": "Agent ladder cycle 1/7 — self-correction chains", "url": "topics/prompt-chaining.html" },
+        { "type": "new-sheet", "label": "Scikit-learn pipelines", "detail": "24 recipes · 6 sections · the leakage traps", "url": "cheatsheets/sklearn-pipelines.html" },
+        { "type": "code-pattern", "label": "Optuna as child runs", "detail": "Pattern 04 on the MLflow topic page", "url": "topics/mlflow.html" },
+        { "type": "code-pattern", "label": "step__param tuning", "detail": "Pattern 03 on the Pipelines topic page", "url": "topics/pipelines.html" },
+        { "type": "feature", "label": "calendra_pipeline.joblib", "detail": "Single artifact supersedes the v4.1 blob", "url": "projects/calendra-gbm.html" },
+        { "type": "roadmap", "label": "GBM roadmap: Pipeline + Optuna now current", "detail": "Steps 1–2 (MLflow) shipped; step 3 Optuna in flight", "url": "projects/calendra-gbm.html" },
+        { "type": "updated", "label": "MLflow topic", "detail": "Optuna appearance, pattern 04, roadmap advanced", "url": "topics/mlflow.html" }
+      ]
+    },
+    {
+      "edition": "005", "codename": "Ultraviolet", "date": "2026-05-27", "url": "editions/005.html",
+      "entries": [
+        { "type": "new-topic", "label": "MLflow", "detail": "Experiment tracking — the spine of every Calendra run", "url": "topics/mlflow.html" },
+        { "type": "new-sheet", "label": "Jupyter for ML", "detail": "42 recipes · 8 sections", "url": "cheatsheets/jupyter-ml.html" },
+        { "type": "code-pattern", "label": "MLflow baseline · sweep · feature A/B", "detail": "Patterns 01–03 on the MLflow topic page", "url": "topics/mlflow.html" },
+        { "type": "feature", "label": "desc_embed_sim", "detail": "Description-embedding feature spec'd (icebreaker #1)", "url": "projects/calendra-gbm.html" },
+        { "type": "shipped", "label": "GBM: MLflow tracking", "detail": "Baseline experiment tracking landed", "url": "projects/calendra-gbm.html" }
+      ]
+    },
+    {
+      "edition": "004", "codename": "Feature Forensics", "date": "2026-04-22", "url": null,
+      "entries": [
+        { "type": "updated", "label": "SHAP", "detail": "Deepened to interaction effects + feature forensics", "url": "topics/index.html" },
+        { "type": "updated", "label": "Features", "detail": "Feature-level analysis of the GBM", "url": "topics/index.html" }
+      ]
+    },
+    {
+      "edition": "003", "codename": "The Trace Layer", "date": "2026-04-04", "url": null,
+      "entries": [
+        { "type": "new-topic", "label": "Tool Use", "detail": "Anthropic SDK function-dispatch loop introduced", "url": "topics/tool-use.html" },
+        { "type": "updated", "label": "Observability", "detail": "Agent trace layer", "url": "topics/index.html" }
+      ]
+    },
+    {
+      "edition": "002", "codename": "Drift & Drag", "date": "2026-03-27", "url": null,
+      "entries": [
+        { "type": "new-topic", "label": "Embeddings", "detail": "Sentence transformers as a feature axis", "url": "topics/embeddings.html" },
+        { "type": "new-topic", "label": "Drift", "detail": "Data drift detection introduced", "url": "topics/index.html" }
+      ]
+    },
+    {
+      "edition": "001", "codename": "Cold Start", "date": "2026-03-21", "url": null,
+      "entries": [
+        { "type": "new-edition", "label": "GRADIENT DESCENT launches", "detail": "Established the GBM baseline + SHAP", "url": null },
+        { "type": "new-topic", "label": "SHAP", "detail": "Explainability anchor topic", "url": "topics/index.html" },
+        { "type": "new-topic", "label": "GBM", "detail": "The Calendra classifier", "url": "topics/index.html" }
+      ]
+    }
+  ]
+}
+  </script>
+
+  <script>
+    // Type taxonomy: glyph char, glyph color class, pill class, pill label
+    const TYPES = {
+      "new-edition": { g: "★", gc: "star", pc: "star", t: "edition" },
+      "new-topic":   { g: "+",      gc: "add",  pc: "add",  t: "new topic" },
+      "new-sheet":   { g: "+",      gc: "add",  pc: "add",  t: "new sheet" },
+      "code-pattern":{ g: "+",      gc: "blue", pc: "blue", t: "code pattern" },
+      "feature":     { g: "+",      gc: "blue", pc: "blue", t: "feature" },
+      "roadmap":     { g: "~",      gc: "upd",  pc: "",     t: "roadmap" },
+      "updated":     { g: "~",      gc: "upd",  pc: "",     t: "updated" },
+      "shipped":     { g: "✓", gc: "ship", pc: "ship", t: "shipped" }
+    };
+
+    const data = JSON.parse(document.getElementById("changelog").textContent);
+    const eds = data.editions || [];
+    const feed = document.getElementById("feed");
+    const esc = s => (s == null ? "" : String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])));
+
+    let total = 0;
+    eds.forEach((ed, i) => {
+      total += (ed.entries || []).length;
+      const group = document.createElement("section");
+      group.className = "ed-group" + (i === 0 ? " latest" : "");
+
+      const isoToDot = (ed.date || "").replace(/-/g, "·");
+      const edLink = ed.url ? `<a href="${esc(ed.url)}">view →</a>` : "no snapshot";
+      const liveTag = i === 0 ? `<span class="live">LIVE</span>` : "";
+
+      let rows = `
+        <div class="ed-group-head">
+          <div class="num">${esc(ed.edition)}${i === 0 ? "<em>.</em>" : ""}</div>
+          <div class="meta"><span class="cn">${esc(ed.codename)}</span>${(ed.entries||[]).length} change${(ed.entries||[]).length === 1 ? "" : "s"} this edition</div>
+          <div class="date">${esc(isoToDot)}<br>${edLink}<br>${liveTag}</div>
+        </div>`;
+
+      (ed.entries || []).forEach(en => {
+        const ty = TYPES[en.type] || { g: "·", gc: "upd", pc: "", t: en.type };
+        const tag = i === 0 ? "a" : (en.url ? "a" : "div");
+        const href = en.url ? ` href="${esc(en.url)}"` : "";
+        const isLink = !!en.url;
+        rows += `
+        <${tag} class="entry${isLink ? "" : " nolink"}"${isLink ? href : ""}>
+          <div class="glyph ${ty.gc}">${ty.g}</div>
+          <div class="pill ${ty.pc}">${esc(ty.t)}</div>
+          <div class="body"><span class="lbl">${esc(en.label)}</span>${en.detail ? `<span class="det">${esc(en.detail)}</span>` : ""}</div>
+          <div class="go">${isLink ? "open →" : "—"}</div>
+        </${tag}>`;
+      });
+
+      group.innerHTML = rows;
+      feed.appendChild(group);
+    });
+
+    // KPIs + nav count
+    if (eds.length) {
+      document.getElementById("kpiLatest").textContent = "#" + eds[0].edition;
+      document.getElementById("kpiLatestName").textContent = eds[0].codename;
+      document.getElementById("kpiEditions").textContent = eds.length;
+      document.getElementById("kpiTotal").textContent = total;
+      document.getElementById("kpiThis").textContent = (eds[0].entries || []).length;
+      document.getElementById("navCount").textContent = total + " ADDS";
+    }
+  </script>
+</body>
+</html>

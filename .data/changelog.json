@@ -1,0 +1,75 @@
+{
+  "_comment": "Source of truth for the What's New feed (whats-new.html). The ml-digest skill PREPENDS each new edition's block here AND mirrors it into the inline <script id='changelog'> block in whats-new.html. Newest edition first. Entry types: new-edition, new-topic, new-sheet, code-pattern, feature, roadmap, updated, shipped.",
+  "editions": [
+    {
+      "edition": "006",
+      "codename": "Composite",
+      "date": "2026-06-02",
+      "url": "index.html",
+      "entries": [
+        { "type": "new-topic", "label": "Pipelines", "detail": "Leak-free ColumnTransformer + Pipeline — one deployable object", "url": "topics/pipelines.html" },
+        { "type": "new-topic", "label": "Prompt Chaining", "detail": "Agent ladder cycle 1/7 — self-correction chains", "url": "topics/prompt-chaining.html" },
+        { "type": "new-sheet", "label": "Scikit-learn pipelines", "detail": "24 recipes · 6 sections · the leakage traps", "url": "cheatsheets/sklearn-pipelines.html" },
+        { "type": "code-pattern", "label": "Optuna as child runs", "detail": "Pattern 04 on the MLflow topic page", "url": "topics/mlflow.html" },
+        { "type": "code-pattern", "label": "step__param tuning", "detail": "Pattern 03 on the Pipelines topic page", "url": "topics/pipelines.html" },
+        { "type": "feature", "label": "calendra_pipeline.joblib", "detail": "Single artifact supersedes the v4.1 blob", "url": "projects/calendra-gbm.html" },
+        { "type": "roadmap", "label": "GBM roadmap: Pipeline + Optuna now current", "detail": "Steps 1–2 (MLflow) shipped; step 3 Optuna in flight", "url": "projects/calendra-gbm.html" },
+        { "type": "updated", "label": "MLflow topic", "detail": "Optuna appearance, pattern 04, roadmap advanced", "url": "topics/mlflow.html" }
+      ]
+    },
+    {
+      "edition": "005",
+      "codename": "Ultraviolet",
+      "date": "2026-05-27",
+      "url": "editions/005.html",
+      "entries": [
+        { "type": "new-topic", "label": "MLflow", "detail": "Experiment tracking — the spine of every Calendra run", "url": "topics/mlflow.html" },
+        { "type": "new-sheet", "label": "Jupyter for ML", "detail": "42 recipes · 8 sections", "url": "cheatsheets/jupyter-ml.html" },
+        { "type": "code-pattern", "label": "MLflow baseline · sweep · feature A/B", "detail": "Patterns 01–03 on the MLflow topic page", "url": "topics/mlflow.html" },
+        { "type": "feature", "label": "desc_embed_sim", "detail": "Description-embedding feature spec'd (icebreaker #1)", "url": "projects/calendra-gbm.html" },
+        { "type": "shipped", "label": "GBM: MLflow tracking", "detail": "Baseline experiment tracking landed", "url": "projects/calendra-gbm.html" }
+      ]
+    },
+    {
+      "edition": "004",
+      "codename": "Feature Forensics",
+      "date": "2026-04-22",
+      "url": null,
+      "entries": [
+        { "type": "updated", "label": "SHAP", "detail": "Deepened to interaction effects + feature forensics", "url": "topics/index.html" },
+        { "type": "updated", "label": "Features", "detail": "Feature-level analysis of the GBM", "url": "topics/index.html" }
+      ]
+    },
+    {
+      "edition": "003",
+      "codename": "The Trace Layer",
+      "date": "2026-04-04",
+      "url": null,
+      "entries": [
+        { "type": "new-topic", "label": "Tool Use", "detail": "Anthropic SDK function-dispatch loop introduced", "url": "topics/tool-use.html" },
+        { "type": "updated", "label": "Observability", "detail": "Agent trace layer", "url": "topics/index.html" }
+      ]
+    },
+    {
+      "edition": "002",
+      "codename": "Drift & Drag",
+      "date": "2026-03-27",
+      "url": null,
+      "entries": [
+        { "type": "new-topic", "label": "Embeddings", "detail": "Sentence transformers as a feature axis", "url": "topics/embeddings.html" },
+        { "type": "new-topic", "label": "Drift", "detail": "Data drift detection introduced", "url": "topics/index.html" }
+      ]
+    },
+    {
+      "edition": "001",
+      "codename": "Cold Start",
+      "date": "2026-03-21",
+      "url": null,
+      "entries": [
+        { "type": "new-edition", "label": "GRADIENT DESCENT launches", "detail": "Established the GBM baseline + SHAP", "url": null },
+        { "type": "new-topic", "label": "SHAP", "detail": "Explainability anchor topic", "url": "topics/index.html" },
+        { "type": "new-topic", "label": "GBM", "detail": "The Calendra classifier", "url": "topics/index.html" }
+      ]
+    }
+  ]
+}
