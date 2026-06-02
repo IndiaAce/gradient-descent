@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GRADIENT-DESCENT // 005 — Ultraviolet</title>
+  <title>GRADIENT-DESCENT // 006 — Composite</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -340,7 +340,7 @@
     .cs-card.coming h3 { opacity: 0.4; }
     .cs-card.coming .blurb { opacity: 0.4; }
     .cs-card.coming .row .go { color: var(--dim); }
-  
+
     @media (max-width: 720px) {
       .hero { padding: 40px 0 36px; }
       .hero-meta-row {
@@ -404,7 +404,7 @@
   <nav class="top">
     <div class="nav-inner">
       <div class="nav-brand">
-        <span class="hash">GD-005</span>
+        <span class="hash">GD-006</span>
         <a href="index.html">GRADIENT/DESCENT</a>
       </div>
       <div class="nav-links">
@@ -416,8 +416,8 @@
       </div>
       <div class="nav-meta">
         <span class="live">LIVE</span>
-        <span>2026·05·27</span>
-        <span style="color: var(--ink);">REV 005-A</span>
+        <span>2026·06·02</span>
+        <span style="color: var(--ink);">REV 006-A</span>
       </div>
     </div>
   </nav>
@@ -430,11 +430,11 @@
       <span class="cmark tr" style="top:8px; right:-20px;"></span>
 
       <div class="hero-meta-row">
-        <div class="cell hot"><strong>№005</strong>edition</div>
-        <div class="cell"><strong>2026·05·27</strong>publish date</div>
-        <div class="cell"><strong>ULTRAVIOLET</strong>codename</div>
-        <div class="cell"><strong>~7 min</strong>read time</div>
-        <div class="cell"><strong>6 / 1 / 3</strong>secs / topics-new / in-flight</div>
+        <div class="cell hot"><strong>№006</strong>edition</div>
+        <div class="cell"><strong>2026·06·02</strong>publish date</div>
+        <div class="cell"><strong>COMPOSITE</strong>codename</div>
+        <div class="cell"><strong>~8 min</strong>read time</div>
+        <div class="cell"><strong>6 / 2 / 3</strong>secs / topics-new / in-flight</div>
       </div>
 
       <div class="hero-display" id="kinetic">
@@ -445,15 +445,15 @@
       <div class="hero-deck">
         <div class="col">
           <h4>// THE LEAD</h4>
-          <p><a href="topics/mlflow.html"><strong>MLflow</strong></a> becomes the spine of every Calendra experiment this week — the loop that finally turns ad-hoc notebook runs into something you can <em>diff</em>.</p>
+          <p><a href="topics/pipelines.html"><strong>Pipelines + ColumnTransformer</strong></a> turn Calendra's preprocessing into a single leak-free object — one <code class="inline">.joblib</code> that <em>carries its own scaler</em> from train to inference.</p>
         </div>
         <div class="col">
           <h4>// ONE LEVEL UP</h4>
-          <p><a href="topics/embeddings.html"><strong>Sentence transformers</strong></a> open a new feature axis on the ICS description field. A 384-dim vector that catches what <code class="inline">url_count</code> misses.</p>
+          <p><a href="topics/mlflow.html"><strong>Optuna</strong></a> searches over that whole pipeline — every trial a tracked <em>MLflow run</em>, the best config locked as v5.0. Picks up the thread #005 promised.</p>
         </div>
         <div class="col">
           <h4>// AGENT LOOP</h4>
-          <p>Anthropic's <a href="topics/tool-use.html"><strong>tool-use</strong></a> loop, drawn out so the GBM can <em>explain itself</em> — verdict JSON in, three-sentence threat report out.</p>
+          <p><a href="topics/prompt-chaining.html"><strong>Prompt chaining</strong></a> — a SHAP attribution becomes a draft, the draft gets <em>critiqued</em>, the critique rewrites it tighter. Three small calls beat one big one.</p>
         </div>
       </div>
     </section>
@@ -466,7 +466,7 @@
       <div class="panel-head">
         <span class="id">§ B · BUILD LOG</span>
         <h2>What's <em>actually</em> on the bench.</h2>
-        <span class="ts">SYNCED 14:32 UTC</span>
+        <span class="ts">SYNCED 13:08 UTC</span>
         <span class="ref"><a href="projects/index.html">ALL PROJECTS →</a></span>
       </div>
 
@@ -478,19 +478,19 @@
         <a class="buildlog-row" href="projects/calendra-gbm.html">
           <span class="idx">B-01</span>
           <div class="name">Calendra · <em>GBM</em></div>
-          <div class="next-line">Add <b>MLflow tracking</b> · §C-02 this weekend</div>
+          <div class="next-line">Wrap as <b>Pipeline</b> + <b>Optuna</b> · §C-02 / §C-05</div>
           <span class="status training">TRAINING</span>
-          <div class="barwrap"><span>72%</span><div class="bar"><i style="width:72%"></i></div></div>
+          <div class="barwrap"><span>78%</span><div class="bar"><i style="width:78%"></i></div></div>
           <div class="metrics"><span>AUC</span> 0.978 · <span>F1</span> 0.954</div>
-          <div class="touch">2 days ago</div>
+          <div class="touch">today</div>
         </a>
 
-        <a class="buildlog-row" href="projects/index.html">
+        <a class="buildlog-row" href="projects/calendra-gbm.html">
           <span class="idx">B-02</span>
           <div class="name">Description <em>embeddings</em></div>
-          <div class="next-line">Test <b>all-MiniLM-L6-v2</b> · §C-05 icebreaker</div>
+          <div class="next-line">Slot into <b>ColumnTransformer</b> as a text branch</div>
           <span class="status experiment">EXPERIMENT</span>
-          <div class="barwrap"><span>18%</span><div class="bar"><i style="width:18%"></i></div></div>
+          <div class="barwrap"><span>22%</span><div class="bar"><i style="width:22%"></i></div></div>
           <div class="metrics"><span>DIMS</span> 384 · <span>L2</span> queued</div>
           <div class="touch">spec draft</div>
         </a>
@@ -498,11 +498,11 @@
         <a class="buildlog-row" href="projects/index.html">
           <span class="idx">B-03</span>
           <div class="name">Workshop <em>trace</em> layer</div>
-          <div class="next-line">Wire into <b>tool-use agent</b> · §C-04</div>
+          <div class="next-line">Wrap the <b>prompt chain</b> · §C-04</div>
           <span class="status evaluating">EVALUATING</span>
-          <div class="barwrap"><span>35%</span><div class="bar"><i style="width:35%"></i></div></div>
+          <div class="barwrap"><span>40%</span><div class="bar"><i style="width:40%"></i></div></div>
           <div class="metrics"><span>PORT</span> :5899 · <span>STORE</span> SQLite</div>
-          <div class="touch">5 days ago</div>
+          <div class="touch">8 days ago</div>
         </a>
       </div>
     </section>
@@ -515,50 +515,50 @@
       <div class="panel-head">
         <span class="id">§ K · TOPIC GRAPH</span>
         <h2>Compounding <em>knowledge.</em></h2>
-        <span class="ts">8 NODES · 14 EDGES</span>
+        <span class="ts">10 NODES · 19 EDGES</span>
         <span class="ref"><a href="topics/index.html">ALL TOPICS →</a></span>
       </div>
 
       <div class="topic-grid">
-        <a class="topic-cell current" href="topics/mlflow.html">
-          <div class="num">// NEW · ED #005</div>
-          <h3>MLflow</h3>
+        <a class="topic-cell current" href="topics/pipelines.html">
+          <div class="num">// NEW · ED #006</div>
+          <h3>Pipelines</h3>
           <div class="meta"><span>1 ED</span><span>ANCHOR-CANDIDATE</span></div>
+        </a>
+        <a class="topic-cell current" href="topics/prompt-chaining.html">
+          <div class="num">// NEW · ED #006</div>
+          <h3>Prompt Chaining</h3>
+          <div class="meta"><span>1 ED</span><span>L3</span></div>
+        </a>
+        <a class="topic-cell current" href="topics/mlflow.html">
+          <div class="num">// ACTIVE · ED #006</div>
+          <h3>MLflow</h3>
+          <div class="meta"><span>2 ED</span><span>+ Optuna</span></div>
         </a>
         <a class="topic-cell" href="topics/index.html">
           <div class="num">// ANCHOR</div>
           <h3>SHAP</h3>
-          <div class="meta"><span>3 ED</span><span>2 NEW EDGES</span></div>
+          <div class="meta"><span>3 ED</span><span>chain input</span></div>
         </a>
-        <a class="topic-cell current" href="topics/tool-use.html">
-          <div class="num">// ACTIVE · ED #005</div>
-          <h3>Tool Use</h3>
-          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
-        </a>
-        <a class="topic-cell current" href="topics/embeddings.html">
-          <div class="num">// ACTIVE · ED #005</div>
-          <h3>Embeddings</h3>
-          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
-        </a>
-        <a class="topic-cell" href="topics/index.html">
-          <div class="num">// RECURRING</div>
-          <h3>Observability</h3>
-          <div class="meta"><span>2 ED</span><span>—</span></div>
-        </a>
-        <a class="topic-cell" href="topics/index.html">
-          <div class="num">// RECURRING</div>
+        <a class="topic-cell current" href="topics/index.html">
+          <div class="num">// RECURRING · ED #006</div>
           <h3>GBM</h3>
-          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
+          <div class="meta"><span>3 ED</span><span>+1 EDGE</span></div>
         </a>
-        <a class="topic-cell" href="topics/index.html">
-          <div class="num">// DORMANT 30d</div>
-          <h3>Drift</h3>
+        <a class="topic-cell current" href="topics/index.html">
+          <div class="num">// RECURRING · ED #006</div>
+          <h3>Features</h3>
+          <div class="meta"><span>3 ED</span><span>+1 EDGE</span></div>
+        </a>
+        <a class="topic-cell" href="topics/tool-use.html">
+          <div class="num">// DORMANT</div>
+          <h3>Tool Use</h3>
           <div class="meta"><span>2 ED</span><span>radar</span></div>
         </a>
-        <a class="topic-cell" href="topics/index.html">
-          <div class="num">// RECURRING</div>
-          <h3>Features</h3>
-          <div class="meta"><span>2 ED</span><span>+1 EDGE</span></div>
+        <a class="topic-cell" href="topics/embeddings.html">
+          <div class="num">// DORMANT</div>
+          <h3>Embeddings</h3>
+          <div class="meta"><span>2 ED</span><span>queued</span></div>
         </a>
       </div>
     </section>
@@ -574,11 +574,11 @@
       <div class="secblock-head">
         <div class="secblock-meta">
           <span class="id">§ C-01 · THE SIGNAL</span>
-          <div class="ref">3 ITEMS · WEEK 21 · REF: VB / MTP / ARXIV</div>
+          <div class="ref">3 ITEMS · WEEK 23 · REF: SKLEARN / MLFLOW / ANTHROPIC</div>
           <div class="secblock-topics">
-            <a class="topic-chip" href="topics/index.html">Observability</a>
-            <a class="topic-chip" href="topics/index.html">SHAP</a>
-            <a class="topic-chip" href="topics/embeddings.html">Embeddings</a>
+            <a class="topic-chip" href="topics/pipelines.html">Pipelines</a>
+            <a class="topic-chip" href="topics/mlflow.html">MLflow</a>
+            <a class="topic-chip" href="topics/prompt-chaining.html">LLM Eng</a>
           </div>
         </div>
         <h2>Three things <em>worth</em> stopping for.</h2>
@@ -587,34 +587,34 @@
       <div class="signal-sheet">
         <article class="signal-cell">
           <div class="ix">// item i · S-01-A</div>
-          <h3>Raindrop <em>Workshop:</em> local debugger for AI agents.</h3>
-          <div class="meta-line">VENTUREBEAT · MAY 14 · MIT · OPEN SOURCE</div>
-          <p>Raindrop AI dropped <strong>Workshop</strong> — a local daemon that streams every token, tool call, and decision from your AI agent into a single SQLite file and serves a dashboard at <code class="inline">localhost:5899</code>. Zero code changes — an env var hooks Anthropic, OpenAI, LangChain, LlamaIndex, CrewAI automatically.</p>
+          <h3>scikit-learn <em>1.8:</em> GPU arrays + no-GIL.</h3>
+          <div class="meta-line">SCIKIT-LEARN.ORG · MAY 2026 · RELEASE</div>
+          <p>The Array API rollout matures: <strong>StandardScaler</strong>, <code class="inline">PolynomialFeatures</code>, and several Ridge estimators now accept PyTorch and CuPy arrays directly — preprocessing can run on a <em>GPU</em> without leaving sklearn. Plus official support for free-threaded CPython 3.14, so cross-validation folds can actually run in parallel threads. Your pipeline gets faster for free.</p>
           <div class="ftr">
-            <a href="https://venturebeat.com/technology/developers-can-now-debug-and-evaluate-ai-agents-locally-with-raindrops-open-source-tool-workshop" class="read">VENTUREBEAT →</a>
-            <div class="tags"><span class="tag">MIT</span><span class="tag">TRACE</span></div>
+            <a href="https://scikit-learn.org/stable/auto_examples/release_highlights/plot_release_highlights_1_8_0.html" class="read">SKLEARN →</a>
+            <div class="tags"><span class="tag">ARRAY-API</span><span class="tag">3.14</span></div>
           </div>
         </article>
 
         <article class="signal-cell">
           <div class="ix">// item ii · S-01-B</div>
-          <h3>Advanced <em>SHAP:</em> drift, interactions, maskers.</h3>
-          <div class="meta-line">MARKTECHPOST · MAY 17 · CODING GUIDE</div>
-          <p>A code-first guide past force plots: <strong>SHAP-IQ</strong> for feature <em>interaction</em> effects, KS-tests on SHAP distributions to detect attribution drift, side-by-side TreeExplainer vs. KernelExplainer vs. PermutationExplainer. Tells you not just "inputs changed" but "the model's <em>reasoning</em> changed."</p>
+          <h3>MLflow <em>3.0</em> meets Optuna natively.</h3>
+          <div class="meta-line">MLFLOW.ORG · DOCS · TRADITIONAL-ML</div>
+          <p>MLflow 3.0 ships first-class Optuna integration: <strong>MlflowStorage</strong> lets Optuna use the tracking server as its study backend, and <code class="inline">MlflowSparkStudy</code> fans trials out across Spark executors. Each Optuna trial lands as a <em>child run</em> under one parent — the search tree becomes sortable, diffable history instead of a console scroll. This is exactly the loop in §C-05.</p>
           <div class="ftr">
-            <a href="https://www.marktechpost.com/2026/05/17/a-coding-guide-implementing-shap-explainability-workflows-with-explainer-comparisons-maskers-interactions-drift-and-black-box-models/" class="read">MARKTECHPOST →</a>
-            <div class="tags"><span class="tag">DRIFT</span><span class="tag">PYTHON</span></div>
+            <a href="https://mlflow.org/docs/latest/ml/traditional-ml/tutorials/hyperparameter-tuning/" class="read">MLFLOW →</a>
+            <div class="tags"><span class="tag">OPTUNA</span><span class="tag">CHILD-RUNS</span></div>
           </div>
         </article>
 
         <article class="signal-cell">
           <div class="ix">// item iii · S-01-C</div>
-          <h3>Sentence transformers <em>benchmarked</em> for attack-to-CVE.</h3>
-          <div class="meta-line">ARXIV 2602.22433 · L2 · ONE LEVEL AHEAD</div>
-          <p>14 models tested on mapping cyberattack descriptions to known CVEs. <em>multi-qa-mpnet-base-dot-v1</em> hit <strong>F1 = 89.0</strong>, precision 84.0, recall 94.7 on MITRE ATT&amp;CK. The finding: description text outperforms TTP summary labels — surrounding language carries more weight than structured tags.</p>
+          <h3>Claude <em>Opus 4.8</em> lands for agent work.</h3>
+          <div class="meta-line">ANTHROPIC · JUNE 2026 · L3 · MODEL DROP</div>
+          <p>Opus 4.8 posts <strong>88.6%</strong> on SWE-bench Verified and 74.6% on Terminal-Bench 2.1, with built-in parallel-subagent workflows and a 2.5x fast mode. For the prompt-chaining work in §C-04 the practical read: a stronger critique step at each link, and fast mode makes multi-call chains cheap enough to run inline on every detection verdict.</p>
           <div class="ftr">
-            <a href="https://arxiv.org/abs/2602.22433" class="read">ARXIV →</a>
-            <div class="tags"><span class="tag l2">L2 PULL</span></div>
+            <a href="https://llm-stats.com/llm-updates" class="read">LLM-STATS →</a>
+            <div class="tags"><span class="tag l2">L3</span></div>
           </div>
         </article>
       </div>
@@ -629,54 +629,56 @@
       <div class="secblock-head">
         <div class="secblock-meta">
           <span class="id">§ C-02 · CONCEPT → CODE</span>
-          <div class="ref">~ 7 MIN · L1 PYTHON · REF: MLflow 2.x</div>
+          <div class="ref">~ 7 MIN · L1 PYTHON · REF: sklearn 1.8</div>
           <div class="secblock-topics">
-            <a class="topic-chip" href="topics/mlflow.html">MLflow</a>
-            <a class="topic-chip" href="topics/mlflow.html">Tracking</a>
+            <a class="topic-chip" href="topics/pipelines.html">Pipelines</a>
+            <a class="topic-chip" href="topics/pipelines.html">ColumnTransformer</a>
             <a class="topic-chip" href="topics/index.html">GBM</a>
           </div>
         </div>
-        <h2>MLflow: <em>stop guessing,</em> start comparing.</h2>
+        <h2>Pipelines: <em>one object,</em> zero leakage.</h2>
       </div>
 
       <div class="twocol">
         <div>
-          <p>You have a working GBM hitting 98% accuracy. But which <code class="inline">n_estimators</code> got you there? What <code class="inline">max_depth</code> did you finally settle on? When you retrain on fresh labeled data next month, how will you know the new run is actually better — or just differently broken?</p>
-          <p>Without experiment tracking, model development is <em>archaeology</em> — reconstructing what past-you did from notebook cells and vague memory. <strong>MLflow fixes this.</strong> Every training run becomes a named, permanent record with its exact parameters, evaluation metrics, and saved model artifact.</p>
-          <p>The API surface you need is tiny: <code class="inline">set_experiment()</code> names the project, <code class="inline">start_run()</code> opens a record, three logging calls fill it in. Comparison views, registry, artifact browser — free.</p>
-          <p>Change one param, re-run with a different <code class="inline">run_name</code>, and the UI lets you diff them. That's the entire loop.</p>
+          <p>Right now Calendra's preprocessing probably lives as loose cells: scale these columns, one-hot those, then call <code class="inline">.fit()</code>. The bug hiding in that flow is <strong>data leakage</strong> — if you scale on the full dataset <em>before</em> splitting, your test fold has already peeked at the training set's statistics. Your reported AUC is optimistic fiction.</p>
+          <p>A <code class="inline">Pipeline</code> fixes this structurally. It chains preprocessing and model into one estimator. When cross-validation re-fits it on each fold, the scaler learns its means from <em>that fold's training rows only</em>. Leakage becomes impossible by construction, not by discipline.</p>
+          <p><code class="inline">ColumnTransformer</code> is the other half: different columns, different treatment. Numeric features get scaled; categorical TLDs and languages get one-hot encoded with <code class="inline">handle_unknown="ignore"</code> so an unseen <code class="inline">.zip</code> domain at inference produces all-zeros instead of a crash.</p>
+          <p>The payoff: the whole thing pickles as <em>one</em> <code class="inline">.joblib</code>. Preprocessing travels with the model — no separate scaler to version, lose, or mismatch at inference.</p>
 
           <div class="callout">
             <span class="lbl">// see also</span>
-            Full topic page on MLflow with every appearance across editions, the full code archive, and the roadmap of where it goes next — <a href="topics/mlflow.html">topics/mlflow →</a>
+            Full topic page on Pipelines — every appearance, the growing code archive, and the roadmap from baseline wrap to full feature-union — <a href="topics/pipelines.html">topics/pipelines →</a>
           </div>
         </div>
 
         <div class="code">
           <div class="code-head">
-            <span class="lang">python · baseline_gbm.py</span>
+            <span class="lang">python · leakproof_pipeline.py</span>
             <span class="id">// FIG C-02-α</span>
           </div>
-<pre><span class="k">import</span> mlflow
-<span class="k">import</span> mlflow.sklearn
+<pre><span class="k">from</span> sklearn.pipeline <span class="k">import</span> Pipeline
+<span class="k">from</span> sklearn.compose <span class="k">import</span> ColumnTransformer
+<span class="k">from</span> sklearn.preprocessing <span class="k">import</span> StandardScaler, OneHotEncoder
 <span class="k">from</span> sklearn.ensemble <span class="k">import</span> GradientBoostingClassifier
 <span class="k">from</span> sklearn.model_selection <span class="k">import</span> train_test_split
-<span class="k">from</span> sklearn.metrics <span class="k">import</span> roc_auc_score, f1_score
 
-params = {<span class="s">"n_estimators"</span>: <span class="n">100</span>, <span class="s">"max_depth"</span>: <span class="n">3</span>, <span class="s">"learning_rate"</span>: <span class="n">0.1</span>}
+numeric = [<span class="s">"url_count"</span>, <span class="s">"sender_domain_age"</span>, <span class="s">"content_len"</span>, <span class="s">"attendee_count"</span>]
+nominal = [<span class="s">"organizer_tld"</span>, <span class="s">"detected_language"</span>]
 
-mlflow.set_experiment(<span class="s">"calendra-gbm"</span>)
+pre = <span class="f">ColumnTransformer</span>([
+    (<span class="s">"num"</span>, <span class="f">StandardScaler</span>(), numeric),                       <span class="c"># scale on fold-train stats only</span>
+    (<span class="s">"cat"</span>, <span class="f">OneHotEncoder</span>(handle_unknown=<span class="s">"ignore"</span>), nominal), <span class="c"># unseen TLD -&gt; all-zeros</span>
+])
 
-<span class="k">with</span> mlflow.start_run(run_name=<span class="s">"baseline"</span>):
-    model = <span class="f">GradientBoostingClassifier</span>(**params, random_state=<span class="n">42</span>)
-    model.fit(X_train, y_train)
+pipe = <span class="f">Pipeline</span>([
+    (<span class="s">"pre"</span>, pre),                                          <span class="c"># preprocessing re-fit per fold</span>
+    (<span class="s">"gbm"</span>, <span class="f">GradientBoostingClassifier</span>(random_state=<span class="n">42</span>)),
+])
 
-    mlflow.log_params(params)
-    mlflow.log_metric(<span class="s">"auc_roc"</span>, roc_auc_score(y_test, model.predict_proba(X_test)[:, <span class="n">1</span>]))
-    mlflow.log_metric(<span class="s">"f1"</span>,      f1_score(y_test, model.predict(X_test)))
-    mlflow.sklearn.log_model(model, <span class="s">"model"</span>)
-
-<span class="c"># Now run:  mlflow ui  →  open localhost:5000</span></pre>
+X_tr, X_te, y_tr, y_te = <span class="f">train_test_split</span>(X, y, stratify=y, random_state=<span class="n">42</span>)
+pipe.fit(X_tr, y_tr)            <span class="c"># scaler learns means from X_tr ONLY</span>
+<span class="f">print</span>(pipe.score(X_te, y_te))  <span class="c"># one estimator: preprocessing + model, no leak</span></pre>
         </div>
       </div>
     </section>
@@ -690,67 +692,87 @@ mlflow.set_experiment(<span class="s">"calendra-gbm"</span>)
       <div class="secblock-head">
         <div class="secblock-meta">
           <span class="id">§ C-03 · THIS WEEK'S BUILD</span>
-          <div class="ref">SAT · ~ 90 MIN · DELIVERABLE: NOTEBOOK</div>
+          <div class="ref">SAT · ~ 90 MIN · DELIVERABLE: ONE .JOBLIB</div>
           <div class="secblock-topics">
-            <a class="topic-chip" href="topics/mlflow.html">MLflow</a>
+            <a class="topic-chip" href="topics/pipelines.html">Pipelines</a>
             <a class="topic-chip" href="topics/index.html">GBM</a>
           </div>
         </div>
-        <h2>GBM <em>experiment tracker.</em></h2>
+        <h2>Package Calendra as <em>one estimator.</em></h2>
       </div>
 
       <div class="build">
         <div class="build-band">
           <span class="diff">INTERMEDIATE</span>
-          <span>// DELIVERABLE: SWEEP_GBM.PY + MLFLOW UI · 3 TRACKED RUNS · LIVE DIFF</span>
-          <span>REV 005-A</span>
+          <span>// DELIVERABLE: BUILD_PIPELINE.PY · 5-FOLD CV · SINGLE JOBLIB ARTIFACT</span>
+          <span>REV 006-A</span>
         </div>
 
         <div class="build-body">
           <div class="twocol">
             <div class="prose">
               <h4>// WHAT YOU'LL BUILD</h4>
-              <p style="font-family:var(--mono); font-size:14px; line-height:1.7; color:var(--ink-2); max-width:60ch;">A repeatable GBM training pipeline that logs every run — parameters, AUC, F1, and the model artifact — to MLflow, so you can compare iterations visually and never lose a result.</p>
+              <p style="font-family:var(--mono); font-size:14px; line-height:1.7; color:var(--ink-2); max-width:60ch;">A single fittable <code class="inline">Pipeline</code> that bundles all of Calendra's preprocessing with the GBM, scores itself honestly with 5-fold cross-validation, and serializes to one <code class="inline">.joblib</code> you can reload and call without ever touching a scaler again.</p>
 
               <h4>// WHAT YOU'LL LEARN</h4>
               <ul>
-                <li>How MLflow organizes experiments, runs, parameters, metrics, artifacts</li>
-                <li>Sweep multiple hyperparameter configs in one script and diff them in the UI</li>
-                <li>Register a production-ready model version from the winning run</li>
+                <li>Wiring numeric + categorical branches into one <code class="inline">ColumnTransformer</code></li>
+                <li>Why <code class="inline">cross_val_score</code> on a Pipeline is the only honest number</li>
+                <li>Persisting preprocessing and model together so inference can't drift</li>
               </ul>
 
               <h4>// CALENDRA ANGLE</h4>
-              <p style="font-family:var(--mono); font-size:14px; line-height:1.7; color:var(--ink-2); max-width:60ch;">Open <code class="inline">model_training.ipynb</code> this weekend. Migration is three steps: <code class="inline">import mlflow</code>, wrap the training block in <code class="inline">with start_run():</code>, drop in four <code class="inline">log_*</code> calls around your existing metrics prints. See the full <a href="projects/calendra-gbm.html">Calendra GBM project page</a> for the migration plan.</p>
+              <p style="font-family:var(--mono); font-size:14px; line-height:1.7; color:var(--ink-2); max-width:60ch;">If you open a notebook this weekend, open <code class="inline">model_training.ipynb</code> and collapse the scattered preprocessing cells into this one object. Then point <code class="inline">features.py</code> at it and replace <code class="inline">models/v4.1.joblib</code> with <code class="inline">models/calendra_pipeline.joblib</code> — the FastAPI <code class="inline">/predict</code> endpoint stops doing manual scaling entirely. See the <a href="projects/calendra-gbm.html">Calendra GBM project page</a> for the migration plan.</p>
             </div>
 
             <div class="code">
               <div class="code-head">
-                <span class="lang">python · sweep_gbm.py</span>
+                <span class="lang">python · build_pipeline.py</span>
                 <span class="id">// FIG C-03-α</span>
               </div>
-<pre>experiments = [
-    {<span class="s">"run_name"</span>: <span class="s">"shallow-fast"</span>,  <span class="s">"n_estimators"</span>:  <span class="n">50</span>, <span class="s">"max_depth"</span>: <span class="n">3</span>, <span class="s">"learning_rate"</span>: <span class="n">0.10</span>},
-    {<span class="s">"run_name"</span>: <span class="s">"deeper-slower"</span>, <span class="s">"n_estimators"</span>: <span class="n">100</span>, <span class="s">"max_depth"</span>: <span class="n">5</span>, <span class="s">"learning_rate"</span>: <span class="n">0.05</span>},
-    {<span class="s">"run_name"</span>: <span class="s">"more-trees"</span>,    <span class="s">"n_estimators"</span>: <span class="n">200</span>, <span class="s">"max_depth"</span>: <span class="n">3</span>, <span class="s">"learning_rate"</span>: <span class="n">0.05</span>},
-]
+<pre><span class="k">import</span> joblib
+<span class="k">import</span> pandas <span class="k">as</span> pd
+<span class="k">from</span> sklearn.pipeline <span class="k">import</span> Pipeline
+<span class="k">from</span> sklearn.compose <span class="k">import</span> ColumnTransformer
+<span class="k">from</span> sklearn.preprocessing <span class="k">import</span> StandardScaler, OneHotEncoder
+<span class="k">from</span> sklearn.ensemble <span class="k">import</span> GradientBoostingClassifier
+<span class="k">from</span> sklearn.model_selection <span class="k">import</span> cross_val_score, train_test_split
 
-mlflow.set_experiment(<span class="s">"calendra-gbm-comparison"</span>)
+<span class="c"># 1 — load the labeled ICS feature table (one row per invite)</span>
+df = pd.read_parquet(<span class="s">"data/train.parquet"</span>)   <span class="c"># TODO: your real path</span>
+y  = df.pop(<span class="s">"is_malicious"</span>)                   <span class="c"># label column -&gt; target</span>
 
-<span class="k">for</span> cfg <span class="k">in</span> experiments:
-    run_name = cfg.pop(<span class="s">"run_name"</span>)
-    <span class="k">with</span> mlflow.start_run(run_name=run_name):
-        model = <span class="f">GradientBoostingClassifier</span>(**cfg, random_state=<span class="n">42</span>)
-        model.fit(X_train, y_train)
+<span class="c"># 2 — declare which columns get which treatment</span>
+NUMERIC = [<span class="s">"url_count"</span>, <span class="s">"sender_domain_age"</span>, <span class="s">"content_len"</span>, <span class="s">"attendee_count"</span>]
+NOMINAL = [<span class="s">"organizer_tld"</span>, <span class="s">"detected_language"</span>]
+<span class="c"># TODO: distribute the rest of your 12 features into the right list</span>
 
-        auc   = roc_auc_score(y_test, model.predict_proba(X_test)[:, <span class="n">1</span>])
-        f1    = f1_score(y_test, model.predict(X_test))
-        cv_f1 = cross_val_score(model, X_train, y_train, cv=<span class="n">5</span>, scoring=<span class="s">"f1"</span>).mean()
+<span class="c"># 3 — one ColumnTransformer = all preprocessing, re-fit per fold</span>
+pre = <span class="f">ColumnTransformer</span>([
+    (<span class="s">"num"</span>, <span class="f">StandardScaler</span>(), NUMERIC),
+    (<span class="s">"cat"</span>, <span class="f">OneHotEncoder</span>(handle_unknown=<span class="s">"ignore"</span>), NOMINAL),
+    <span class="c"># TODO: ("txt", TfidfVectorizer(max_features=300), "subject")  -&gt; stretch</span>
+])
 
-        mlflow.log_params(cfg)
-        mlflow.log_metric(<span class="s">"auc_roc"</span>, auc)
-        mlflow.log_metric(<span class="s">"f1"</span>,      f1)
-        mlflow.log_metric(<span class="s">"cv_f1"</span>,   cv_f1)
-        mlflow.sklearn.log_model(model, <span class="s">"model"</span>)</pre>
+<span class="c"># 4 — glue preprocessing + estimator into a single object</span>
+pipe = <span class="f">Pipeline</span>([
+    (<span class="s">"pre"</span>, pre),
+    (<span class="s">"gbm"</span>, <span class="f">GradientBoostingClassifier</span>(n_estimators=<span class="n">200</span>, random_state=<span class="n">42</span>)),
+])
+
+<span class="c"># 5 — honest score: CV runs preprocessing INSIDE each fold</span>
+X = df[NUMERIC + NOMINAL]
+cv = <span class="f">cross_val_score</span>(pipe, X, y, cv=<span class="n">5</span>, scoring=<span class="s">"roc_auc"</span>)
+<span class="f">print</span>(<span class="s">f"5-fold AUC: {cv.mean():.4f} +/- {cv.std():.4f}"</span>)
+
+<span class="c"># 6 — fit on a split, persist the WHOLE pipeline as one artifact</span>
+X_tr, X_te, y_tr, y_te = <span class="f">train_test_split</span>(X, y, stratify=y, random_state=<span class="n">42</span>)
+pipe.fit(X_tr, y_tr)
+joblib.dump(pipe, <span class="s">"models/calendra_pipeline.joblib"</span>)  <span class="c"># scaler travels with model</span>
+
+<span class="c"># 7 — reload + predict: no manual scaling at inference, ever again</span>
+reloaded = joblib.load(<span class="s">"models/calendra_pipeline.joblib"</span>)
+<span class="f">print</span>(reloaded.predict(X_te.head()))   <span class="c"># TODO: wire into FastAPI /predict</span></pre>
             </div>
           </div>
         </div>
@@ -766,68 +788,58 @@ mlflow.set_experiment(<span class="s">"calendra-gbm-comparison"</span>)
       <div class="secblock-head">
         <div class="secblock-meta">
           <span class="id">§ C-04 · AGENT BRIEF</span>
-          <div class="ref">L3 · LLM ENG · CYCLE 0/7</div>
+          <div class="ref">L3 · LLM ENG · CYCLE 1/7</div>
           <div class="secblock-topics">
-            <a class="topic-chip" href="topics/tool-use.html">Tool Use</a>
-            <a class="topic-chip" href="topics/tool-use.html">Anthropic SDK</a>
+            <a class="topic-chip" href="topics/prompt-chaining.html">Prompt Chaining</a>
+            <a class="topic-chip" href="topics/prompt-chaining.html">Anthropic SDK</a>
           </div>
         </div>
-        <h2>Tool use, the <em>function-dispatch</em> loop.</h2>
+        <h2>Prompt chaining, <em>one link</em> at a time.</h2>
       </div>
 
       <div class="agent-meta-strip">
-        <span class="hot">CYCLE 0 / 7</span>
+        <span class="hot">CYCLE 1 / 7</span>
         <span class="ink">L3 · LLM ENG</span>
-        <span>EDITION #005</span>
+        <span>EDITION #006</span>
         <span>SDK: anthropic-py 0.42+</span>
       </div>
 
       <div class="twocol">
         <div>
-          <p>Tool use is the pattern where you give Claude a set of functions it can call during a response — pausing generation to invoke them and incorporating their return values before continuing.</p>
-          <p>You describe each tool with a name, description, and JSON schema for its inputs. Claude decides when to call it. You implement the logic. The loop runs until Claude reaches a natural stopping point. This isn't prompt engineering — it's a proper function-dispatch loop with Claude as the decision-maker about when to invoke external systems.</p>
-          <p>The most immediate use case for you: a Claude agent that reads a Calendra verdict JSON and writes a human-readable threat report, optionally calling lookup tools — domain age, URL category — for context the verdict alone can't carry.</p>
+          <p>Prompt chaining is the pattern where one model call's output becomes the next call's input. Instead of asking Claude to do five things in a single prompt — and getting a mush where each step half-fails — you break the work into focused links, each with one job.</p>
+          <p>The reliability comes from the seams. Every link is a separate API call, so you can log it, evaluate it, retry it, or swap its model independently. The most common shape is <em>self-correction</em>: generate a draft, critique the draft against criteria, rewrite from the critique.</p>
+          <p>For you: take a Calendra verdict's SHAP attributions, translate them to plain English, draft a three-sentence analyst note, then have a critique link strip the hedging and tighten it. Each step is inspectable — when an analyst disputes a report, you can see exactly which link produced the weak sentence.</p>
 
           <div class="next-up">
-            <span class="lbl">NEXT UP · CYCLE 1 / 7</span>
-            Prompt chaining — when a single call isn't enough and Claude's output needs to become the input for the next step.
+            <span class="lbl">NEXT UP · CYCLE 2 / 7</span>
+            Multi-step orchestration — when the chain stops being a straight line and a controller decides which link runs next.
           </div>
         </div>
 
         <div class="code">
           <div class="code-head">
-            <span class="lang">python · threat_report_agent.py</span>
+            <span class="lang">python · verdict_chain.py</span>
             <span class="id">// FIG C-04-α</span>
           </div>
-<pre><span class="k">import</span> anthropic, json, os
+<pre><span class="k">import</span> anthropic, os
 
 client = anthropic.Anthropic(api_key=os.environ[<span class="s">"ANTHROPIC_API_KEY"</span>])
 
-tools = [{
-    <span class="s">"name"</span>: <span class="s">"lookup_domain_age"</span>,
-    <span class="s">"description"</span>: <span class="s">"Returns approximate age of a domain in years"</span>,
-    <span class="s">"input_schema"</span>: {
-        <span class="s">"type"</span>: <span class="s">"object"</span>,
-        <span class="s">"properties"</span>: {<span class="s">"domain"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>}},
-        <span class="s">"required"</span>: [<span class="s">"domain"</span>],
-    },
-}]
+<span class="k">def</span> <span class="f">ask</span>(prompt: str) -&gt; str:          <span class="c"># one link in the chain = one call</span>
+    r = client.messages.create(
+        model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=<span class="n">400</span>,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
+    )
+    <span class="k">return</span> r.content[<span class="n">0</span>].text
 
-<span class="k">def</span> <span class="f">write_threat_report</span>(verdict: dict) -> str:
-    messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>:
-        <span class="s">f"Write a 3-sentence threat report. Verdict: {json.dumps(verdict)}"</span>}]
+<span class="c"># SHAP drivers -&gt; plain English -&gt; analyst draft -&gt; self-critique rewrite</span>
+drivers = <span class="s">"url_count=+0.41, sender_domain_age=+0.33, organizer_tld=.xyz=+0.22"</span>
 
-    <span class="k">while</span> <span class="n">True</span>:
-        resp = client.messages.create(
-            model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=<span class="n">512</span>,
-            tools=tools, messages=messages,
-        )
-        <span class="k">if</span> resp.stop_reason == <span class="s">"end_turn"</span>:
-            <span class="k">return</span> next(b.text <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> hasattr(b, <span class="s">"text"</span>))
-        results = [<span class="f">execute_tool</span>(b.name, b.input)
-                   <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
-        messages += [{<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content},
-                     {<span class="s">"role"</span>: <span class="s">"user"</span>,      <span class="s">"content"</span>: results}]</pre>
+plain  = <span class="f">ask</span>(<span class="s">f"Translate these SHAP attributions into plain English:\n{drivers}"</span>)
+draft  = <span class="f">ask</span>(<span class="s">f"Write a 3-sentence analyst threat note from:\n{plain}"</span>)
+report = <span class="f">ask</span>(<span class="s">f"Cut hedging and vague verbs, then rewrite tighter:\n{draft}"</span>)
+
+<span class="f">print</span>(report)   <span class="c"># every link is loggable + independently swappable</span></pre>
         </div>
       </div>
     </section>
@@ -841,53 +853,55 @@ tools = [{
       <div class="secblock-head">
         <div class="secblock-meta">
           <span class="id">§ C-05 · ICEBREAKER</span>
-          <div class="ref">IDEA #1 · L2 · ~2 HRS · CALENDRA</div>
+          <div class="ref">IDEA #2 · L1 · ~2 HRS · CALENDRA</div>
           <div class="secblock-topics">
-            <a class="topic-chip" href="topics/embeddings.html">Embeddings</a>
-            <a class="topic-chip" href="topics/index.html">Features</a>
+            <a class="topic-chip" href="topics/mlflow.html">Optuna</a>
+            <a class="topic-chip" href="topics/index.html">GBM</a>
           </div>
         </div>
-        <h2>Trade <code class="inline" style="font-size:0.7em; background: var(--hot); color: var(--paper);">url_count</code> for a <em>description embedding.</em></h2>
+        <h2>Let <em>Optuna</em> tune the whole pipeline.</h2>
       </div>
 
       <div class="ice">
         <div class="ice-band">
-          <span>// IDEA #1 OF 2 THIS EDITION</span>
-          <span>HYPOTHESIS: description embeddings &gt; raw URL count on AUC</span>
-          <span>REV 005-A</span>
+          <span>// IDEA #2 OF 2 THIS EDITION</span>
+          <span>HYPOTHESIS: a 50-trial search beats your hand-picked params</span>
+          <span>REV 006-A</span>
         </div>
 
         <div class="ice-body">
           <div class="twocol">
             <div>
-              <p>Your Calendra feature pipeline uses <code class="inline">url_count</code> as a raw integer. Useful, but brittle: a single obfuscated link scores the same as a zero-URL benign invite, and a verbose phishing description with no URLs at all gets ignored entirely.</p>
-              <p>The description field itself contains far richer signal. Attackers write things like <em>"Click here to confirm your attendance: http://malcal-invite.xyz/rsvp?t=abc123"</em> — the surrounding language is semantically suspicious before you ever parse the URL.</p>
-              <p><strong>Sentence transformers</strong> map raw text into a 384-dim vector encoding semantic meaning. Add cosine similarity to a centroid of known-malicious description embeddings as a single new feature — or use the raw embedding dims via PCA, or test both alongside your existing features with MLflow.</p>
+              <p>Your GBM's <code class="inline">n_estimators=100, max_depth=3, learning_rate=0.10</code> were hand-picked across a handful of runs. That's a guess dressed as a decision. <strong>Optuna</strong> turns it into a search: define the ranges, let a Bayesian sampler propose 50 configs, keep the best by cross-validated AUC.</p>
+              <p>The trick is to tune the <em>Pipeline you just built in §C-03</em>, not a bare model. Optuna addresses nested params with the <code class="inline">step__param</code> syntax — <code class="inline">gbm__max_depth</code> reaches inside the pipeline. Because the objective wraps <code class="inline">cross_val_score</code>, every trial is leak-free by construction.</p>
+              <p>Wire each trial to an MLflow child run (per §C-01) and the search tree becomes the same sortable history you set up last edition. Lock the winner as <code class="inline">v5.0</code>.</p>
 
               <div class="connect">
-                ↳ CONNECTS TO §C-03 BUILD — log the embedding-augmented run alongside your baseline in MLflow and compare AUC + F1 directly in the UI. <a href="topics/embeddings.html">topics/embeddings →</a>
+                ↳ CONNECTS TO §C-03 BUILD — Yes. The Optuna objective tunes the exact cross-validated Pipeline you packaged this weekend. <a href="topics/mlflow.html">topics/mlflow →</a>
               </div>
             </div>
 
             <div class="code">
               <div class="code-head">
-                <span class="lang">python · description_embed.py</span>
+                <span class="lang">python · tune_pipeline.py</span>
                 <span class="id">// FIG C-05-α</span>
               </div>
-<pre><span class="k">from</span> sentence_transformers <span class="k">import</span> SentenceTransformer
-<span class="k">from</span> sklearn.metrics.pairwise <span class="k">import</span> cosine_similarity
+<pre><span class="c"># pip install optuna</span>
+<span class="k">import</span> optuna
+<span class="k">from</span> sklearn.model_selection <span class="k">import</span> cross_val_score
 
-model = <span class="f">SentenceTransformer</span>(<span class="s">"all-MiniLM-L6-v2"</span>)  <span class="c"># 384-dim, fast</span>
+<span class="k">def</span> <span class="f">objective</span>(trial):                          <span class="c"># one trial = one config</span>
+    params = {
+        <span class="s">"gbm__n_estimators"</span>:  trial.suggest_int(<span class="s">"n_estimators"</span>, <span class="n">100</span>, <span class="n">400</span>),
+        <span class="s">"gbm__max_depth"</span>:     trial.suggest_int(<span class="s">"max_depth"</span>, <span class="n">2</span>, <span class="n">6</span>),
+        <span class="s">"gbm__learning_rate"</span>: trial.suggest_float(<span class="s">"learning_rate"</span>, <span class="n">0.01</span>, <span class="n">0.2</span>, log=<span class="n">True</span>),
+    }
+    pipe.set_params(**params)                   <span class="c"># tune the WHOLE pipeline</span>
+    <span class="k">return</span> <span class="f">cross_val_score</span>(pipe, X, y, cv=<span class="n">5</span>, scoring=<span class="s">"roc_auc"</span>).mean()
 
-descriptions = [
-    <span class="s">"Join the team for our Q2 planning session — Google Meet link inside"</span>,
-    <span class="s">"Confirm your attendance: http://quarterly-sync.xyz/rsvp?token=abc"</span>,
-]
-embeddings = model.encode(descriptions)   <span class="c"># shape: (n, 384)</span>
-
-<span class="c"># Cosine similarity to a centroid of known-malicious embeddings</span>
-mal_centroid   = embeddings[labels == <span class="n">1</span>].mean(axis=<span class="n">0</span>, keepdims=<span class="n">True</span>)
-suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
+study = optuna.create_study(direction=<span class="s">"maximize"</span>)
+study.optimize(objective, n_trials=<span class="n">50</span>)        <span class="c"># each trial -&gt; an MLflow run</span>
+<span class="f">print</span>(study.best_params, study.best_value)</pre>
             </div>
           </div>
         </div>
@@ -903,10 +917,10 @@ suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
       <div class="secblock-head">
         <div class="secblock-meta">
           <span class="id">§ C-06 · ONE READ</span>
-          <div class="ref">PINNED · LONG FORM · MARKTECHPOST</div>
+          <div class="ref">PINNED · INTERACTIVE NOTEBOOK · MLFLOW</div>
           <div class="secblock-topics">
             <a class="topic-chip" href="topics/mlflow.html">MLflow</a>
-            <a class="topic-chip" href="topics/index.html">Deployment</a>
+            <a class="topic-chip" href="topics/mlflow.html">Optuna</a>
           </div>
         </div>
         <h2>The one <em>worth opening.</em></h2>
@@ -914,13 +928,13 @@ suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
 
       <div class="oneread">
         <div class="number">
-          <div class="big">01</div>
-          <div class="lbl">PINNED // ED #005</div>
+          <div class="big">06</div>
+          <div class="lbl">PINNED // ED #006</div>
         </div>
         <div class="content">
-          <h3><a href="https://www.marktechpost.com/2026/03/01/a-complete-end-to-end-coding-guide-to-mlflow-experiment-tracking-hyperparameter-optimization-model-evaluation-and-live-model-deployment/">End-to-End MLflow: <em>tracking → tuning → live deployment.</em></a></h3>
+          <h3><a href="https://mlflow.org/docs/latest/ml/traditional-ml/tutorials/hyperparameter-tuning/">MLflow × Optuna: <em>hyperparameter tuning with child runs.</em></a></h3>
           <p style="font-family: var(--mono); font-size: 14px; line-height: 1.75; color: var(--ink-2); max-width: 70ch;">
-            A complete, production-grade ML experimentation and deployment walkthrough in a single notebook: structured MLflow tracking server, Optuna hyperparameter search as tracked runs, evaluating the winner, Model Registry, REST endpoint. The exact progression you'll work through with Calendra over the next month — baseline (this weekend) → Optuna (next edition's icebreaker) → registry → API.
+            The official MLflow notebook that wires an Optuna study to the tracking server — parent run, one child run per trial, the comparison view sorted by metric. It is the exact mechanism behind this week's icebreaker; run it once on the sample data, then point the objective at your Calendra pipeline. Do it today, not someday.
           </p>
         </div>
       </div>
@@ -934,26 +948,29 @@ suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
       <div class="panel-head">
         <span class="id">§ X · CHEAT SHEETS</span>
         <h2>Always-on <em>references.</em></h2>
-        <span class="ts">1 LIVE · 3 ON DECK</span>
+        <span class="ts">2 LIVE · 2 ON DECK</span>
         <span class="ref"><a href="cheatsheets/index.html">ALL CHEAT SHEETS →</a></span>
       </div>
 
       <div class="cs-grid">
-        <a class="cs-card featured" href="cheatsheets/jupyter-ml.html">
-          <div class="ix">// NEW · ED #005</div>
-          <h3>Jupyter <em>for ML.</em></h3>
-          <p class="blurb">42 opinions, sharply held — kernels, cell discipline, autoreload, MLflow integration, reproducibility, plotting, and the anti-patterns that quietly destroy your experiments.</p>
+        <a class="cs-card featured" href="cheatsheets/sklearn-pipelines.html">
+          <div class="ix">// NEW · ED #006</div>
+          <h3>Scikit-learn <em>pipelines.</em></h3>
+          <p class="blurb">Why every project ships as a Pipeline — ColumnTransformer, custom transformers, the <code class="inline">step__param</code> grammar, joblib gotchas, and the leakage traps that quietly inflate your scores.</p>
           <div class="row">
-            <span>~ 14 MIN · LIVING DOC</span>
+            <span>6 SECTIONS · 24 RECIPES · ~10 MIN</span>
             <span class="go">OPEN →</span>
           </div>
         </a>
 
-        <a class="cs-card coming" href="cheatsheets/index.html">
-          <div class="ix">// ON DECK · ED #006</div>
-          <h3>Scikit-learn <em>pipelines.</em></h3>
-          <p class="blurb">Why every project should ship as a Pipeline — preprocessing, ColumnTransformer, custom transformers, and the joblib gotchas.</p>
-          <div class="row"><span>QUEUED</span><span class="go">SOON →</span></div>
+        <a class="cs-card" href="cheatsheets/jupyter-ml.html">
+          <div class="ix">// LIVE · ED #005</div>
+          <h3>Jupyter <em>for ML.</em></h3>
+          <p class="blurb">42 opinions, sharply held — kernels, cell discipline, autoreload, reproducibility, and the anti-patterns that destroy experiments.</p>
+          <div class="row">
+            <span>~ 14 MIN · LIVING DOC</span>
+            <span class="go">OPEN →</span>
+          </div>
         </a>
 
         <a class="cs-card coming" href="cheatsheets/index.html">
@@ -980,7 +997,7 @@ suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
       <div class="panel-head">
         <span class="id">§ A · ARCHIVE</span>
         <h2>Every edition <em>compounds.</em></h2>
-        <span class="ts">5 ISSUES · SINCE 03/2026</span>
+        <span class="ts">6 ISSUES · SINCE 03/2026</span>
         <span class="ref">FULL TIMELINE →</span>
       </div>
 
@@ -1009,11 +1026,17 @@ suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
           <div class="title">Feature Forensics</div>
           <div class="topics"><span>SHAP</span><span>Feat</span></div>
         </a>
-        <a class="arch current" href="editions/005.html">
+        <a class="arch" href="editions/005.html">
           <div class="num">005</div>
           <div class="date">2026·05·27</div>
-          <div class="title"><em>Ultraviolet</em></div>
+          <div class="title">Ultraviolet</div>
           <div class="topics"><span>MLflow</span><span>Tools</span><span>Embed</span></div>
+        </a>
+        <a class="arch current" href="#latest">
+          <div class="num">006</div>
+          <div class="date">2026·06·02</div>
+          <div class="title"><em>Composite</em></div>
+          <div class="topics"><span>Pipelines</span><span>Optuna</span><span>Chaining</span></div>
         </a>
       </div>
     </section>
@@ -1049,18 +1072,18 @@ suspicion_feat = cosine_similarity(embeddings, mal_centroid).flatten()</pre>
         <div class="foot-col">
           <h4>// Editions</h4>
           <ul>
+            <li>006 — Composite</li>
             <li>005 — Ultraviolet</li>
             <li>004 — Feature Forensics</li>
             <li>003 — Trace Layer</li>
             <li>002 — Drift &amp; Drag</li>
-            <li>001 — Cold Start</li>
           </ul>
         </div>
       </div>
 
       <div class="foot-bottom">
-        <span>BUILT FOR BUILDERS · NOT THEORISTS</span>
-        <span>GRADIENT-DESCENT · 005 · ULTRAVIOLET · REV 005-A</span>
+        <span>FOR BUILDERS, NOT THEORISTS</span>
+        <span>GRADIENT-DESCENT · 006 · COMPOSITE · REV 006-A</span>
         <a href="directions.html">↳ DESIGN STUDY</a>
       </div>
     </footer>

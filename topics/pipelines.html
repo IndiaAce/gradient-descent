@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipelines — Topic // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .topic-hero { padding: 70px 0 60px; border-bottom: 2px solid var(--ink); }
+    .topic-hero .crumbs { margin-bottom: 32px; }
+    .topic-hero .id {
+      display: inline-block; font-family: var(--depmono); font-size: 11px;
+      letter-spacing: 0.22em; text-transform: uppercase; padding: 4px 10px;
+      background: var(--hot); color: var(--paper); margin-bottom: 24px;
+    }
+    .topic-hero h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(80px, 12vw, 200px);
+      line-height: 0.85; letter-spacing: -0.05em; margin-bottom: 32px;
+    }
+    .topic-hero h1 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .topic-hero .deck {
+      font-family: var(--mono); font-size: 17px; line-height: 1.55;
+      color: var(--ink-2); max-width: 70ch; margin-bottom: 36px;
+    }
+    .topic-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .topic-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    .ed-timeline { display: grid; grid-template-columns: 100px 1fr 200px; gap: 0; border: 2px solid var(--ink); background: var(--paper-3); }
+    .ed-timeline-row { display: contents; }
+    .ed-timeline-row > * { padding: 20px 22px; border-top: 1px solid var(--line); }
+    .ed-timeline-row.h > * {
+      background: var(--ink); color: var(--paper); border-top: 0;
+      font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; padding: 10px 22px;
+    }
+    .ed-num { font-family: var(--display); font-weight: 800; font-size: 38px; letter-spacing: -0.025em; line-height: 1; color: var(--ink); }
+    .ed-num.current { color: var(--hot); }
+    .ed-where { font-family: var(--mono); font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+    .ed-where .ttl { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -0.01em; color: var(--ink); display: block; margin-bottom: 4px; }
+    .ed-where .ttl em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+    .ed-meta { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); text-align: right; }
+    .ed-meta .pill { display: inline-block; padding: 3px 8px; border: 1px solid var(--ink); color: var(--ink); margin-bottom: 6px; }
+    .ed-meta .pill.hot { background: var(--hot); color: var(--paper); border-color: var(--hot); }
+
+    .related-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+    .related-row .label { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; margin-right: 6px; }
+
+    .roadmap { border: 2px solid var(--ink); background: var(--paper-3); }
+    .roadmap-row { display: grid; grid-template-columns: 80px 60px 1fr 160px; gap: 20px; padding: 18px 22px; border-bottom: 1px solid var(--line); align-items: center; }
+    .roadmap-row:last-child { border-bottom: 0; }
+    .roadmap-row .step { font-family: var(--display); font-weight: 700; font-size: 32px; letter-spacing: -0.025em; line-height: 1; color: var(--hot); }
+    .roadmap-row .dur { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.16em; color: var(--dim); text-transform: uppercase; }
+    .roadmap-row .desc { font-family: var(--mono); font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
+    .roadmap-row .desc strong { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -0.005em; color: var(--ink); display: block; margin-bottom: 4px; }
+    .roadmap-row .when { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink); text-align: right; }
+    .roadmap-row.done .step { color: var(--green); }
+    .roadmap-row.done .desc strong { text-decoration: line-through; opacity: 0.6; }
+    .roadmap-row.current { background: rgba(255,77,46,0.04); }
+    .roadmap-row.future { opacity: 0.7; }
+    .roadmap-row.future .step { color: var(--dim); }
+
+    @media (max-width: 720px) {
+      .topic-hero { padding: 36px 0 40px; }
+      .topic-hero h1 { font-size: clamp(48px, 16vw, 88px); margin-bottom: 22px; line-height: 0.88; }
+      .topic-hero .id { font-size: 10px; padding: 3px 8px; margin-bottom: 18px; }
+      .topic-hero .deck { font-size: 14px; line-height: 1.55; margin-bottom: 26px; }
+      .related-row { gap: 6px; margin-top: 12px; }
+      .ed-timeline { grid-template-columns: 1fr; }
+      .ed-timeline-row.h { display: none; }
+      .ed-timeline-row > * { padding: 16px 18px; border-top: 1px solid var(--line); }
+      .ed-timeline-row > div:first-child { border-top: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; }
+      .ed-timeline-row > div:first-child .ed-num { font-size: 24px; }
+      .ed-where { font-size: 12.5px; line-height: 1.6; }
+      .ed-where .ttl { font-size: 16px; margin-bottom: 6px; }
+      .ed-meta { text-align: left; font-size: 9px; }
+      .roadmap-row { grid-template-columns: 50px 1fr; grid-template-areas: "step desc" ".    meta"; gap: 4px 14px; padding: 16px 18px; }
+      .roadmap-row .step { grid-area: step; font-size: 24px; align-self: start; }
+      .roadmap-row .desc { grid-area: desc; font-size: 12.5px; }
+      .roadmap-row .desc strong { font-size: 15px; }
+      .roadmap-row .dur, .roadmap-row .when { grid-area: meta; display: inline; text-align: left; font-size: 9px; }
+      .roadmap-row .when::before { content: " · "; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-T09</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="index.html" class="active">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// TOPIC</span>
+        <span style="color: var(--ink);">Pipelines</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <!-- HERO -->
+    <section class="topic-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">topics</a>
+        <span class="sep">/</span>
+        <span>pipelines</span>
+      </div>
+
+      <span class="id">§ TOPIC · NEW THIS WEEK</span>
+
+      <h1>Pipelines<em>.</em></h1>
+
+      <p class="deck">The single object that bundles preprocessing and model so leakage becomes <em>impossible by construction</em>. <code class="inline">ColumnTransformer</code> routes each column to the right treatment; <code class="inline">Pipeline</code> chains it to the estimator; <code class="inline">joblib</code> ships the whole thing as one artifact. Introduced this edition as the way Calendra's scattered preprocessing finally becomes <strong>one fittable, deployable unit.</strong></p>
+
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="lbl">// EDITIONS TOUCHED</div>
+          <div class="v">1<em>/6</em></div>
+          <div class="delta">NEW · ED #006</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// CODE SAMPLES</div>
+          <div class="v">3</div>
+          <div class="delta">leakproof · build · tune</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// RELATED TOPICS</div>
+          <div class="v">4</div>
+          <div class="delta">GBM · MLflow · Optuna · Features</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// PROJECTS USING</div>
+          <div class="v">1</div>
+          <div class="delta">Calendra · GBM</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// CHEAT SHEETS</div>
+          <div class="v">1</div>
+          <div class="delta">sklearn-pipelines</div>
+        </div>
+      </div>
+
+      <div class="related-row">
+        <span class="label">// RELATED:</span>
+        <a class="topic-chip" href="index.html">GBM</a>
+        <a class="topic-chip" href="mlflow.html">MLflow</a>
+        <a class="topic-chip" href="mlflow.html">Optuna</a>
+        <a class="topic-chip" href="index.html">Features</a>
+        <a class="topic-chip" href="index.html">Leakage</a>
+      </div>
+    </section>
+
+    <!-- ============== WHY IT MATTERS ============== -->
+    <section class="secblock body">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">01</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id ink">§ T-01 · WHY IT MATTERS</span>
+          <div class="ref">CORE THESIS · CALENDRA CONTEXT</div>
+        </div>
+        <h2>Leakage isn't a bug you fix — it's one you <em>design out.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p>The most common silent failure in an ML notebook: you scale or impute on the <em>whole</em> dataset, then split. Now the test fold has seen the training set's mean and variance. Cross-validation scores come back beautiful — and lie. The model looks better than it will ever be in production.</p>
+          <p>A <code class="inline">Pipeline</code> makes this structurally impossible. It chains every preprocessing step to the estimator into one object. When CV re-fits it on each fold, the scaler learns from <em>that fold's training rows only</em>. You stop relying on remembering to split first. The architecture remembers for you.</p>
+          <p><strong>ColumnTransformer</strong> is the routing layer: numeric columns to <code class="inline">StandardScaler</code>, categorical to <code class="inline">OneHotEncoder(handle_unknown="ignore")</code>, text to a vectorizer — each branch fit independently, outputs concatenated.</p>
+        </div>
+
+        <div>
+          <p>The deployment payoff is just as large:</p>
+          <ul style="list-style:none; padding:0; font-family:var(--mono); font-size:13.5px; line-height:1.85; color:var(--ink-2); margin-bottom:20px;">
+            <li><code class="inline">pipe.fit(X, y)</code> — preprocessing + model, one call</li>
+            <li><code class="inline">joblib.dump(pipe, ...)</code> — scaler travels with model</li>
+            <li><code class="inline">pipe.predict(raw_df)</code> — no manual scaling, ever</li>
+            <li><code class="inline">gbm__max_depth</code> — tune nested params by name</li>
+            <li><code class="inline">handle_unknown="ignore"</code> — unseen TLD won't crash</li>
+          </ul>
+
+          <div class="callout">
+            <span class="lbl">// THE BEHAVIORAL UNLOCK</span>
+            Once preprocessing lives <strong>inside</strong> the estimator, the gap between "works in the notebook" and "works at the FastAPI endpoint" disappears. One artifact does both.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== APPEARANCES ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">02</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-02 · APPEARANCES</span>
+          <div class="ref">ACROSS 6 EDITIONS</div>
+        </div>
+        <h2>Where this topic <em>has lived.</em></h2>
+      </div>
+
+      <div class="ed-timeline">
+        <div class="ed-timeline-row h">
+          <span>edition</span><span>section · why it appeared</span><span>tag</span>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num current">006</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--hot); margin-top:6px; text-transform:uppercase;">2026·06·02</div></div>
+          <div class="ed-where">
+            <span class="ttl">§C-02 · Concept → Code <em>— one object, zero leakage</em></span>
+            Introduced as the structural fix for data leakage and the path to a single deployable artifact. <code class="inline">ColumnTransformer + Pipeline</code>, fit per fold. Carried into §C-03 BUILD (package Calendra) and §C-05 (Optuna tunes the pipeline).
+            <div class="related-row">
+              <span class="label">also in:</span>
+              <span class="dm-tag">§C-03 BUILD</span>
+              <span class="dm-tag">§C-05 ICEBREAKER</span>
+              <span class="dm-tag">§C-01 SIGNAL · sklearn 1.8</span>
+            </div>
+          </div>
+          <div class="ed-meta"><span class="pill hot">CURRENT</span><div>// NEW</div></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">005</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·05·27</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · adjacent</span>
+            Ultraviolet set up MLflow and feature A/B testing — the natural host for Pipelines, but the pipeline abstraction itself wasn't formalized yet.
+          </div>
+          <div class="ed-meta"><span class="pill">ADJACENT</span></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">004</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·04·22</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · not covered</span>
+            Feature Forensics dealt in features one at a time. Wrapping them in a ColumnTransformer was the obvious next move, deferred.
+          </div>
+          <div class="ed-meta"><span class="pill">NEXT-UP</span></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">001–003</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·03–04</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · pre</span>
+            Early editions established the GBM, SHAP, and the trace layer. Preprocessing lived in loose cells throughout.
+          </div>
+          <div class="ed-meta"><span class="pill">PRE</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CODE ARCHIVE ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">03</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id blue">§ T-03 · CODE ARCHIVE</span>
+          <div class="ref">3 PATTERNS · GROWS WITH EDITIONS</div>
+        </div>
+        <h2>Reach-for-it <em>patterns.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--hot); margin-bottom:14px; text-transform:uppercase;">// PATTERN 01 · LEAKPROOF WRAP</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">Numeric scaled, categorical one-hot, glued to the model. CV now re-fits preprocessing per fold. Source: <a href="../index.html#concept">§C-02 ED #006</a>.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 01 · leakproof</span>
+            <span class="id">// THE CORE IDEA</span>
+          </div>
+<pre>pre = <span class="f">ColumnTransformer</span>([
+    (<span class="s">"num"</span>, <span class="f">StandardScaler</span>(), numeric),
+    (<span class="s">"cat"</span>, <span class="f">OneHotEncoder</span>(handle_unknown=<span class="s">"ignore"</span>), nominal),
+])
+pipe = <span class="f">Pipeline</span>([
+    (<span class="s">"pre"</span>, pre),
+    (<span class="s">"gbm"</span>, <span class="f">GradientBoostingClassifier</span>(random_state=<span class="n">42</span>)),
+])
+pipe.fit(X_tr, y_tr)   <span class="c"># scaler learns from X_tr only</span></pre>
+        </div>
+      </div>
+
+      <div class="twocol" style="margin-top:48px;">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--hot); margin-bottom:14px; text-transform:uppercase;">// PATTERN 02 · HONEST CV + PERSIST</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">Cross-validate the whole pipeline, then dump it as one artifact. The reloaded object scales for you. Source: <a href="../index.html#build">§C-03 ED #006</a>.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 02 · cv + joblib</span>
+            <span class="id">// ONE ARTIFACT</span>
+          </div>
+<pre>cv = <span class="f">cross_val_score</span>(pipe, X, y, cv=<span class="n">5</span>, scoring=<span class="s">"roc_auc"</span>)
+<span class="f">print</span>(cv.mean())                <span class="c"># preprocessing fit inside each fold</span>
+
+pipe.fit(X_tr, y_tr)
+joblib.dump(pipe, <span class="s">"models/calendra_pipeline.joblib"</span>)
+
+reloaded = joblib.load(<span class="s">"models/calendra_pipeline.joblib"</span>)
+reloaded.predict(raw_df)        <span class="c"># no manual scaling, ever</span></pre>
+        </div>
+      </div>
+
+      <div class="twocol" style="margin-top:48px;">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--hot); margin-bottom:14px; text-transform:uppercase;">// PATTERN 03 · TUNE NESTED PARAMS</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">The <code class="inline">step__param</code> grammar reaches inside the pipeline, so Optuna or GridSearch can tune the model without unwrapping it. Source: <a href="../index.html#icebreaker">§C-05 ED #006</a>.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 03 · step__param</span>
+            <span class="id">// REACHES INSIDE</span>
+          </div>
+<pre>pipe.set_params(
+    gbm__n_estimators=<span class="n">300</span>,      <span class="c"># step "gbm", param "n_estimators"</span>
+    gbm__max_depth=<span class="n">4</span>,
+    pre__num__with_mean=<span class="n">False</span>,    <span class="c"># nest deeper: step__sub__param</span>
+)
+<span class="c"># same grammar GridSearchCV + Optuna trials use</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== ROADMAP ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">04</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-04 · ROADMAP</span>
+          <div class="ref">FROM WRAP TO FEATURE UNION</div>
+        </div>
+        <h2>Where this <em>goes next.</em></h2>
+      </div>
+
+      <div class="roadmap">
+        <div class="roadmap-row current">
+          <div class="step">01</div>
+          <div class="dur">~ 90 MIN</div>
+          <div class="desc">
+            <strong>Wrap Calendra preprocessing in one Pipeline</strong>
+            Collapse the scattered cells in <code class="inline">model_training.ipynb</code> into a <code class="inline">ColumnTransformer + GBM</code>. Cross-validate, dump one <code class="inline">.joblib</code>.
+          </div>
+          <div class="when">THIS WEEKEND</div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="step">02</div>
+          <div class="dur">~ 2 HRS</div>
+          <div class="desc">
+            <strong>Tune the pipeline with Optuna</strong>
+            Use <code class="inline">step__param</code> targets, each trial an MLflow child run. Lock the best as v5.0.
+          </div>
+          <div class="when">ED #006 · ICEBREAKER</div>
+        </div>
+
+        <div class="roadmap-row future">
+          <div class="step">03</div>
+          <div class="dur">~ 90 MIN</div>
+          <div class="desc">
+            <strong>Add a text branch to the ColumnTransformer</strong>
+            Slot the description-embedding feature in as its own branch — TF-IDF or sentence-transformer — alongside numeric and categorical.
+          </div>
+          <div class="when">ED #007</div>
+        </div>
+
+        <div class="roadmap-row future">
+          <div class="step">04</div>
+          <div class="dur">~ 2 HRS</div>
+          <div class="desc">
+            <strong>Custom transformer for ICS-specific cleaning</strong>
+            Wrap the URL-extraction / domain-parsing logic as a <code class="inline">FunctionTransformer</code> so it lives inside the pipeline, not upstream of it.
+          </div>
+          <div class="when">ED #008</div>
+        </div>
+
+        <div class="roadmap-row future">
+          <div class="step">05</div>
+          <div class="dur">ONGOING</div>
+          <div class="desc">
+            <strong>Serve the pipeline straight from the registry</strong>
+            One artifact behind <code class="inline">mlflow models serve</code> — preprocessing and model deployed as a unit, no skew between train and inference.
+          </div>
+          <div class="when">ED #009+</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== USED IN ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">05</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id blue">§ T-05 · USED IN</span>
+          <div class="ref">PROJECTS · CHEAT SHEETS</div>
+        </div>
+        <h2>Where it shows <em>up.</em></h2>
+      </div>
+
+      <div class="topic-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <a class="topic-cell current" href="../projects/calendra-gbm.html">
+          <div class="num">// PROJECT</div>
+          <h3>Calendra · GBM</h3>
+          <div class="meta"><span>78% · TRAINING</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="../cheatsheets/sklearn-pipelines.html">
+          <div class="num">// CHEAT SHEET · NEW</div>
+          <h3>Scikit-learn pipelines</h3>
+          <div class="meta"><span>24 RECIPES</span><span>OPEN →</span></div>
+        </a>
+        <a class="topic-cell" href="mlflow.html">
+          <div class="num">// TOPIC · TUNED VIA</div>
+          <h3>MLflow + Optuna</h3>
+          <div class="meta"><span>2 ED</span><span>OPEN →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="foot">
+      <div class="foot-marquee">topic/<em>pipelines.</em></div>
+
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <p>Topic pages compound. Every week this page gains another entry — a new code pattern, a roadmap step crossed off, another project that started using it.</p>
+        </div>
+        <div class="foot-col">
+          <h4>// Related topics</h4>
+          <ul>
+            <li><a href="index.html">GBM</a></li>
+            <li><a href="mlflow.html">MLflow</a></li>
+            <li><a href="mlflow.html">Optuna</a></li>
+            <li><a href="index.html">Features</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// Library</h4>
+          <ul>
+            <li><a href="index.html">All topics</a></li>
+            <li><a href="../projects/index.html">Build log</a></li>
+            <li><a href="../cheatsheets/sklearn-pipelines.html">Pipelines cheat sheet</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// First seen</h4>
+          <ul>
+            <li>ED #006 · 2026·06·02</li>
+            <li>Anchor candidate</li>
+            <li>Next: ED #007</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <span>TOPIC PAGE · GROWS WITH EDITIONS</span>
+        <span>GD/T09 · PIPELINES</span>
+        <a href="../index.html">↳ BACK TO LATEST</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    const obs = new IntersectionObserver(es => {
+      es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

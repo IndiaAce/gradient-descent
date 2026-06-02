@@ -266,22 +266,22 @@
         <span>mlflow</span>
       </div>
 
-      <span class="id">§ TOPIC · NEW THIS WEEK</span>
+      <span class="id">§ TOPIC · ANCHOR-CANDIDATE</span>
 
       <h1>MLflow<em>.</em></h1>
 
-      <p class="deck">The experiment tracker that turns notebook archaeology into a sortable table. Every run becomes a named, permanent record with its exact parameters, evaluation metrics, and saved model artifact. Introduced this edition as the <em>spine</em> of every Calendra experiment going forward.</p>
+      <p class="deck">The experiment tracker that turns notebook archaeology into a sortable table. Every run becomes a named, permanent record with its exact parameters, evaluation metrics, and saved model artifact. The <em>spine</em> of every Calendra experiment — and from #006, the backend Optuna writes each trial into.</p>
 
       <div class="kpi-row">
         <div class="kpi">
           <div class="lbl">// EDITIONS TOUCHED</div>
-          <div class="v">1<em>/5</em></div>
-          <div class="delta">NEW · ED #005</div>
+          <div class="v">2<em>/6</em></div>
+          <div class="delta">ED #005 → #006</div>
         </div>
         <div class="kpi">
           <div class="lbl">// CODE SAMPLES</div>
-          <div class="v">3</div>
-          <div class="delta">baseline · sweep · embed-aug</div>
+          <div class="v">4</div>
+          <div class="delta">baseline · sweep · embed · optuna</div>
         </div>
         <div class="kpi">
           <div class="lbl">// RELATED TOPICS</div>
@@ -357,7 +357,7 @@
       <div class="secblock-head">
         <div class="secblock-meta">
           <span class="id">§ T-02 · APPEARANCES</span>
-          <div class="ref">ACROSS 5 EDITIONS</div>
+          <div class="ref">ACROSS 6 EDITIONS</div>
         </div>
         <h2>Where this topic <em>has lived.</em></h2>
       </div>
@@ -368,7 +368,21 @@
         </div>
 
         <div class="ed-timeline-row">
-          <div><span class="ed-num current">005</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--hot); margin-top:6px; text-transform:uppercase;">2026·05·27</div></div>
+          <div><span class="ed-num current">006</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--hot); margin-top:6px; text-transform:uppercase;">2026·06·02</div></div>
+          <div class="ed-where">
+            <span class="ttl">§C-05 · Icebreaker <em>— let Optuna tune the whole pipeline</em></span>
+            Each Optuna trial becomes an MLflow child run under one parent — the search tree turns into sortable, diffable history. Tunes the cross-validated Pipeline from §C-03 via the <code class="inline">step__param</code> grammar. Echoed in §C-01 (MLflow 3.0 × Optuna) and §C-06 ONE READ.
+            <div class="related-row">
+              <span class="label">also in:</span>
+              <span class="dm-tag">§C-01 SIGNAL</span>
+              <span class="dm-tag">§C-06 ONE READ</span>
+            </div>
+          </div>
+          <div class="ed-meta"><span class="pill hot">CURRENT</span><div>// + OPTUNA</div></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">005</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·05·27</div></div>
           <div class="ed-where">
             <span class="ttl">§C-02 · Concept → Code <em>— stop guessing, start comparing</em></span>
             Introduced as the new spine of every Calendra experiment. Tiny API surface: <code class="inline">set_experiment</code> + <code class="inline">start_run</code> + three logging calls. Read in &lt;7 min, drop in this weekend.
@@ -378,7 +392,7 @@
               <span class="dm-tag">§C-06 ONE READ</span>
             </div>
           </div>
-          <div class="ed-meta"><span class="pill hot">CURRENT</span><div>// ANCHOR</div></div>
+          <div class="ed-meta"><span class="pill">ANCHOR</span><div>// INTRO</div></div>
         </div>
 
         <div class="ed-timeline-row">
@@ -498,6 +512,30 @@
         mlflow.sklearn.log_model(model, <span class="s">"model"</span>)</pre>
         </div>
       </div>
+
+      <div class="twocol" style="margin-top:48px;">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--hot); margin-bottom:14px; text-transform:uppercase;">// PATTERN 04 · OPTUNA AS CHILD RUNS</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">Each Optuna trial logs as a child run under one parent. The search tree becomes a sortable table. Tunes the Pipeline via <code class="inline">step__param</code>. Source: <a href="../index.html#icebreaker">§C-05 ED #006</a>.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 04 · optuna</span>
+            <span class="id">// 1 TRIAL = 1 CHILD RUN</span>
+          </div>
+<pre><span class="k">def</span> <span class="f">objective</span>(trial):
+    params = {<span class="s">"gbm__max_depth"</span>: trial.suggest_int(<span class="s">"max_depth"</span>, <span class="n">2</span>, <span class="n">6</span>)}
+    pipe.set_params(**params)
+    <span class="k">with</span> mlflow.start_run(nested=<span class="n">True</span>):          <span class="c"># child of the study run</span>
+        mlflow.log_params(params)
+        score = <span class="f">cross_val_score</span>(pipe, X, y, cv=<span class="n">5</span>, scoring=<span class="s">"roc_auc"</span>).mean()
+        mlflow.log_metric(<span class="s">"cv_auc"</span>, score)
+    <span class="k">return</span> score
+
+<span class="k">with</span> mlflow.start_run(run_name=<span class="s">"optuna-gbm"</span>):       <span class="c"># parent</span>
+    study.optimize(objective, n_trials=<span class="n">50</span>)</pre>
+        </div>
+      </div>
     </section>
 
     <!-- ============== ROADMAP ============== -->
@@ -514,32 +552,32 @@
       </div>
 
       <div class="roadmap">
-        <div class="roadmap-row current">
+        <div class="roadmap-row done">
           <div class="step">01</div>
           <div class="dur">~ 90 MIN</div>
           <div class="desc">
             <strong>Baseline tracking on Calendra GBM</strong>
             Drop <code class="inline">mlflow.start_run</code> around the existing training cell in <code class="inline">model_training.ipynb</code>. Log 3 params + 2 metrics. Open the UI, confirm runs persist.
           </div>
-          <div class="when">THIS WEEKEND</div>
+          <div class="when">ED #005 · DONE</div>
         </div>
 
-        <div class="roadmap-row">
+        <div class="roadmap-row done">
           <div class="step">02</div>
           <div class="dur">~ 60 MIN</div>
           <div class="desc">
             <strong>Sweep: 5 hyperparameter configs</strong>
             Wrap the training loop in a config list, name each run, sort the comparison view by AUC. First moment you stop guessing.
           </div>
-          <div class="when">ED #006 · BUILD</div>
+          <div class="when">ED #005 · DONE</div>
         </div>
 
-        <div class="roadmap-row">
+        <div class="roadmap-row current">
           <div class="step">03</div>
           <div class="dur">~ 2 HRS</div>
           <div class="desc">
             <strong>Optuna-driven hyperparameter search</strong>
-            Each Optuna trial becomes an MLflow run. Lock the best config as a registered model version. Bridges from tracking into the Model Registry.
+            Each Optuna trial becomes an MLflow child run. Lock the best config as a registered model version. Bridges from tracking into the Model Registry.
           </div>
           <div class="when">ED #006 · ICEBREAKER</div>
         </div>
@@ -637,8 +675,8 @@
           <h4>// First seen</h4>
           <ul>
             <li>ED #005 · 2026·05·27</li>
-            <li>Anchor candidate</li>
-            <li>Next: ED #006</li>
+            <li>Anchor candidate · 2 ED</li>
+            <li>Next: ED #007 · Registry</li>
           </ul>
         </div>
       </div>

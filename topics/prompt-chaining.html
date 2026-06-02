@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Chaining — Topic // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .topic-hero { padding: 70px 0 60px; border-bottom: 2px solid var(--ink); }
+    .topic-hero .crumbs { margin-bottom: 32px; }
+    .topic-hero .id {
+      display: inline-block; font-family: var(--depmono); font-size: 11px;
+      letter-spacing: 0.22em; text-transform: uppercase; padding: 4px 10px;
+      background: var(--blue); color: var(--paper); margin-bottom: 24px;
+    }
+    .topic-hero h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(56px, 10vw, 168px);
+      line-height: 0.86; letter-spacing: -0.045em; margin-bottom: 32px;
+    }
+    .topic-hero h1 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--blue); }
+    .topic-hero .deck {
+      font-family: var(--mono); font-size: 17px; line-height: 1.55;
+      color: var(--ink-2); max-width: 70ch; margin-bottom: 36px;
+    }
+    .topic-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .topic-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    .ed-timeline { display: grid; grid-template-columns: 100px 1fr 200px; gap: 0; border: 2px solid var(--ink); background: var(--paper-3); }
+    .ed-timeline-row { display: contents; }
+    .ed-timeline-row > * { padding: 20px 22px; border-top: 1px solid var(--line); }
+    .ed-timeline-row.h > * {
+      background: var(--ink); color: var(--paper); border-top: 0;
+      font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; padding: 10px 22px;
+    }
+    .ed-num { font-family: var(--display); font-weight: 800; font-size: 38px; letter-spacing: -0.025em; line-height: 1; color: var(--ink); }
+    .ed-num.current { color: var(--blue); }
+    .ed-where { font-family: var(--mono); font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+    .ed-where .ttl { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -0.01em; color: var(--ink); display: block; margin-bottom: 4px; }
+    .ed-where .ttl em { font-family: var(--serif); font-style: italic; font-weight: 300; }
+    .ed-meta { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); text-align: right; }
+    .ed-meta .pill { display: inline-block; padding: 3px 8px; border: 1px solid var(--ink); color: var(--ink); margin-bottom: 6px; }
+    .ed-meta .pill.blue { background: var(--blue); color: var(--paper); border-color: var(--blue); }
+
+    .related-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+    .related-row .label { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; margin-right: 6px; }
+
+    /* chain diagram */
+    .chain { border: 2px solid var(--ink); background: var(--paper-3); display: grid; grid-template-columns: repeat(3, 1fr) ; gap: 0; }
+    .chain .link { padding: 24px 22px; border-right: 1.5px solid var(--ink); position: relative; }
+    .chain .link:last-child { border-right: 0; }
+    .chain .link .n { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.2em; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; }
+    .chain .link h4 { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .chain .link p { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--ink-2); }
+    .chain .link .io { font-family: var(--depmono); font-size: 9px; letter-spacing: 0.16em; color: var(--dim); text-transform: uppercase; margin-top: 12px; }
+
+    .roadmap { border: 2px solid var(--ink); background: var(--paper-3); }
+    .roadmap-row { display: grid; grid-template-columns: 80px 60px 1fr 160px; gap: 20px; padding: 18px 22px; border-bottom: 1px solid var(--line); align-items: center; }
+    .roadmap-row:last-child { border-bottom: 0; }
+    .roadmap-row .step { font-family: var(--display); font-weight: 700; font-size: 32px; letter-spacing: -0.025em; line-height: 1; color: var(--blue); }
+    .roadmap-row .dur { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.16em; color: var(--dim); text-transform: uppercase; }
+    .roadmap-row .desc { font-family: var(--mono); font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
+    .roadmap-row .desc strong { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -0.005em; color: var(--ink); display: block; margin-bottom: 4px; }
+    .roadmap-row .when { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink); text-align: right; }
+    .roadmap-row.current { background: rgba(0,80,255,0.05); }
+    .roadmap-row.future { opacity: 0.7; }
+    .roadmap-row.future .step { color: var(--dim); }
+
+    @media (max-width: 720px) {
+      .topic-hero { padding: 36px 0 40px; }
+      .topic-hero h1 { font-size: clamp(40px, 13vw, 72px); margin-bottom: 22px; line-height: 0.92; }
+      .topic-hero .id { font-size: 10px; padding: 3px 8px; margin-bottom: 18px; }
+      .topic-hero .deck { font-size: 14px; line-height: 1.55; margin-bottom: 26px; }
+      .related-row { gap: 6px; margin-top: 12px; }
+      .ed-timeline { grid-template-columns: 1fr; }
+      .ed-timeline-row.h { display: none; }
+      .ed-timeline-row > * { padding: 16px 18px; border-top: 1px solid var(--line); }
+      .ed-timeline-row > div:first-child { border-top: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; }
+      .ed-timeline-row > div:first-child .ed-num { font-size: 24px; }
+      .ed-where { font-size: 12.5px; line-height: 1.6; }
+      .ed-where .ttl { font-size: 16px; margin-bottom: 6px; }
+      .ed-meta { text-align: left; font-size: 9px; }
+      .chain { grid-template-columns: 1fr; }
+      .chain .link { border-right: 0; border-bottom: 1.5px solid var(--ink); }
+      .chain .link:last-child { border-bottom: 0; }
+      .roadmap-row { grid-template-columns: 50px 1fr; grid-template-areas: "step desc" ".    meta"; gap: 4px 14px; padding: 16px 18px; }
+      .roadmap-row .step { grid-area: step; font-size: 24px; align-self: start; }
+      .roadmap-row .desc { grid-area: desc; font-size: 12.5px; }
+      .roadmap-row .desc strong { font-size: 15px; }
+      .roadmap-row .dur, .roadmap-row .when { grid-area: meta; display: inline; text-align: left; font-size: 9px; }
+      .roadmap-row .when::before { content: " · "; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-T10</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="index.html" class="active">topic-graph</a>
+        <a href="../cheatsheets/index.html">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// TOPIC</span>
+        <span style="color: var(--ink);">Prompt Chaining</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <!-- HERO -->
+    <section class="topic-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">topics</a>
+        <span class="sep">/</span>
+        <span>prompt-chaining</span>
+      </div>
+
+      <span class="id">§ TOPIC · NEW THIS WEEK · L3</span>
+
+      <h1>Prompt <em>chaining.</em></h1>
+
+      <p class="deck">One model call's output becomes the next call's input. Instead of one bloated prompt doing five things badly, you build <em>focused links</em> — each with one job, each independently loggable, retryable, and swappable. The reliability lives in the <strong>seams between calls.</strong> Introduced this edition as cycle 1 of the agent-engineering ladder.</p>
+
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="lbl">// EDITIONS TOUCHED</div>
+          <div class="v">1<em>/6</em></div>
+          <div class="delta">NEW · ED #006</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// AGENT CYCLE</div>
+          <div class="v">1<em>/7</em></div>
+          <div class="delta">after tool use</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// CURRICULUM</div>
+          <div class="v">L3</div>
+          <div class="delta">LLM engineering</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// CODE SAMPLES</div>
+          <div class="v">1</div>
+          <div class="delta">verdict_chain.py</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">// NEXT CYCLE</div>
+          <div class="v">2<em>/7</em></div>
+          <div class="delta">orchestration</div>
+        </div>
+      </div>
+
+      <div class="related-row">
+        <span class="label">// RELATED:</span>
+        <a class="topic-chip" href="tool-use.html">Tool Use</a>
+        <a class="topic-chip" href="index.html">Anthropic SDK</a>
+        <a class="topic-chip" href="index.html">SHAP</a>
+        <a class="topic-chip" href="index.html">Self-correction</a>
+      </div>
+    </section>
+
+    <!-- ============== WHY IT MATTERS ============== -->
+    <section class="secblock body">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">01</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id ink">§ T-01 · WHY IT MATTERS</span>
+          <div class="ref">CORE THESIS · DETECTION CONTEXT</div>
+        </div>
+        <h2>Three small calls beat <em>one big one.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <p>Ask a model to extract, analyze, summarize, critique, and format in a single prompt and you get a mush where each step half-fails and you can't tell which. Chaining breaks the work into links you can actually reason about.</p>
+          <p>Because each link is a separate API call, the seams are where the control lives: log every step, evaluate it against criteria, retry on failure, or swap a cheaper model for the easy links and a stronger one for the critique. The canonical shape is <em>self-correction</em> — generate, critique, rewrite.</p>
+          <p>For a detection engineer, the win is auditability. When an analyst disputes a generated threat note, you can point to the exact link that produced the weak sentence — not shrug at a black box.</p>
+        </div>
+
+        <div>
+          <p>When to reach for it:</p>
+          <ul style="list-style:none; padding:0; font-family:var(--mono); font-size:13.5px; line-height:1.85; color:var(--ink-2); margin-bottom:20px;">
+            <li><strong>Self-correction</strong> — draft → critique → rewrite</li>
+            <li><strong>Pipelines</strong> — extract → transform → summarize</li>
+            <li><strong>Validation gates</strong> — generate, then verify before use</li>
+            <li><strong>Model mixing</strong> — cheap links + one strong critique</li>
+          </ul>
+
+          <div class="callout">
+            <span class="lbl">// WHERE IT LEADS</span>
+            Chaining is a straight line. Cycle 2 — <strong>orchestration</strong> — adds a controller that decides <em>which</em> link runs next. Same parts, branching control flow.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== THE CHAIN ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">02</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-02 · THE CALENDRA CHAIN</span>
+          <div class="ref">VERDICT → REPORT · 3 LINKS</div>
+        </div>
+        <h2>From SHAP drivers to a <em>tight</em> analyst note.</h2>
+      </div>
+
+      <div class="chain">
+        <div class="link">
+          <div class="n">// LINK 01 · TRANSLATE</div>
+          <h4>Drivers → English</h4>
+          <p>Take the verdict's SHAP attributions and turn the numbers into plain-language reasons.</p>
+          <div class="io">IN: shap dict · OUT: prose</div>
+        </div>
+        <div class="link">
+          <div class="n">// LINK 02 · DRAFT</div>
+          <h4>English → note</h4>
+          <p>Write a 3-sentence analyst threat note from the plain-language drivers.</p>
+          <div class="io">IN: prose · OUT: draft</div>
+        </div>
+        <div class="link">
+          <div class="n">// LINK 03 · CRITIQUE</div>
+          <h4>Note → tighter note</h4>
+          <p>Cut hedging and vague verbs, then rewrite. The self-correction link.</p>
+          <div class="io">IN: draft · OUT: report</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== APPEARANCES ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">03</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-03 · APPEARANCES</span>
+          <div class="ref">ACROSS 6 EDITIONS</div>
+        </div>
+        <h2>Where this topic <em>has lived.</em></h2>
+      </div>
+
+      <div class="ed-timeline">
+        <div class="ed-timeline-row h">
+          <span>edition</span><span>section · why it appeared</span><span>tag</span>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num current">006</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--blue); margin-top:6px; text-transform:uppercase;">2026·06·02</div></div>
+          <div class="ed-where">
+            <span class="ttl">§C-04 · Agent Brief <em>— one link at a time</em></span>
+            Cycle 1 of 7. Introduced the seam-based reliability argument and the SHAP-verdict self-correction chain. Three <code class="inline">messages.create</code> calls, each output feeding the next.
+            <div class="related-row">
+              <span class="label">cycle:</span>
+              <span class="dm-tag">1 / 7</span>
+            </div>
+          </div>
+          <div class="ed-meta"><span class="pill blue">CURRENT</span><div>// NEW</div></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">005</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·05·27</div></div>
+          <div class="ed-where">
+            <span class="ttl">§C-04 · Agent Brief <em>— tool use (cycle 0)</em></span>
+            The predecessor pattern: function-dispatch loop. Chaining is the natural next step once a single call isn't enough.
+            <div class="related-row">
+              <span class="label">see:</span>
+              <span class="dm-tag"><a href="tool-use.html" style="color:inherit;">topics/tool-use</a></span>
+            </div>
+          </div>
+          <div class="ed-meta"><span class="pill">CYCLE 0</span></div>
+        </div>
+
+        <div class="ed-timeline-row">
+          <div><span class="ed-num">001–004</span><div style="font-family:var(--depmono); font-size:9.5px; letter-spacing:0.16em; color:var(--dim); margin-top:6px; text-transform:uppercase;">2026·03–04</div></div>
+          <div class="ed-where">
+            <span class="ttl">— · pre-agent</span>
+            Early editions stayed on the ML side of the ladder — GBM, SHAP, drift, embeddings. The agent track opened at #005.
+          </div>
+          <div class="ed-meta"><span class="pill">PRE</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CODE ARCHIVE ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">04</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id blue">§ T-04 · CODE ARCHIVE</span>
+          <div class="ref">1 PATTERN · GROWS WITH EDITIONS</div>
+        </div>
+        <h2>Reach-for-it <em>patterns.</em></h2>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <h4 class="prose" style="font-family:var(--depmono); font-size:11px; letter-spacing:0.22em; color:var(--blue); margin-bottom:14px; text-transform:uppercase;">// PATTERN 01 · LINEAR CHAIN</h4>
+          <p style="font-family:var(--mono); font-size:14px; line-height:1.75; color:var(--ink-2); max-width:60ch;">One helper, three calls, each output feeding the next. The simplest reliable shape. Source: <a href="../index.html#agent">§C-04 ED #006</a>.</p>
+        </div>
+        <div class="code">
+          <div class="code-head">
+            <span class="lang">python · pattern 01 · linear chain</span>
+            <span class="id">// 3 LINKS</span>
+          </div>
+<pre><span class="k">def</span> <span class="f">ask</span>(prompt: str) -&gt; str:        <span class="c"># one link = one call</span>
+    r = client.messages.create(
+        model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=<span class="n">400</span>,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
+    )
+    <span class="k">return</span> r.content[<span class="n">0</span>].text
+
+plain  = <span class="f">ask</span>(<span class="s">f"Translate to English:\n{drivers}"</span>)
+draft  = <span class="f">ask</span>(<span class="s">f"3-sentence note from:\n{plain}"</span>)
+report = <span class="f">ask</span>(<span class="s">f"Cut hedging, rewrite tighter:\n{draft}"</span>)</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== ROADMAP ============== -->
+    <section class="secblock">
+      <span class="cmark"></span><span class="cmark tr"></span>
+      <div class="secblock-num-display">05</div>
+
+      <div class="secblock-head">
+        <div class="secblock-meta">
+          <span class="id">§ T-05 · CYCLE ROADMAP</span>
+          <div class="ref">THE 7-STEP AGENT LADDER</div>
+        </div>
+        <h2>Where this <em>goes next.</em></h2>
+      </div>
+
+      <div class="roadmap">
+        <div class="roadmap-row current">
+          <div class="step">1</div>
+          <div class="dur">ED #006</div>
+          <div class="desc">
+            <strong>Prompt chaining</strong>
+            Linear output-to-input chains. Self-correction as the canonical shape.
+          </div>
+          <div class="when">CURRENT</div>
+        </div>
+        <div class="roadmap-row future">
+          <div class="step">2</div>
+          <div class="dur">ED #007</div>
+          <div class="desc">
+            <strong>Multi-step orchestration</strong>
+            A controller decides which link runs next. Branching, not a straight line.
+          </div>
+          <div class="when">NEXT</div>
+        </div>
+        <div class="roadmap-row future">
+          <div class="step">3</div>
+          <div class="dur">ED #008</div>
+          <div class="desc">
+            <strong>System prompt design for constrained tasks</strong>
+            Lock each link's behavior so outputs stay parseable downstream.
+          </div>
+          <div class="when">QUEUED</div>
+        </div>
+        <div class="roadmap-row future">
+          <div class="step">4</div>
+          <div class="dur">ED #009</div>
+          <div class="desc">
+            <strong>Structured output with Pydantic + Claude</strong>
+            Typed handoffs between links — no more string parsing.
+          </div>
+          <div class="when">QUEUED</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="foot">
+      <div class="foot-marquee">topic/<em>prompt-chaining.</em></div>
+
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <p>Topic pages compound. The agent track advances one cycle per edition — this page gains a link of the ladder each time.</p>
+        </div>
+        <div class="foot-col">
+          <h4>// Related topics</h4>
+          <ul>
+            <li><a href="tool-use.html">Tool Use</a></li>
+            <li><a href="index.html">Anthropic SDK</a></li>
+            <li><a href="index.html">SHAP</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// Library</h4>
+          <ul>
+            <li><a href="index.html">All topics</a></li>
+            <li><a href="../projects/index.html">Build log</a></li>
+            <li><a href="../cheatsheets/index.html">Cheat sheets</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>// First seen</h4>
+          <ul>
+            <li>ED #006 · 2026·06·02</li>
+            <li>Cycle 1 / 7 · L3</li>
+            <li>Next: ED #007 · orchestration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <span>TOPIC PAGE · GROWS WITH EDITIONS</span>
+        <span>GD/T10 · PROMPT CHAINING</span>
+        <a href="../index.html">↳ BACK TO LATEST</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    const obs = new IntersectionObserver(es => {
+      es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

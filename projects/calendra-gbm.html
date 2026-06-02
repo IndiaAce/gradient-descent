@@ -243,13 +243,13 @@
       <div class="id-row">
         <span class="dm-tag solid-hot">B-01</span>
         <span class="dm-tag blue">TRAINING</span>
-        <span class="dm-tag">REV 005-A</span>
+        <span class="dm-tag">REV 006-A</span>
         <span class="dm-tag">CALENDRA / main</span>
       </div>
 
       <h1>Calendra · <em>GBM.</em></h1>
 
-      <p class="deck">A gradient-boosting classifier that scores incoming meeting invitations as benign or malicious. Currently <strong>v4.1</strong>, <strong>AUC 0.978</strong>, <strong>F1 0.954</strong>, training set 5,142 labeled events. About to grow up: MLflow goes in this weekend, then a description-embedding feature on the L2 backlog.</p>
+      <p class="deck">A gradient-boosting classifier that scores incoming meeting invitations as benign or malicious. Currently <strong>v4.1</strong>, <strong>AUC 0.978</strong>, <strong>F1 0.954</strong>, training set 5,142 labeled events. MLflow tracking landed in #005; this weekend the scattered preprocessing collapses into a single leak-free <strong>Pipeline</strong>, then Optuna searches it for v5.0.</p>
 
       <div class="kpi-row">
         <div class="kpi"><div class="lbl">// AUC ROC</div><div class="v">0.978</div><div class="delta">▲ +0.012 vs v4.0</div></div>
@@ -318,7 +318,7 @@
           <div class="mc-legend">
             <span class="item"><span class="swatch"></span> AUC ROC · 0.978</span>
             <span class="item"><span class="swatch blue"></span> F1 · 0.954</span>
-            <span class="item" style="margin-left:auto; color: var(--hot);">▴ next: MLflow this weekend</span>
+            <span class="item" style="margin-left:auto; color: var(--hot);">▴ next: Pipeline + Optuna → v5.0</span>
           </div>
         </div>
       </div>
@@ -391,8 +391,8 @@
       </div>
 
       <div class="callout" style="margin-top: 24px;">
-        <span class="lbl">// MLFLOW MIGRATION — THIS WEEKEND</span>
-        These five rows live in <code class="inline">model_training.ipynb</code> cell outputs. After this weekend they live in MLflow's tracking server as named runs, sortable, diffable, with the actual model artifacts attached. See <a href="../topics/mlflow.html">topics/mlflow</a>.
+        <span class="lbl">// NEXT: PIPELINE PACKAGING — THIS WEEKEND</span>
+        These runs now live in MLflow (landed #005). The next move (#006): collapse the loose preprocessing cells into one <code class="inline">ColumnTransformer + Pipeline</code> so every logged run is leak-free by construction, then let Optuna search it. See <a href="../topics/pipelines.html">topics/pipelines</a>.
       </div>
     </section>
 
@@ -476,7 +476,7 @@
       <div class="panel-head">
         <span class="id">§ R · ROADMAP</span>
         <h2>What's <em>next.</em></h2>
-        <span class="ts">5 STEPS · ED #005 → #008</span>
+        <span class="ts">6 STEPS · ED #005 → #008</span>
         <span class="ref">PRIORITIZED BY EXPECTED LIFT</span>
       </div>
 
@@ -484,36 +484,43 @@
         <div class="buildlog-head" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
           <span>#</span><span>step</span><span>angle</span><span>est. lift</span><span>when</span>
         </div>
-        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr; background: rgba(255,77,46,0.04);">
-          <span class="idx" style="color: var(--hot);">01</span>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
+          <span class="idx" style="color: var(--green);">01</span>
           <div class="name" style="font-size: 18px;">MLflow tracking on existing pipeline</div>
           <div class="next-line">Wrap training in <code class="inline">with start_run():</code>. Log params + metrics + model artifact. 5 lines of diff.</div>
+          <div class="metrics" style="color: var(--dim);">DONE · #005</div>
+          <span class="dm-tag">SHIPPED</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr; background: rgba(255,77,46,0.04);">
+          <span class="idx" style="color: var(--hot);">02</span>
+          <div class="name" style="font-size: 18px;">Package as one leak-free Pipeline</div>
+          <div class="next-line"><code class="inline">ColumnTransformer + GBM</code> into one <code class="inline">.joblib</code>. CV inside folds. Inference stops scaling by hand.</div>
           <div class="metrics" style="color: var(--dim);">PROCESS</div>
           <span class="dm-tag hot">THIS WEEKEND</span>
         </div>
-        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
-          <span class="idx">02</span>
-          <div class="name" style="font-size: 18px;">Description embedding feature (cosine)</div>
-          <div class="next-line">One new feature: <code class="inline">desc_embed_sim</code>. A/B against v4.1 baseline in MLflow.</div>
-          <div class="metrics"><b>+0.008 AUC</b><br><span style="font-family: var(--depmono); font-size: 9px; color: var(--dim);">est. · per L2</span></div>
-          <span class="dm-tag">ED #006</span>
-        </div>
-        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
-          <span class="idx">03</span>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr; background: rgba(255,77,46,0.04);">
+          <span class="idx" style="color: var(--hot);">03</span>
           <div class="name" style="font-size: 18px;">Optuna hyperparameter search</div>
-          <div class="next-line">50 trials, each an MLflow run. Pick best. Register as <code class="inline">v5.0</code>.</div>
+          <div class="next-line">50 trials over the Pipeline, each an MLflow child run. Pick best. Register as <code class="inline">v5.0</code>.</div>
           <div class="metrics"><b>+0.004 AUC</b><br><span style="font-family: var(--depmono); font-size: 9px; color: var(--dim);">est.</span></div>
-          <span class="dm-tag">ED #006</span>
+          <span class="dm-tag hot">ED #006</span>
         </div>
         <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
           <span class="idx">04</span>
+          <div class="name" style="font-size: 18px;">Description embedding feature (cosine)</div>
+          <div class="next-line">One new feature: <code class="inline">desc_embed_sim</code> as a text branch in the ColumnTransformer. A/B in MLflow.</div>
+          <div class="metrics"><b>+0.008 AUC</b><br><span style="font-family: var(--depmono); font-size: 9px; color: var(--dim);">est. · per L2</span></div>
+          <span class="dm-tag">ED #007</span>
+        </div>
+        <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
+          <span class="idx">05</span>
           <div class="name" style="font-size: 18px;">SHAP interaction maskers (post-hoc)</div>
           <div class="next-line">After model is locked, find feature pairs that interact. Inform future feature engineering.</div>
           <div class="metrics" style="color: var(--dim);">INSIGHT</div>
           <span class="dm-tag">ED #007</span>
         </div>
         <div class="buildlog-row" style="grid-template-columns: 60px 1.4fr 1.5fr 120px 1fr;">
-          <span class="idx">05</span>
+          <span class="idx">06</span>
           <div class="name" style="font-size: 18px;">Model Registry → REST serving</div>
           <div class="next-line">Promote winner to <code class="inline">@production</code>. Spin up <code class="inline">mlflow models serve</code>. Calendra inference path hits a URL.</div>
           <div class="metrics" style="color: var(--dim);">DEPLOYMENT</div>
@@ -528,8 +535,8 @@
       <div class="panel-head">
         <span class="id blue">§ FS · FILES</span>
         <h2>The <em>artifacts.</em></h2>
-        <span class="ts">8 ENTRIES · CALENDRA / main</span>
-        <span class="ref">GIT REF: a3f1c2</span>
+        <span class="ts">9 ENTRIES · CALENDRA / main</span>
+        <span class="ref">GIT REF: b7e2d9</span>
       </div>
 
       <div class="files">
@@ -553,9 +560,15 @@
         </div>
         <div class="files-row">
           <span class="icon">.joblib</span>
-          <span class="path">models/v4.1.joblib <em>· current production blob — to be replaced by MLflow registry</em></span>
+          <span class="path">models/calendra_pipeline.joblib <em>· NEW #006 · ColumnTransformer + GBM in one artifact</em></span>
+          <span class="size">2.6 MB</span>
+          <span class="touched">today</span>
+        </div>
+        <div class="files-row">
+          <span class="icon">.joblib</span>
+          <span class="path">models/v4.1.joblib <em>· legacy blob — superseded by the Pipeline artifact</em></span>
           <span class="size">2.4 MB</span>
-          <span class="touched">2 days ago</span>
+          <span class="touched">1 week ago</span>
         </div>
         <div class="files-row">
           <span class="icon">.parquet</span>
@@ -577,7 +590,7 @@
         </div>
         <div class="files-row">
           <span class="icon">.toml</span>
-          <span class="path">pyproject.toml <em>· uv-locked · sklearn 1.5.2</em></span>
+          <span class="path">pyproject.toml <em>· uv-locked · sklearn 1.8 · + optuna</em></span>
           <span class="size">2 KB</span>
           <span class="touched">3 weeks ago</span>
         </div>
@@ -595,14 +608,14 @@
       </div>
 
       <div class="topic-grid" style="grid-template-columns: repeat(4, 1fr);">
-        <a class="topic-cell current" href="../topics/mlflow.html">
-          <div class="num">// TOPIC · NEXT STEP</div>
-          <h3>MLflow</h3>
-          <div class="meta"><span>NEW · ED #005</span><span>OPEN →</span></div>
+        <a class="topic-cell current" href="../topics/pipelines.html">
+          <div class="num">// TOPIC · THIS WEEKEND</div>
+          <h3>Pipelines</h3>
+          <div class="meta"><span>NEW · ED #006</span><span>OPEN →</span></div>
         </a>
-        <a class="topic-cell" href="../topics/embeddings.html">
-          <div class="num">// TOPIC · ICEBREAKER #1</div>
-          <h3>Embeddings</h3>
+        <a class="topic-cell current" href="../topics/mlflow.html">
+          <div class="num">// TOPIC · + OPTUNA</div>
+          <h3>MLflow</h3>
           <div class="meta"><span>ACTIVE · 2 ED</span><span>OPEN →</span></div>
         </a>
         <a class="topic-cell" href="../topics/index.html">
@@ -624,7 +637,7 @@
         <div class="foot-brand"><p>The flagship classifier this newsletter exists to advance. Every edition feeds something into this project; every project advance feeds back into the editorial roadmap.</p></div>
         <div class="foot-col"><h4>// Related topics</h4><ul><li><a href="../topics/mlflow.html">MLflow</a></li><li><a href="../topics/embeddings.html">Embeddings</a></li><li><a href="../topics/index.html">SHAP</a></li></ul></div>
         <div class="foot-col"><h4>// Library</h4><ul><li><a href="index.html">All projects</a></li><li><a href="../topics/index.html">Topic graph</a></li><li><a href="../cheatsheets/index.html">Cheat sheets</a></li></ul></div>
-        <div class="foot-col"><h4>// Status</h4><ul><li>v4.1 · TRAINING</li><li>AUC 0.978 · F1 0.954</li><li>5142 labeled events</li><li>Next: MLflow this weekend</li></ul></div>
+        <div class="foot-col"><h4>// Status</h4><ul><li>v4.1 · TRAINING</li><li>AUC 0.978 · F1 0.954</li><li>5142 labeled events</li><li>Next: Pipeline + Optuna → v5.0</li></ul></div>
       </div>
       <div class="foot-bottom"><span>PROJECT PAGE · LIVING DOC</span><span>GD/B01 · CALENDRA-GBM</span><a href="../index.html">↳ BACK TO LATEST</a></div>
     </footer>

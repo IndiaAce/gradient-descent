@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scikit-learn Pipelines — Cheat Sheet // Gradient Descent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&family=Departure+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../system.css">
+  <style>
+    .cs-hero { padding: 70px 0 60px; border-bottom: 2px solid var(--ink); }
+    .cs-hero .crumbs { margin-bottom: 28px; }
+    .cs-hero .id-row { display: flex; gap: 8px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+    .cs-hero h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(64px, 11vw, 180px);
+      line-height: 0.86; letter-spacing: -0.05em;
+      margin-bottom: 32px;
+    }
+    .cs-hero h1 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .cs-hero .deck {
+      font-family: var(--mono); font-size: 17px; line-height: 1.55;
+      color: var(--ink-2); max-width: 72ch; margin-bottom: 36px;
+    }
+    .cs-hero .deck strong { color: var(--ink); font-weight: 500; }
+    .cs-hero .deck em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    .cs-layout { display: grid; grid-template-columns: 1fr 240px; gap: 56px; align-items: start; padding-top: 60px; }
+    .cs-toc { position: sticky; top: 80px; padding-bottom: 40px; }
+    .cs-toc h4 { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--hot); padding-bottom: 10px; border-bottom: 1.5px solid var(--ink); margin-bottom: 6px; }
+    .cs-toc ul { list-style: none; }
+    .cs-toc li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dotted var(--line); font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); cursor: pointer; transition: color 0.2s; }
+    .cs-toc li:hover, .cs-toc li.on { color: var(--hot); }
+    .cs-toc li .num { font-family: var(--depmono); font-size: 10px; letter-spacing: 0.14em; color: var(--dim); }
+    .cs-toc li.on .num { color: var(--hot); }
+
+    .recipe-list { display: grid; gap: 0; }
+    .recipe { display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--line); align-items: start; }
+    .recipe:first-child { border-top: 1.5px solid var(--ink); }
+    .recipe:last-child { border-bottom: 1.5px solid var(--ink); }
+    .recipe-num { font-family: var(--display); font-weight: 700; font-size: 28px; letter-spacing: -0.02em; line-height: 0.95; color: var(--hot); }
+    .recipe-num small { display: block; font-family: var(--depmono); font-size: 9px; letter-spacing: 0.18em; color: var(--dim); font-weight: 400; margin-top: 4px; text-transform: uppercase; }
+    .recipe h3 { font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: -0.01em; line-height: 1.15; margin-bottom: 10px; }
+    .recipe h3 em { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--hot); }
+    .recipe p { font-family: var(--mono); font-size: 13.5px; line-height: 1.7; color: var(--ink-2); max-width: 76ch; margin-bottom: 10px; }
+    .recipe p strong { color: var(--ink); }
+    .recipe p em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+    .recipe .snippet { background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 12.5px; line-height: 1.65; padding: 12px 16px; margin-top: 10px; overflow-x: auto; }
+    .recipe .snippet .k { color: #ffb88f; }
+    .recipe .snippet .s { color: #b8e0ff; }
+    .recipe .snippet .c { color: rgba(232,230,212,0.45); font-style: italic; }
+    .recipe .snippet .n { color: #f2c462; }
+    .recipe .snippet .f { color: #ffd699; }
+    .recipe .snippet .pr { color: #ff4d2e; }
+
+    @media (max-width: 720px) {
+      .cs-hero { padding: 36px 0 40px; }
+      .cs-hero h1 { font-size: clamp(44px, 14vw, 88px); margin-bottom: 22px; line-height: 0.9; }
+      .cs-hero .id-row { gap: 6px; margin-bottom: 20px; }
+      .cs-hero .deck { font-size: 14px; line-height: 1.55; margin-bottom: 26px; }
+      .cs-layout { grid-template-columns: 1fr; gap: 28px; padding-top: 40px; }
+      .cs-toc { position: static; order: -1; padding: 0; margin-bottom: 8px; }
+      .cs-toc h4 { font-size: 9.5px; padding-bottom: 8px; }
+      .cs-toc ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+      .cs-toc li { padding: 6px 0; font-size: 11.5px; }
+      .cs-toc li .num { font-size: 9px; }
+      .recipe { grid-template-columns: 44px 1fr; gap: 14px; padding: 18px 0; }
+      .recipe-num { font-size: 22px; }
+      .recipe-num small { font-size: 8.5px; margin-top: 2px; }
+      .recipe h3 { font-size: 18px; line-height: 1.2; margin-bottom: 8px; }
+      .recipe p { font-size: 12.5px; line-height: 1.6; }
+      .recipe .snippet { font-size: 11px; line-height: 1.6; padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="hash">GD-CS02</span>
+        <a href="../index.html">GRADIENT/DESCENT</a>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html#latest">latest</a>
+        <a href="../projects/index.html">build-log</a>
+        <a href="../topics/index.html">topic-graph</a>
+        <a href="index.html" class="active">cheatsheets</a>
+        <a href="../index.html#archive">archive</a>
+      </div>
+      <div class="nav-meta">
+        <span>// CHEAT SHEET</span>
+        <span style="color: var(--ink);">Scikit-learn Pipelines</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="canvas">
+
+    <section class="cs-hero">
+      <div class="crumbs">
+        <a href="../index.html">gradient/descent</a>
+        <span class="sep">/</span>
+        <a href="index.html">cheatsheets</a>
+        <span class="sep">/</span>
+        <span>sklearn-pipelines</span>
+      </div>
+
+      <div class="id-row">
+        <span class="dm-tag solid-hot">CHEAT SHEET · 02</span>
+        <span class="dm-tag">LIVING DOC · GROWS WEEKLY</span>
+        <span class="dm-tag blue">~ 10 MIN READ</span>
+        <span class="dm-tag">FIRST: ED #006</span>
+      </div>
+
+      <h1>Scikit-learn <em>pipelines.</em></h1>
+
+      <p class="deck">Twenty-four opinions on shipping ML as a Pipeline instead of a pile of cells. <code class="inline">ColumnTransformer</code> routing, the <code class="inline">step__param</code> grammar, joblib persistence, tuning inside the pipeline, and the <em>leakage traps</em> that quietly inflate every score you report. Every recipe is runnable; copy what you need and keep this open next to your editor.</p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">// SECTIONS</div><div class="v">6</div><div class="delta">why → anti-patterns</div></div>
+        <div class="kpi"><div class="lbl">// RECIPES</div><div class="v">24</div><div class="delta">+ growing</div></div>
+        <div class="kpi"><div class="lbl">// RUNNABLE SNIPPETS</div><div class="v">18</div><div class="delta">copy + paste</div></div>
+        <div class="kpi"><div class="lbl">// RELATED TOPICS</div><div class="v">3</div><div class="delta">Pipelines · MLflow · GBM</div></div>
+      </div>
+    </section>
+
+    <div class="cs-layout">
+
+      <div>
+
+        <!-- §1 · WHY -->
+        <section class="secblock" id="why" style="padding-top: 0; border-bottom-style: none;">
+          <div class="secblock-num-display">1</div>
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 1 · WHY PIPELINES</span>
+              <div class="ref">4 RECIPES · THE CASE</div>
+            </div>
+            <h2>Ship one <em>object,</em> not a pile of cells.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">1.1<small>law</small></div>
+              <div>
+                <h3>A Pipeline makes leakage <em>structurally impossible.</em></h3>
+                <p>When cross-validation re-fits the pipeline on each fold, every preprocessing step learns from that fold's training rows only. You stop relying on remembering to split first — the architecture enforces it.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">1.2<small>core</small></div>
+              <div>
+                <h3>One <em>.joblib</em> carries preprocessing + model together.</h3>
+                <p>No separate scaler to version, lose, or mismatch at inference. The gap between "works in the notebook" and "works at the endpoint" closes.</p>
+                <div class="snippet"><span class="k">from</span> sklearn.pipeline <span class="k">import</span> Pipeline
+pipe = <span class="f">Pipeline</span>([(<span class="s">"pre"</span>, pre), (<span class="s">"gbm"</span>, model)])
+pipe.fit(X_tr, y_tr); joblib.dump(pipe, <span class="s">"pipe.joblib"</span>)</div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">1.3<small>tip</small></div>
+              <div>
+                <h3>Name your steps — you'll address them later.</h3>
+                <p>The string names (<code class="inline">"pre"</code>, <code class="inline">"gbm"</code>) become the prefix for tuning nested params and for swapping steps. Pick them deliberately.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">1.4<small>tip</small></div>
+              <div>
+                <h3><em>make_pipeline</em> for throwaway, Pipeline for keeps.</h3>
+                <p><code class="inline">make_pipeline</code> auto-names steps (lowercased class name) — fine for a quick test, painful when you need to reference them. Use explicit <code class="inline">Pipeline</code> for anything you'll tune.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- §2 · COLUMNTRANSFORMER -->
+        <section class="secblock" id="ct" style="border-bottom-style: none;">
+          <div class="secblock-num-display">2</div>
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 2 · COLUMNTRANSFORMER</span>
+              <div class="ref">5 RECIPES · ROUTING COLUMNS</div>
+            </div>
+            <h2>Different columns, <em>different</em> treatment.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">2.1<small>core</small></div>
+              <div>
+                <h3>The canonical numeric + categorical split.</h3>
+                <p>Scale numerics, one-hot nominals, concatenate. This is 90% of tabular preprocessing.</p>
+                <div class="snippet"><span class="k">from</span> sklearn.compose <span class="k">import</span> ColumnTransformer
+pre = <span class="f">ColumnTransformer</span>([
+    (<span class="s">"num"</span>, <span class="f">StandardScaler</span>(), numeric),
+    (<span class="s">"cat"</span>, <span class="f">OneHotEncoder</span>(handle_unknown=<span class="s">"ignore"</span>), nominal),
+])</div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">2.2<small>law</small></div>
+              <div>
+                <h3>Always set <em>handle_unknown="ignore"</em> on OneHotEncoder.</h3>
+                <p>An unseen <code class="inline">.zip</code> TLD at inference would otherwise raise. With <code class="inline">ignore</code> it encodes to all-zeros — degraded, but alive.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">2.3<small>tip</small></div>
+              <div>
+                <h3>Select columns by <em>dtype</em>, not by hand.</h3>
+                <p><code class="inline">make_column_selector</code> picks columns by type or name regex — the transformer keeps working as your feature table grows.</p>
+                <div class="snippet"><span class="k">from</span> sklearn.compose <span class="k">import</span> make_column_selector <span class="k">as</span> sel
+(<span class="s">"num"</span>, <span class="f">StandardScaler</span>(), <span class="f">sel</span>(dtype_include=<span class="s">"number"</span>))</div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">2.4<small>tip</small></div>
+              <div>
+                <h3>Use <em>remainder="passthrough"</em> for already-clean columns.</h3>
+                <p>Booleans and pre-encoded ordinals don't need a transformer. <code class="inline">remainder="passthrough"</code> keeps them; the default <code class="inline">"drop"</code> silently discards them — a classic surprise.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">2.5<small>kit</small></div>
+              <div>
+                <h3>A text branch is just another transformer.</h3>
+                <p>Slot a vectorizer onto a single text column alongside numeric/categorical. This is how the description-embedding feature joins Calendra.</p>
+                <div class="snippet">(<span class="s">"txt"</span>, <span class="f">TfidfVectorizer</span>(max_features=<span class="n">300</span>), <span class="s">"subject"</span>)</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- §3 · STEP__PARAM -->
+        <section class="secblock" id="grammar" style="border-bottom-style: none;">
+          <div class="secblock-num-display">3</div>
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 3 · THE step__param GRAMMAR</span>
+              <div class="ref">3 RECIPES · REACHING INSIDE</div>
+            </div>
+            <h2>Address anything by <em>name.</em></h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">3.1<small>core</small></div>
+              <div>
+                <h3>Double underscore = "reach into this step".</h3>
+                <p><code class="inline">gbm__max_depth</code> sets <code class="inline">max_depth</code> on the step named <code class="inline">gbm</code>. This is the grammar GridSearchCV, RandomizedSearchCV, and Optuna all use.</p>
+                <div class="snippet">pipe.set_params(gbm__n_estimators=<span class="n">300</span>, gbm__max_depth=<span class="n">4</span>)</div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">3.2<small>tip</small></div>
+              <div>
+                <h3>Chain it deeper for nested transformers.</h3>
+                <p>Inside a ColumnTransformer named <code class="inline">pre</code>, target a sub-step: <code class="inline">pre__num__with_mean=False</code>. The path mirrors the structure.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">3.3<small>tip</small></div>
+              <div>
+                <h3>Swap a whole step by assigning to its name.</h3>
+                <p>You can replace an estimator entirely in a search — e.g. test GBM vs. RandomForest — by putting the step name itself in the param grid.</p>
+                <div class="snippet">param_grid = {<span class="s">"gbm"</span>: [<span class="f">GradientBoostingClassifier</span>(), <span class="f">RandomForestClassifier</span>()]}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- §4 · PERSISTENCE -->
+        <section class="secblock" id="persist" style="border-bottom-style: none;">
+          <div class="secblock-num-display">4</div>
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 4 · PERSISTENCE</span>
+              <div class="ref">4 RECIPES · JOBLIB + SERVING</div>
+            </div>
+            <h2>Dump it, reload it, <em>predict.</em></h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">4.1<small>core</small></div>
+              <div>
+                <h3>joblib over pickle for anything with numpy.</h3>
+                <p><code class="inline">joblib.dump</code> handles large numpy arrays far more efficiently than the stdlib pickler. The reloaded pipeline scales raw input for you.</p>
+                <div class="snippet">joblib.dump(pipe, <span class="s">"models/calendra_pipeline.joblib"</span>)
+pipe = joblib.load(<span class="s">"models/calendra_pipeline.joblib"</span>)
+pipe.predict(raw_df)   <span class="c"># no manual scaling</span></div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">4.2<small>law</small></div>
+              <div>
+                <h3>Pin your sklearn version in the lockfile.</h3>
+                <p>A pipeline pickled under 1.5 may warn or break under 1.8. The <code class="inline">pyproject.toml</code> + lock is the contract between train-time and serve-time.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">4.3<small>tip</small></div>
+              <div>
+                <h3>Log the pipeline to MLflow, not just the model.</h3>
+                <p><code class="inline">mlflow.sklearn.log_model(pipe, "model")</code> stores the whole estimator. The registry then serves preprocessing + model as a unit.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">4.4<small>kit</small></div>
+              <div>
+                <h3>Inference parity is free once it's one object.</h3>
+                <p>The FastAPI <code class="inline">/predict</code> endpoint loads the joblib and calls <code class="inline">.predict</code> on the raw feature dict. No scaling code to keep in sync with training.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- §5 · TUNING -->
+        <section class="secblock" id="tune" style="border-bottom-style: none;">
+          <div class="secblock-num-display">5</div>
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 5 · TUNING IN-PLACE</span>
+              <div class="ref">4 RECIPES · CV, GRID, OPTUNA</div>
+            </div>
+            <h2>Search the <em>whole</em> pipeline.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">5.1<small>law</small></div>
+              <div>
+                <h3>Cross-validate the pipeline, never the model alone.</h3>
+                <p>Passing <code class="inline">pipe</code> to <code class="inline">cross_val_score</code> runs preprocessing inside each fold — the only honest number.</p>
+                <div class="snippet">cv = <span class="f">cross_val_score</span>(pipe, X, y, cv=<span class="n">5</span>, scoring=<span class="s">"roc_auc"</span>)</div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">5.2<small>core</small></div>
+              <div>
+                <h3>GridSearchCV with step-prefixed params.</h3>
+                <p>The grid keys are <code class="inline">step__param</code> paths; the best estimator is a refit pipeline ready to dump.</p>
+                <div class="snippet">grid = {<span class="s">"gbm__max_depth"</span>: [<span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>]}
+gs = <span class="f">GridSearchCV</span>(pipe, grid, scoring=<span class="s">"roc_auc"</span>, cv=<span class="n">5</span>)</div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">5.3<small>kit</small></div>
+              <div>
+                <h3>Optuna for ranges too big to grid.</h3>
+                <p>The objective sets params on the pipeline and returns the CV mean. Each trial is leak-free because the pipeline is.</p>
+                <div class="snippet"><span class="k">def</span> <span class="f">objective</span>(trial):
+    pipe.set_params(gbm__max_depth=trial.suggest_int(<span class="s">"d"</span>, <span class="n">2</span>, <span class="n">6</span>))
+    <span class="k">return</span> <span class="f">cross_val_score</span>(pipe, X, y, cv=<span class="n">5</span>, scoring=<span class="s">"roc_auc"</span>).mean()</div>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">5.4<small>tip</small></div>
+              <div>
+                <h3>Wire each trial to an MLflow child run.</h3>
+                <p>Wrap the study in a parent run and each trial in <code class="inline">start_run(nested=True)</code>. The search tree becomes sortable history. See <a href="../topics/mlflow.html">topics/mlflow</a>.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- §6 · ANTI-PATTERNS -->
+        <section class="secblock" id="bad" style="border-bottom-style: none;">
+          <div class="secblock-num-display">6</div>
+          <div class="secblock-head">
+            <div class="secblock-meta">
+              <span class="id">§ 6 · ANTI-PATTERNS</span>
+              <div class="ref">4 RECIPES · WHAT INFLATES SCORES</div>
+            </div>
+            <h2>The traps that <em>lie</em> to you.</h2>
+          </div>
+
+          <div class="recipe-list">
+            <div class="recipe">
+              <div class="recipe-num">6.1<small>trap</small></div>
+              <div>
+                <h3>Fitting the scaler before the split.</h3>
+                <p>The original sin. <code class="inline">scaler.fit(X)</code> then <code class="inline">train_test_split</code> leaks test statistics into training. The pipeline exists to make this impossible — don't reach around it.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">6.2<small>trap</small></div>
+              <div>
+                <h3>SMOTE / resampling outside the CV fold.</h3>
+                <p>Oversampling before cross-validation leaks synthetic neighbors across folds. Use <code class="inline">imblearn.pipeline.Pipeline</code> so resampling happens per-fold, train-side only.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">6.3<small>trap</small></div>
+              <div>
+                <h3>Target-derived features computed on the full set.</h3>
+                <p>Mean-encoding a category by its target rate, computed before the split, is leakage even inside a pipeline if done in a raw cell. Wrap it as a transformer that fits per fold.</p>
+              </div>
+            </div>
+            <div class="recipe">
+              <div class="recipe-num">6.4<small>trap</small></div>
+              <div>
+                <h3>Trusting a single train/test number.</h3>
+                <p>One split is one sample of the model's variance. Report the 5-fold mean <em>and</em> std. A 0.978 with ±0.03 std is a different story than ±0.004.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RELATED -->
+        <section class="panel" style="margin-top: 40px;">
+          <span class="cmark"></span><span class="cmark tr"></span>
+          <div class="panel-head">
+            <span class="id">§ X · RELATED</span>
+            <h2>What this <em>connects to.</em></h2>
+            <span class="ts">2 TOPICS · 1 PROJECT</span>
+            <span class="ref">EDGES IN GRAPH</span>
+          </div>
+
+          <div class="topic-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <a class="topic-cell current" href="../topics/pipelines.html">
+              <div class="num">// TOPIC · NEW</div>
+              <h3>Pipelines</h3>
+              <div class="meta"><span>NEW · ED #006</span><span>OPEN →</span></div>
+            </a>
+            <a class="topic-cell" href="../projects/calendra-gbm.html">
+              <div class="num">// PROJECT</div>
+              <h3>Calendra · GBM</h3>
+              <div class="meta"><span>WHERE §1–5 LAND</span><span>OPEN →</span></div>
+            </a>
+            <a class="topic-cell" href="../topics/mlflow.html">
+              <div class="num">// TOPIC · TUNED VIA</div>
+              <h3>MLflow + Optuna</h3>
+              <div class="meta"><span>2 ED</span><span>OPEN →</span></div>
+            </a>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- TOC -->
+      <div class="cs-toc">
+        <h4>// CONTENTS</h4>
+        <ul id="csToc">
+          <li data-tgt="#why"><span class="num">01</span><span>Why Pipelines</span></li>
+          <li data-tgt="#ct"><span class="num">02</span><span>ColumnTransformer</span></li>
+          <li data-tgt="#grammar"><span class="num">03</span><span>step__param</span></li>
+          <li data-tgt="#persist"><span class="num">04</span><span>Persistence</span></li>
+          <li data-tgt="#tune"><span class="num">05</span><span>Tuning in-place</span></li>
+          <li data-tgt="#bad"><span class="num">06</span><span>Anti-patterns</span></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <footer class="foot">
+      <div class="foot-marquee">cheatsheet/<em>pipelines.</em></div>
+      <div class="foot-grid">
+        <div class="foot-brand"><p>Living doc. Each edition that touches sklearn pipelines adds a recipe here. Open suggestions / corrections / additions for next week — that's what this skill is built for.</p></div>
+        <div class="foot-col"><h4>// Sections</h4><ul><li><a href="#why">Why Pipelines</a></li><li><a href="#ct">ColumnTransformer</a></li><li><a href="#grammar">step__param</a></li><li><a href="#tune">Tuning</a></li><li><a href="#bad">Anti-patterns</a></li></ul></div>
+        <div class="foot-col"><h4>// Related</h4><ul><li><a href="../topics/pipelines.html">Pipelines</a></li><li><a href="../projects/calendra-gbm.html">Calendra GBM</a></li><li><a href="index.html">All cheat sheets</a></li></ul></div>
+        <div class="foot-col"><h4>// Status</h4><ul><li>First: ED #006</li><li>24 recipes · 6 sections</li><li>Living doc · grows weekly</li></ul></div>
+      </div>
+      <div class="foot-bottom"><span>CHEAT SHEET · 02 · LIVING DOC</span><span>GD/CS02 · SCIKIT-LEARN PIPELINES</span><a href="../index.html">↳ BACK TO LATEST</a></div>
+    </footer>
+
+  </main>
+
+  <script>
+    const tocLis = document.querySelectorAll('#csToc li[data-tgt]');
+    tocLis.forEach(li => li.addEventListener('click', () => {
+      const tgt = li.dataset.tgt;
+      document.querySelector(tgt)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }));
+
+    const sections = [...document.querySelectorAll('section[id]')];
+    const obs = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (e.isIntersecting) {
+          const id = '#' + e.target.id;
+          tocLis.forEach(li => li.classList.toggle('on', li.dataset.tgt === id));
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    sections.forEach(s => obs.observe(s));
+  </script>
+</body>
+</html>
